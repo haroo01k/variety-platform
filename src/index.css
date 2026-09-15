@@ -1,0 +1,26 @@
+@import 'tailwindcss';
+
+/* 브랜드 색상 토큰 (기후농사) — Tailwind v4 CSS 기반 테마 설정 */
+@theme {
+  --color-brand-ivory: #fbf6ea;
+  --color-brand-green: #2f7d45;
+  --color-brand-green-dark: #1f5c33;
+  --color-brand-green-light: #e5f0de;
+  --color-brand-yellow: #f5b93e;
+  --color-brand-orange: #f08a3c;
+}
+
+body {
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    'Noto Sans KR',
+    'Malgun Gothic',
+    sans-serif;
+  background-color: var(--color-brand-ivory);
+  /* 한글 단어가 어색하게 중간에서 잘리지 않도록 함 */
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
