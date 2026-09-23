@@ -67,9 +67,10 @@ src/
     HomePage.tsx  공통 시작 화면
     farmer/       농업인 조건 입력 · 분석 · 결과 화면
     consumer/     소비자 작물 선택 · 추천 카드 화면
-  data/           mock 데이터 (작물, 지역/농업 문제 옵션, 추천 품종 등)
+  data/           작물·품종·질문 옵션 데이터 (src/data/varieties.ts가 25개 품종 원본)
   types/          공용 TypeScript 타입 정의
-  lib/            라우트 상수 등 공용 유틸리티
+  lib/            라우트 상수, 추천 채점 로직, 좋아요(Supabase) 연동 유틸리티
+supabase/         좋아요 기능용 SQL 스키마·RLS·함수, 설정 가이드
 ```
 
 ## 화면 흐름
@@ -87,8 +88,25 @@ src/
 로직·취향 테스트 로직·데이터베이스 연동은 포함되어 있지 않습니다. 모든
 데이터는 `src/data`의 mock 데이터입니다.
 
-## 환경 변수
+## 환경 변수 (소비자 "좋아요" 기능 — Supabase)
 
-현재 단계에서는 외부 서비스(Supabase 등)를 연결하지 않으므로 별도의
-환경 변수가 필요하지 않습니다. 이후 연동 시 `.env.local` 파일을 만들어
-사용하며, 이 파일은 Git에 커밋하지 않습니다(`.gitignore`에 포함됨).
+소비자 취향 테스트 결과의 좋아요 기능은 Supabase를 사용합니다. `.env.example`을
+`.env.local`로 복사한 뒤 값을 채워주세요(`.env.local`은 `.gitignore`에 포함되어
+커밋되지 않습니다).
+
+```bash
+cp .env.example .env.local
+```
+
+```env
+VITE_SUPABASE_URL=https://xxxx.supabase.co
+VITE_SUPABASE_ANON_KEY=anon_public_key
+```
+
+- Supabase 프로젝트를 처음부터 만드는 방법과 필요한 테이블/함수 SQL은
+  [supabase/README.md](supabase/README.md), [supabase/schema.sql](supabase/schema.sql)를 참고하세요.
+- `service_role` 키는 절대 프런트엔드에 넣지 않습니다. 여기서 쓰는 건 공개 가능한
+  `anon` 키뿐이며, 실제 데이터 접근은 SQL Editor로 만든 서버 측 함수를 통해서만 이루어집니다.
+- 환경 변수가 없어도 앱은 정상 실행됩니다. 이 경우 좋아요 관련 영역(하트 버튼,
+  농업인 화면의 소비자 관심도 코너, `/admin` 집계 화면)에만 "불러오지 못했어요" 안내가
+  뜨고, 추천 결과 자체는 평소와 동일하게 동작합니다.

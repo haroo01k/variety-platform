@@ -1,0 +1,186 @@
+/**
+ * 판매처 링크가 정해지면 marketUrl 값만 교체하면 됩니다.
+ */
+import type { MarketVariety } from '../types/market';
+
+export const MARKET_VARIETIES: MarketVariety[] = [
+  {
+    crop: 'potato',
+    varietyName: '선풍',
+    image: '/images/market/potato-seonpung.png',
+    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EC%84%A0%ED%92%8D%EA%B0%90%EC%9E%90&traceId=muckg1bo&channel=user',
+    isFullCard: true,
+  },
+  {
+    crop: 'potato',
+    varietyName: '장원',
+    image: '/images/market/potato-jangwon.png',
+    marketUrl: 'https://www.coupang.com/np/search?q=%EC%9E%A5%EC%9B%90%EA%B0%90%EC%9E%90&channel=recent&traceId=muckk1og',
+    isFullCard: true,
+  },
+  {
+    crop: 'potato',
+    varietyName: '포슬이',
+    image: '/images/market/potato-poseuli.png',
+    marketUrl: 'https://www.coupang.com/np/search?component=&q=%ED%8F%AC%EC%8A%AC%EC%9D%B4%EA%B0%90%EC%9E%90&traceId=mucl6aly&channel=user',
+    isFullCard: true,
+  },
+  {
+    crop: 'potato',
+    varietyName: '풍농',
+    image: '/images/market/potato-pungnong.png',
+    marketUrl: 'https://www.coupang.com/np/search?component=&q=%ED%92%8D%EB%86%8D%EA%B0%90%EC%9E%90&traceId=mucl0x54&channel=user',
+    isFullCard: true,
+  },
+  {
+    crop: 'potato',
+    varietyName: '자미',
+    image: '/images/market/potato-jami.png',
+    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EC%9E%90%EB%AF%B8%EA%B0%90%EC%9E%90&traceId=mucl57yp&channel=user',
+    isFullCard: true,
+  },
+
+  {
+    crop: 'corn',
+    varietyName: '미백2호',
+    image: '/images/market/corn-mibaek2.png',
+    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EC%98%A5%EC%88%98%EC%88%98+%EB%AF%B8%EB%B0%B12%ED%98%B8&traceId=muclbc18&channel=user',
+    isFullCard: true,
+  },
+  {
+    crop: 'corn',
+    varietyName: '미흑찰',
+    image: '/images/market/corn-miheukchal.png',
+    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EC%98%A5%EC%88%98%EC%88%98+%EB%AF%B8%ED%9D%91%EC%B0%B0&traceId=muclcnyh&channel=user',
+    isFullCard: true,
+  },
+  {
+    crop: 'corn',
+    varietyName: '흑점 2호',
+    image: '/images/market/corn-heukjeom2.png',
+    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EC%98%A5%EC%88%98%EC%88%98+%ED%9D%91%EC%A0%902%ED%98%B8&traceId=mucledkh&channel=user',
+    isFullCard: true,
+  },
+  {
+    crop: 'corn',
+    varietyName: '흑점 3호',
+    image: '/images/market/corn-heukjeom3.png',
+    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EC%98%A5%EC%88%98%EC%88%98+%ED%9D%91%EC%A0%903%ED%98%B8&traceId=muclf7xf&channel=user',
+    isFullCard: true,
+  },
+  {
+    crop: 'corn',
+    varietyName: '황금맛찰',
+    image: '/images/market/corn-hwanggeummatchal.png',
+    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EC%98%A5%EC%88%98%EC%88%98+%ED%99%A9%EA%B8%88%EB%A7%9B%EC%B0%B0&traceId=muclhpim&channel=user',
+    isFullCard: true,
+  },
+
+  {
+    crop: 'peach',
+    varietyName: '옐로드림',
+    image: '/images/market/peach-yellowdream.png',
+    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EB%B3%B5%EC%88%AD%EC%95%84+%EC%98%90%EB%A1%9C%EB%93%9C%EB%A6%BC&traceId=mucll8j4&channel=user',
+    isFullCard: true,
+  },
+  {
+    crop: 'peach',
+    varietyName: '이노센스',
+    image: '/images/market/peach-innocence.png',
+    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EB%B3%B5%EC%88%AD%EC%95%84+%EC%9D%B4%EB%85%B8%EC%84%BC%EC%8A%A4&traceId=muclmsei&channel=user',
+    isFullCard: true,
+  },
+  {
+    crop: 'peach',
+    varietyName: '홍슬',
+    image: '/images/market/peach-hongseul.png',
+    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EB%B3%B5%EC%88%AD%EC%95%84+%ED%99%8D%EC%8A%AC&traceId=muclpeai&channel=user&correctedQuery=%EB%B3%B5%EC%88%AD%EC%95%84+%ED%99%8D%EC%84%A4&spellCorrectionType=weak',
+    isFullCard: true,
+  },
+  {
+    crop: 'peach',
+    varietyName: '설홍',
+    image: '/images/market/peach-seolhong.png',
+    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EB%B3%B5%EC%88%AD%EC%95%84+%EC%84%A4%ED%99%8D&traceId=muclq3k4&channel=user',
+    isFullCard: true,
+  },
+  {
+    crop: 'peach',
+    varietyName: '마루황도',
+    image: '/images/market/peach-maruhwangdo.png',
+    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EB%B3%B5%EC%88%AD%EC%95%84+%EB%A7%88%EB%A3%A8%ED%99%A9%EB%8F%84&traceId=muclr1pc&channel=user',
+    isFullCard: true,
+  },
+
+  {
+    crop: 'apple',
+    varietyName: '썸머킹',
+    image: '/images/market/apple-summerking.png',
+    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EC%82%AC%EA%B3%BC+%EC%8D%B8%EB%A8%B8%ED%82%B9&traceId=mucluzqv&channel=user',
+    isFullCard: true,
+  },
+  {
+    crop: 'apple',
+    varietyName: '골든볼',
+    image: '/images/market/apple-goldenball.png',
+    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EC%82%AC%EA%B3%BC+%EA%B3%A8%EB%93%A0%EB%B3%BC&traceId=muclw2c8&channel=user',
+    isFullCard: true,
+  },
+  {
+    crop: 'apple',
+    varietyName: '아리수',
+    image: '/images/market/apple-arisu.png',
+    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EC%82%AC%EA%B3%BC+%EC%95%84%EB%A6%AC%EC%88%98&traceId=muclwnxg&channel=user',
+    isFullCard: true,
+  },
+  {
+    crop: 'apple',
+    varietyName: '이지플',
+    image: '/images/market/apple-ezfl.png',
+    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EC%82%AC%EA%B3%BC+%EC%9D%B4%EC%A7%80%ED%94%8C&traceId=muclx65z&channel=user',
+    isFullCard: true,
+  },
+  {
+    crop: 'apple',
+    varietyName: '컬러플',
+    image: '/images/market/apple-colorful.png',
+    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EC%82%AC%EA%B3%BC+%EC%BB%AC%EB%9F%AC%ED%94%8C&traceId=mucly0qr&channel=user',
+    isFullCard: true,
+  },
+
+  {
+    crop: 'cabbage',
+    varietyName: '원교20054호',
+    image: '/images/market/cabbage-wongyo20054.png',
+    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EB%B0%B0%EC%B6%94+%EC%9B%90%EA%B5%9020054%ED%98%B8&traceId=muclz5qa&channel=user',
+    isFullCard: true,
+  },
+  {
+    crop: 'cabbage',
+    varietyName: '원교 20049호',
+    image: '/images/market/cabbage-wongyo20049.png',
+    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EB%B0%B0%EC%B6%94+%EC%9B%90%EA%B5%9020049%ED%98%B8&traceId=mucm0pi7&channel=user',
+    isFullCard: true,
+  },
+  {
+    crop: 'cabbage',
+    varietyName: 'FH112',
+    image: '/images/market/cabbage-fh112.png',
+    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EB%B0%B0%EC%B6%94+FH112&traceId=mucm1kk7&channel=user',
+    isFullCard: true,
+  },
+  {
+    crop: 'cabbage',
+    varietyName: '순정아삭',
+    image: '/images/market/cabbage-sunjeongasak.png',
+    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EB%B0%B0%EC%B6%94+%EC%88%9C%EC%A0%95%EC%95%84%EC%82%AD&traceId=mucm2gnq&channel=user',
+    isFullCard: true,
+  },
+  {
+    crop: 'cabbage',
+    varietyName: '하라듀',
+    image: '/images/market/cabbage-haradyu.png',
+    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EB%B0%B0%EC%B6%94+%ED%95%98%EB%9D%BC%EB%93%80&traceId=mucm2zxt&channel=user&correctedQuery=%EB%B0%B0%EC%B6%94+%ED%95%98%EB%9D%BC%ED%94%BC%EB%87%A8&spellCorrectionType=weak',
+    isFullCard: true,
+  },
+];

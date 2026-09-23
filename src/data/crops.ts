@@ -6,9 +6,9 @@
 import type { Crop } from '../types/crop';
 
 export const CROPS: Crop[] = [
-  { id: 'potato', name: '감자', emoji: '🥔', colorClass: 'bg-amber-100' },
-  { id: 'corn', name: '옥수수', emoji: '🌽', colorClass: 'bg-yellow-100' },
-  { id: 'peach', name: '복숭아', emoji: '🍑', colorClass: 'bg-pink-100' },
-  { id: 'apple', name: '사과', emoji: '🍎', colorClass: 'bg-red-100' },
-  { id: 'cabbage', name: '배추', emoji: '🥬', colorClass: 'bg-green-100' },
+  { id: 'potato', name: '감자', emoji: '🥔', colorClass: 'bg-amber-100', imageSrc: '/images/potato.png' },
+  { id: 'corn', name: '옥수수', emoji: '🌽', colorClass: 'bg-yellow-100', imageSrc: '/images/corn.png' },
+  { id: 'peach', name: '복숭아', emoji: '🍑', colorClass: 'bg-pink-100', imageSrc: '/images/peach.png' },
+  { id: 'apple', name: '사과', emoji: '🍎', colorClass: 'bg-red-100', imageSrc: '/images/apple.png' },
+  { id: 'cabbage', name: '배추', emoji: '🥬', colorClass: 'bg-green-100', imageSrc: '/images/cabbage.png' },
 ];

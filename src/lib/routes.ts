@@ -7,12 +7,11 @@ export const ROUTES = {
   farmerConditions: '/farmer',
   farmerAnalyzing: '/farmer/analyzing',
   farmerResult: '/farmer/result',
-  consumerCrops: '/consumer',
-  /** react-router용 동적 경로 패턴 */
-  consumerRecommendation: '/consumer/:cropId',
+  /** 소비자 단계형 질문 화면. 작물 선택도 이 안에서 첫 단계로 처리합니다. */
+  consumer: '/consumer',
+  consumerResult: '/consumer/result',
+  /** 좋아요 집계 조회 전용 관리자 화면. 로그인 체계는 아직 없습니다(4단계 예정). */
+  admin: '/admin',
+  about: '/about',
+  market: '/market',
 } as const;
-
-/** 소비자 추천 카드 화면으로 이동할 때 사용하는 경로 생성 함수 */
-export function consumerRecommendationPath(cropId: string): string {
-  return `/consumer/${cropId}`;
-}

@@ -5,4 +5,10 @@ import { defineConfig } from 'vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  server: {
+    allowedHosts: ['.loca.lt', '.trycloudflare.com'],
+  },
+  preview: {
+    allowedHosts: ['.loca.lt', '.trycloudflare.com'],
+  },
 })

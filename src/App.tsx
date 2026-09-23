@@ -4,8 +4,11 @@ import { HomePage } from './pages/HomePage';
 import { FarmerConditionsPage } from './pages/farmer/FarmerConditionsPage';
 import { FarmerAnalyzingPage } from './pages/farmer/FarmerAnalyzingPage';
 import { FarmerResultPage } from './pages/farmer/FarmerResultPage';
-import { ConsumerCropSelectPage } from './pages/consumer/ConsumerCropSelectPage';
-import { ConsumerRecommendationPage } from './pages/consumer/ConsumerRecommendationPage';
+import { ConsumerQuizPage } from './pages/consumer/ConsumerQuizPage';
+import { ConsumerResultPage } from './pages/consumer/ConsumerResultPage';
+import { AdminLikesPage } from './pages/AdminLikesPage';
+import { AboutPage } from './pages/AboutPage';
+import { MarketPage } from './pages/MarketPage';
 import { ROUTES } from './lib/routes';
 
 /**
@@ -21,8 +24,11 @@ function App() {
         <Route path={ROUTES.farmerConditions} element={<FarmerConditionsPage />} />
         <Route path={ROUTES.farmerAnalyzing} element={<FarmerAnalyzingPage />} />
         <Route path={ROUTES.farmerResult} element={<FarmerResultPage />} />
-        <Route path={ROUTES.consumerCrops} element={<ConsumerCropSelectPage />} />
-        <Route path={ROUTES.consumerRecommendation} element={<ConsumerRecommendationPage />} />
+        <Route path={ROUTES.consumerResult} element={<ConsumerResultPage />} />
+        <Route path={ROUTES.consumer} element={<ConsumerQuizPage />} />
+        <Route path={ROUTES.admin} element={<AdminLikesPage />} />
+        <Route path={ROUTES.about} element={<AboutPage />} />
+        <Route path={ROUTES.market} element={<MarketPage />} />
       </Route>
     </Routes>
   );

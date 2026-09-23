@@ -6,15 +6,17 @@ type ButtonVariant = 'primary' | 'secondary' | 'accent';
 interface ButtonProps {
   children: ReactNode;
   variant?: ButtonVariant;
-  /** 지정하면 <Link>로, 없으면 <button>으로 렌더링됩니다. */
+  /** 지정하면 <Link>로, 없으면 <button>으로 렌더링됩니다. (disabled와 함께 쓰지 않습니다) */
   to?: string;
   onClick?: () => void;
   type?: 'button' | 'submit';
   className?: string;
+  /** true면 비활성화됩니다. `to`가 있는 링크 버튼에는 적용되지 않습니다. */
+  disabled?: boolean;
 }
 
 const BASE_CLASSES =
-  'inline-flex min-h-[48px] items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green sm:text-base';
+  'inline-flex min-h-[48px] items-center justify-center gap-2 rounded-2xl px-5 py-3 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green sm:text-base disabled:cursor-not-allowed disabled:opacity-40';
 
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   primary: 'bg-brand-green text-white hover:bg-brand-green-dark',
@@ -34,6 +36,7 @@ export function Button({
   onClick,
   type = 'button',
   className = '',
+  disabled = false,
 }: ButtonProps) {
   const classes = `${BASE_CLASSES} ${VARIANT_CLASSES[variant]} ${className}`;
 
@@ -46,7 +49,7 @@ export function Button({
   }
 
   return (
-    <button type={type} onClick={onClick} className={classes}>
+    <button type={type} onClick={onClick} disabled={disabled} className={classes}>
       {children}
     </button>
   );
