@@ -116,7 +116,7 @@ export function HomePage() {
 
       <p className="mt-5 flex items-center justify-center gap-1.5 px-4 text-center text-xs text-brand-green/70 sm:px-6">
         <span aria-hidden="true">🌿</span>
-        작은 선택이, 더 건강한 지구를 만듭니다.
+        <span className="font-handwriting-emotion">작은 선택이, 더 건강한 지구를 만듭니다.</span>
       </p>
     </div>
   );
