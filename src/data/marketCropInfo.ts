@@ -2,7 +2,7 @@ import type { CropId } from '../types/crop';
 
 /** 판매처 화면에서 작물별로 보여주는 한 줄 소개. */
 export const MARKET_CROP_DESCRIPTIONS: Record<CropId, string> = {
-  potato: '튼튼한 한 끼를 담은 감자',
+  potato: '든든한 한끼를 담은 감자',
   corn: '달콤한 에너지를 담은 옥수수',
   peach: '달콤한 계절을 전하는 복숭아',
   apple: '아삭한 건강을 담은 사과',
