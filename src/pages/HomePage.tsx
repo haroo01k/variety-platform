@@ -114,8 +114,8 @@ export function HomePage() {
         </Link>
       </section>
 
-      <p className="mt-5 flex items-center justify-center gap-1.5 px-4 text-center text-xs text-brand-green/70 sm:px-6">
-        <span aria-hidden="true">🌿</span>
+      <p className="mt-5 flex items-center justify-center gap-1.5 px-4 text-center text-[18px] leading-snug text-[#4F6B2A] sm:px-6 sm:text-xl">
+        <span aria-hidden="true" className="text-[22px] leading-none sm:text-2xl">🌿</span>
         <span className="font-handwriting-emotion">작은 선택이, 더 건강한 지구를 만듭니다.</span>
       </p>
     </div>
