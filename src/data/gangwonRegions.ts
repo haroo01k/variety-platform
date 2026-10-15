@@ -1,0 +1,85 @@
+/**
+ * 강원도 재배지역 지도에서 쓰는 시·군 메타데이터(이름표, 색상, 추천 지역 그룹 매핑).
+ * 경계 좌표는 src/data/gangwonGeo.ts(자동 생성)에 있고, code(통계청 행정구역 코드)로 연결합니다.
+ *
+ * regionGroup은 기존 추천 로직(src/lib/farmerScoring.ts의 F1 지역 값)으로 변환할 그룹입니다.
+ * - 백두대간 동쪽 해안 시·군 → 'gangwon-yeongdong' (강원 영동·동해안)
+ * - 백두대간 서쪽 내륙 시·군 → 'gangwon-yeongseo' (강원 영서)
+ * - 태백시는 백두대간 위에 걸쳐 있어 영동/영서 어느 쪽으로도 확정하지 않았습니다(null).
+ *   null인 지역은 클릭은 가능하지만, 사용자가 추천 기준 그룹을 직접 골라야 합니다.
+ * 고랭지(highland)는 시·군 단위가 아니라 해발고도 조건이라 기본 매핑에 넣지 않고,
+ * 모든 시·군에서 선택 가능한 대안 그룹으로 제공합니다.
+ */
+import type { RegionAnswer } from '../types/farmer';
+
+export type GangwonRegionId =
+  | 'chuncheon'
+  | 'wonju'
+  | 'gangneung'
+  | 'donghae'
+  | 'taebaek'
+  | 'sokcho'
+  | 'samcheok'
+  | 'hongcheon'
+  | 'hoengseong'
+  | 'yeongwol'
+  | 'pyeongchang'
+  | 'jeongseon'
+  | 'cheorwon'
+  | 'hwacheon'
+  | 'yanggu'
+  | 'inje'
+  | 'goseong'
+  | 'yangyang';
+
+export interface GangwonRegion {
+  regionId: GangwonRegionId;
+  /** 시·군 이름 */
+  regionName: string;
+  /** 통계청 행정구역 코드(gangwonGeo.ts와 연결) */
+  code: string;
+  /** 기존 추천 로직의 지역 그룹. 확정되지 않았으면 null */
+  regionGroup: RegionAnswer | null;
+  /** 지도에 둥근 이름표로 표시할 대표 지역명(예: 강릉권). 없으면 작은 시·군명만 표시 */
+  labelName: string | null;
+  /** 기본 파스텔 색상 */
+  color: string;
+}
+
+export const GANGWON_REGIONS: GangwonRegion[] = [
+  { regionId: 'cheorwon', regionName: '철원군', code: '32360', regionGroup: 'gangwon-yeongseo', labelName: '철원권', color: '#B9D98B' },
+  { regionId: 'hwacheon', regionName: '화천군', code: '32370', regionGroup: 'gangwon-yeongseo', labelName: '화천권', color: '#A8D8B0' },
+  { regionId: 'chuncheon', regionName: '춘천시', code: '32010', regionGroup: 'gangwon-yeongseo', labelName: '춘천권', color: '#D2E5A3' },
+  { regionId: 'hongcheon', regionName: '홍천군', code: '32310', regionGroup: 'gangwon-yeongseo', labelName: '홍천권', color: '#9CCFBD' },
+  { regionId: 'wonju', regionName: '원주시', code: '32020', regionGroup: 'gangwon-yeongseo', labelName: '원주권', color: '#F4D99C' },
+  { regionId: 'hoengseong', regionName: '횡성군', code: '32320', regionGroup: 'gangwon-yeongseo', labelName: '횡성권', color: '#A9D7C7' },
+  { regionId: 'pyeongchang', regionName: '평창군', code: '32340', regionGroup: 'gangwon-yeongseo', labelName: '평창권', color: '#8BC7BC' },
+  { regionId: 'sokcho', regionName: '속초시', code: '32060', regionGroup: 'gangwon-yeongdong', labelName: '속초권', color: '#A9D7F5' },
+  { regionId: 'gangneung', regionName: '강릉시', code: '32030', regionGroup: 'gangwon-yeongdong', labelName: '강릉권', color: '#80BDF3' },
+  { regionId: 'donghae', regionName: '동해시', code: '32040', regionGroup: 'gangwon-yeongdong', labelName: '동해권', color: '#A5D7E8' },
+  { regionId: 'taebaek', regionName: '태백시', code: '32050', regionGroup: null, labelName: '태백권', color: '#B5B9E8' },
+  // 아래 시·군은 대표 이름표 목록에는 없지만 실제 행정구역이므로 지도에 모두 포함합니다.
+  { regionId: 'yanggu', regionName: '양구군', code: '32380', regionGroup: 'gangwon-yeongseo', labelName: null, color: '#CFE8C0' },
+  { regionId: 'inje', regionName: '인제군', code: '32390', regionGroup: 'gangwon-yeongseo', labelName: null, color: '#C3DDA6' },
+  { regionId: 'goseong', regionName: '고성군', code: '32400', regionGroup: 'gangwon-yeongdong', labelName: null, color: '#C4CDF0' },
+  { regionId: 'yangyang', regionName: '양양군', code: '32410', regionGroup: 'gangwon-yeongdong', labelName: null, color: '#B8E0E0' },
+  { regionId: 'samcheok', regionName: '삼척시', code: '32070', regionGroup: 'gangwon-yeongdong', labelName: null, color: '#F4CFB5' },
+  { regionId: 'jeongseon', regionName: '정선군', code: '32350', regionGroup: 'gangwon-yeongseo', labelName: null, color: '#E3E7A9' },
+  { regionId: 'yeongwol', regionName: '영월군', code: '32330', regionGroup: 'gangwon-yeongseo', labelName: null, color: '#EBC9D6' },
+];
+
+export const findGangwonRegion = (regionId: GangwonRegionId | null) =>
+  GANGWON_REGIONS.find((region) => region.regionId === regionId) ?? null;
+
+/**
+ * 선택한 시·군에서 고를 수 있는 추천 기준 그룹 목록.
+ * 기본 그룹(있으면)이 첫 번째이고, 고랭지는 항상 대안으로 포함합니다.
+ * 기본 그룹이 없는 지역(태백시)은 영동·영서·고랭지 중에서 고르게 합니다.
+ */
+export const getRegionGroupCandidates = (region: GangwonRegion): RegionAnswer[] =>
+  region.regionGroup
+    ? [region.regionGroup, 'highland']
+    : ['gangwon-yeongdong', 'gangwon-yeongseo', 'highland'];
+
+/** 강원도 밖 재배지를 위한 기존 지역 선택지 */
+export const NON_GANGWON_GROUPS: RegionAnswer[] = ['central', 'south', 'other'];

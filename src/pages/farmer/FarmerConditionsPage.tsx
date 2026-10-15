@@ -26,11 +26,13 @@ import {
   ORCHARD_LOGISTICS_OPTIONS,
   ORCHARD_REDUCE_WORK_OPTIONS,
   PEST_OPTIONS,
-  REGION_OPTIONS,
   USAGE_OPTIONS,
   WINTER_MIN_OPTIONS,
   isOrchardCrop,
 } from '../../data/farmerOptions';
+import { RegionMapStep } from '../../components/farmer/RegionMapStep';
+import { findGangwonRegion } from '../../data/gangwonRegions';
+import type { GangwonRegionId } from '../../data/gangwonRegions';
 import { getFarmerRecommendation } from '../../lib/farmerScoring';
 import { toggleMultiSelect } from '../../lib/multiSelect';
 import { ROUTES } from '../../lib/routes';
@@ -53,7 +55,7 @@ const ORCHARD_EXTRA_STEPS: StepId[] = ['winterMin', 'reduceWork', 'logistics'];
 
 const STEP_META: Record<StepId, { title: string; hint?: string }> = {
   crop: { title: '어떤 작물을 재배하시나요?' },
-  region: { title: '재배 지역은 어디인가요?' },
+  region: { title: '재배 지역은 어디인가요?', hint: '지도에서 재배하는 시·군을 눌러주세요' },
   climate: { title: '가장 걱정되는 기상위험은 무엇인가요?', hint: '여러 개 선택할 수 있어요' },
   irrigation: { title: '관수 여건은 어떤가요?' },
   harvest: { title: '원하는 수확 시기는 언제인가요?' },
@@ -77,6 +79,7 @@ export function FarmerConditionsPage() {
   const [stepIndex, setStepIndex] = useState(0);
   const [cropId, setCropId] = useState<CropId | null>(null);
   const [region, setRegion] = useState<RegionAnswer | null>(null);
+  const [gangwonRegionId, setGangwonRegionId] = useState<GangwonRegionId | null>(null);
   const [climateRisks, setClimateRisks] = useState<string[]>([]);
   const [irrigation, setIrrigation] = useState<IrrigationAnswer | null>(null);
   const [harvestChoice, setHarvestChoice] = useState<string | null>(null);
@@ -168,7 +171,12 @@ export function FarmerConditionsPage() {
       logistics: isOrchard ? (logistics ?? 'sell-now') : 'sell-now',
     };
     const result = getFarmerRecommendation(answers);
-    navigate(ROUTES.farmerAnalyzing, { state: { cropId, answers, result } });
+    // 지도에서 고른 시·군은 점수 계산에는 쓰지 않지만, 다음 단계에서 표시·활용할 수 있도록 함께 넘깁니다.
+    const gangwonRegion = findGangwonRegion(gangwonRegionId);
+    const farmLocation = gangwonRegion
+      ? { regionId: gangwonRegion.regionId, regionName: gangwonRegion.regionName, regionGroup: answers.region }
+      : null;
+    navigate(ROUTES.farmerAnalyzing, { state: { cropId, answers, result, farmLocation } });
   };
 
   const renderStep = () => {
@@ -191,16 +199,14 @@ export function FarmerConditionsPage() {
       }
       case 'region':
         return (
-          <div className="flex flex-col gap-2">
-            {REGION_OPTIONS.map((option) => (
-              <ChoiceButton
-                key={option.value}
-                label={option.label}
-                selected={region === option.value}
-                onSelect={() => setRegion(option.value)}
-              />
-            ))}
-          </div>
+          <RegionMapStep
+            gangwonRegionId={gangwonRegionId}
+            region={region}
+            onChange={(next) => {
+              setGangwonRegionId(next.gangwonRegionId);
+              setRegion(next.region);
+            }}
+          />
         );
       case 'climate':
         return (
