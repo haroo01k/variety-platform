@@ -134,14 +134,70 @@ export const NOVELTY_OPTIONS: Record<CropId, { value: string; label: string }[]>
   ],
 };
 
-/** C4 식감 (공통 5개, variety.textureTags와 매칭) */
-export const TEXTURE_OPTIONS: TagOption[] = [
-  { value: '아삭', label: '아삭', tags: ['아삭'] },
-  { value: '쫀득', label: '쫀득', tags: ['쫀득'] },
-  { value: '포슬포슬', label: '포슬포슬', tags: ['포슬포슬'] },
-  { value: '부드러움', label: '부드러움', tags: ['부드러움'] },
-  { value: '단단', label: '단단함', tags: ['단단'] },
-];
+export interface TextureOption {
+  /** 작물 안에서 고유한 식감 id (ConsumerAnswers.texture에 저장) */
+  id: string;
+  label: string;
+  /**
+   * 품종표의 기존 textureTags 중 이 식감과 일치하는 태그. 하나라도 포함되면 일치로 봅니다.
+   * 품종표에 해당 식감 근거가 없으면 빈 배열로 두고, 임의로 품종을 연결하지 않습니다.
+   */
+  tags: string[];
+}
+
+/**
+ * C4 식감 (작물별로 다른 선택지, variety.textureTags와 매칭).
+ * - 옥수수 '아삭톡톡', 배추 '연하고 아삭한': 품종표에 해당 식감 태그가 없어 연결된 품종이 없습니다.
+ * - 사과 '퍼석퍼석': 저장 상태에 따른 품질 변화일 수 있어 품종 고유 식감으로 확인된 경우에만 연결합니다(현재 없음).
+ * - 복숭아 '과즙이 풍부한': 엄밀히는 수분감이지만 소비자 선호 특성으로 유지하며 품종표의 '과즙' 태그와 연결합니다.
+ */
+export const CROP_TEXTURE_OPTIONS: Record<CropId, { name: string; textures: TextureOption[] }> = {
+  potato: {
+    name: '감자',
+    textures: [
+      { id: 'fluffy', label: '포슬포슬', tags: ['포슬포슬'] },
+      { id: 'chewy', label: '쫀득쫀득', tags: ['쫀득'] },
+      { id: 'soft', label: '부드러운', tags: ['부드러움'] },
+    ],
+  },
+  corn: {
+    name: '옥수수',
+    textures: [
+      { id: 'chewy', label: '쫀득쫀득', tags: ['쫀득'] },
+      { id: 'popping', label: '아삭톡톡', tags: [] },
+      { id: 'soft', label: '부드러운', tags: ['부드러움'] },
+    ],
+  },
+  apple: {
+    name: '사과',
+    textures: [
+      { id: 'crisp', label: '아삭아삭', tags: ['아삭'] },
+      { id: 'firm', label: '단단한', tags: ['단단'] },
+      { id: 'soft', label: '부드러운', tags: ['부드러움'] },
+      { id: 'mealy', label: '퍼석퍼석', tags: [] },
+    ],
+  },
+  cabbage: {
+    name: '배추',
+    textures: [
+      { id: 'crisp', label: '아삭아삭', tags: ['아삭'] },
+      { id: 'soft', label: '부드러운', tags: ['부드러움'] },
+      { id: 'tender_crisp', label: '연하고 아삭한', tags: [] },
+    ],
+  },
+  peach: {
+    name: '복숭아',
+    textures: [
+      { id: 'firm', label: '아삭하고 단단한', tags: ['단단'] },
+      { id: 'soft', label: '부드럽고 말랑한', tags: ['부드러움'] },
+      { id: 'juicy', label: '과즙이 풍부한', tags: ['과즙'] },
+    ],
+  },
+};
+
+export function findTextureOption(cropId: CropId, textureId: string): TextureOption | undefined {
+  return CROP_TEXTURE_OPTIONS[cropId].textures.find((texture) => texture.id === textureId);
+}
 
 /** C6 (과수 전용) 언제 먹고 싶은지 */
 export const CONSUMER_HARVEST_MONTH_OPTIONS: { value: OrchardHarvestMonthAnswer; label: string }[] = [

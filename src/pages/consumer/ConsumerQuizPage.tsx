@@ -17,7 +17,7 @@ import {
   FLAVOR_OPTIONS,
   NOVELTY_OPTIONS,
   TASTE_TYPE_OPTIONS,
-  TEXTURE_OPTIONS,
+  CROP_TEXTURE_OPTIONS,
 } from '../../data/consumerOptions';
 import { isOrchardCrop } from '../../data/farmerOptions';
 import { getConsumerRecommendation } from '../../lib/consumerScoring';
@@ -71,8 +71,9 @@ export function ConsumerQuizPage() {
 
   const handleSelectCrop = (nextCropId: CropId) => {
     if (cropId !== null && cropId !== nextCropId) {
-      // 작물이 바뀌면 작물별 선택지(활용·맛·새로움·과수 질문)는 더 이상 유효하지 않으므로 초기화합니다.
+      // 작물이 바뀌면 작물별 선택지(활용·맛·식감·새로움·과수 질문)는 더 이상 유효하지 않으므로 초기화합니다.
       setActivity(null);
+      setTexture(null);
       setFlavor(null);
       setNovelty(null);
       setHarvestMonth(null);
@@ -191,14 +192,15 @@ export function ConsumerQuizPage() {
           </div>
         );
       case 'texture':
+        if (!cropId) return null;
         return (
           <div className="flex flex-col gap-2">
-            {TEXTURE_OPTIONS.map((option) => (
+            {CROP_TEXTURE_OPTIONS[cropId].textures.map((option) => (
               <ConsumerChoiceButton
-                key={option.value}
+                key={option.id}
                 label={option.label}
-                selected={texture === option.value}
-                onSelect={() => setTexture(option.value)}
+                selected={texture === option.id}
+                onSelect={() => setTexture(option.id)}
               />
             ))}
           </div>

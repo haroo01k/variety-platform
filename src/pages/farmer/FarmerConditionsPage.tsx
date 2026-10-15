@@ -31,8 +31,9 @@ import {
   isOrchardCrop,
 } from '../../data/farmerOptions';
 import { RegionMapStep } from '../../components/farmer/RegionMapStep';
+import type { RegionStepValue } from '../../components/farmer/RegionMapStep';
 import { findGangwonRegion } from '../../data/gangwonRegions';
-import type { GangwonRegionId } from '../../data/gangwonRegions';
+import { isRegionSelectionComplete, resolveRegionAnswer } from '../../lib/farmRegion';
 import { getFarmerRecommendation } from '../../lib/farmerScoring';
 import { toggleMultiSelect } from '../../lib/multiSelect';
 import { ROUTES } from '../../lib/routes';
@@ -78,8 +79,17 @@ export function FarmerConditionsPage() {
 
   const [stepIndex, setStepIndex] = useState(0);
   const [cropId, setCropId] = useState<CropId | null>(null);
-  const [region, setRegion] = useState<RegionAnswer | null>(null);
-  const [gangwonRegionId, setGangwonRegionId] = useState<GangwonRegionId | null>(null);
+  const [regionStep, setRegionStep] = useState<RegionStepValue>({
+    gangwonRegionId: null,
+    regionGroup: null,
+    isHighland: null,
+  });
+  const regionSelection = {
+    gangwonRegion: findGangwonRegion(regionStep.gangwonRegionId),
+    regionGroup: regionStep.regionGroup,
+    isHighland: regionStep.isHighland,
+  };
+  const region: RegionAnswer | null = resolveRegionAnswer(regionSelection);
   const [climateRisks, setClimateRisks] = useState<string[]>([]);
   const [irrigation, setIrrigation] = useState<IrrigationAnswer | null>(null);
   const [harvestChoice, setHarvestChoice] = useState<string | null>(null);
@@ -121,7 +131,7 @@ export function FarmerConditionsPage() {
       case 'crop':
         return cropId !== null;
       case 'region':
-        return region !== null;
+        return isRegionSelectionComplete(regionSelection);
       case 'climate':
         return climateRisks.length > 0;
       case 'irrigation':
@@ -172,9 +182,14 @@ export function FarmerConditionsPage() {
     };
     const result = getFarmerRecommendation(answers);
     // 지도에서 고른 시·군은 점수 계산에는 쓰지 않지만, 다음 단계에서 표시·활용할 수 있도록 함께 넘깁니다.
-    const gangwonRegion = findGangwonRegion(gangwonRegionId);
+    const { gangwonRegion } = regionSelection;
     const farmLocation = gangwonRegion
-      ? { regionId: gangwonRegion.regionId, regionName: gangwonRegion.regionName, regionGroup: answers.region }
+      ? {
+          regionId: gangwonRegion.regionId,
+          regionName: gangwonRegion.regionName,
+          regionGroup: answers.region,
+          isHighland: regionStep.isHighland,
+        }
       : null;
     navigate(ROUTES.farmerAnalyzing, { state: { cropId, answers, result, farmLocation } });
   };
@@ -199,14 +214,7 @@ export function FarmerConditionsPage() {
       }
       case 'region':
         return (
-          <RegionMapStep
-            gangwonRegionId={gangwonRegionId}
-            region={region}
-            onChange={(next) => {
-              setGangwonRegionId(next.gangwonRegionId);
-              setRegion(next.region);
-            }}
-          />
+          <RegionMapStep value={regionStep} onChange={setRegionStep} />
         );
       case 'climate':
         return (

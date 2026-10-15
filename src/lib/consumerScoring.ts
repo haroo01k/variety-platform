@@ -12,7 +12,7 @@ import {
   CONSUMER_STORAGE_OPTIONS,
   FLAVOR_OPTIONS,
   NOVELTY_OPTIONS,
-  TEXTURE_OPTIONS,
+  findTextureOption,
   tasteTypeDisplayLabel,
 } from '../data/consumerOptions';
 import { isOrchardCrop } from '../data/farmerOptions';
@@ -42,7 +42,7 @@ function scoreFlavor(variety: VarietyRecord, answers: ConsumerAnswers): number {
 }
 
 function scoreTexture(variety: VarietyRecord, answers: ConsumerAnswers): number {
-  const option = TEXTURE_OPTIONS.find((o) => o.value === answers.texture);
+  const option = findTextureOption(variety.cropId, answers.texture);
   if (!option) return 0;
   return hasAnyTag(variety.textureTags, option.tags) ? 2 : 0;
 }
@@ -92,7 +92,7 @@ function buildReasons(variety: VarietyRecord, answers: ConsumerAnswers, breakdow
     if (label) candidates.push({ score: breakdown.flavor, text: `찾으시는 맛(${label})과 잘 맞아요.` });
   }
   if (breakdown.texture > 0) {
-    const label = TEXTURE_OPTIONS.find((o) => o.value === answers.texture)?.label;
+    const label = findTextureOption(variety.cropId, answers.texture)?.label;
     if (label) candidates.push({ score: breakdown.texture, text: `좋아하시는 식감(${label})을 가지고 있어요.` });
   }
   if (breakdown.novelty > 0) {
@@ -129,6 +129,8 @@ export function scoreConsumerVariety(variety: VarietyRecord, answers: ConsumerAn
 
 function compareRecommendations(a: ConsumerRecommendation, b: ConsumerRecommendation): number {
   if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore;
+  // 동점이면 선택한 식감과 일치하는 품종을 먼저 보여줍니다.
+  if (b.breakdown.texture !== a.breakdown.texture) return b.breakdown.texture - a.breakdown.texture;
   return a.variety.id.localeCompare(b.variety.id);
 }
 
@@ -138,5 +140,6 @@ export function getConsumerRecommendation(answers: ConsumerAnswers): ConsumerRes
   const top3 = ranked.slice(0, 3);
   const isCloseCall = top3.length >= 2 && top3[0].totalScore - top3[1].totalScore <= 0.5;
 
-  return { ranked, top3, isCloseCall };
+  const hasTextureMatch = ranked.some((r) => r.breakdown.texture > 0);
+  return { ranked, top3, isCloseCall, hasTextureMatch };
 }

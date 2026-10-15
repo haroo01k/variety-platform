@@ -20,7 +20,7 @@ export interface ConsumerAnswers {
   activity: string;
   /** C3: 작물별 맛 옵션 value */
   flavor: string;
-  /** C4: 공통 식감 옵션 value(태그와 동일 문자열) */
+  /** C4: 작물별 식감 옵션 id (CROP_TEXTURE_OPTIONS) */
   texture: string;
   /** C5 */
   novelty: NoveltyPreferenceAnswer;
@@ -52,4 +52,6 @@ export interface ConsumerResult {
   ranked: ConsumerRecommendation[];
   top3: ConsumerRecommendation[];
   isCloseCall: boolean;
+  /** 선택한 식감과 정확히 일치하는 품종이 하나라도 있는지 */
+  hasTextureMatch: boolean;
 }

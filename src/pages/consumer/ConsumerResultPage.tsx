@@ -6,6 +6,7 @@ import { ConsumerRankPickerCard } from '../../components/consumer/ConsumerRankPi
 import { ConsumerResultCard } from '../../components/consumer/ConsumerResultCard';
 import { ConsumerResultMiniCard } from '../../components/consumer/ConsumerResultMiniCard';
 import { CROPS } from '../../data/crops';
+import { findTextureOption } from '../../data/consumerOptions';
 import { ROUTES } from '../../lib/routes';
 import type { ConsumerAnswers, ConsumerResult } from '../../types/consumer';
 
@@ -39,6 +40,7 @@ export function ConsumerResultPage() {
 
   const { cropId, result } = state;
   const crop = CROPS.find((c) => c.id === cropId) ?? CROPS[0];
+  const textureLabel = findTextureOption(crop.id, state.answers.texture)?.label;
   const selected = result.top3[selectedRank] ?? result.top3[0];
   const alternatives = result.top3
     .map((r, index) => ({ r, index }))
@@ -49,6 +51,13 @@ export function ConsumerResultPage() {
       <header>
         <h1 className="text-2xl font-extrabold text-brand-green-dark sm:text-3xl">당신과 가장 잘 맞는 품종이에요</h1>
       </header>
+
+      {result.hasTextureMatch === false && (
+        <p className="w-full max-w-[520px] rounded-2xl bg-white px-4 py-3 text-sm text-slate-500 shadow-sm">
+          선택하신 식감{textureLabel ? `(${textureLabel})` : ''}과 정확히 일치하는 품종은 아직 없어요. 다른 취향을
+          기준으로 가까운 품종을 추천했어요.
+        </p>
+      )}
 
       {result.isCloseCall && (
         <p className="w-full max-w-[520px] rounded-2xl bg-brand-yellow/20 px-4 py-3 text-sm text-brand-orange">
