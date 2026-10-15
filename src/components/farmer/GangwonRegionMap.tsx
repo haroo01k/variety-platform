@@ -45,7 +45,11 @@ export function GangwonRegionMap({ selectedRegionId, onSelect }: GangwonRegionMa
   const selected = MAP_REGIONS.find((r) => r.regionId === selectedRegionId);
 
   return (
-    <div className="relative mx-auto w-full max-w-[520px]" style={{ aspectRatio: `${VIEW_W} / ${VIEW_H}` }}>
+    // 너비는 부모에 맞추되, 지도 높이가 화면 높이의 75%를 넘지 않도록 최대 너비를 제한합니다(비율 유지).
+    <div
+      className="relative mx-auto w-full"
+      style={{ aspectRatio: `${VIEW_W} / ${VIEW_H}`, maxWidth: `calc(75vh * ${VIEW_W} / ${VIEW_H})` }}
+    >
       <svg
         viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
         className="absolute inset-0 h-full w-full drop-shadow-[0_6px_12px_rgba(31,92,51,0.12)]"

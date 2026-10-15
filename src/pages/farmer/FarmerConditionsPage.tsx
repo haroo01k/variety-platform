@@ -359,7 +359,10 @@ export function FarmerConditionsPage() {
 
       <ProgressBar current={stepIndex + 1} total={steps.length} />
 
-      <section className="flex flex-col gap-4 rounded-3xl bg-white p-5 shadow-sm">
+      {/* 지역 단계는 지도가 핵심이라 태블릿·PC에서 카드만 좌우로 넓혀 지도를 크게 보여줍니다. */}
+      <section
+        className={`flex flex-col gap-4 rounded-3xl bg-white p-5 shadow-sm ${currentStepId === 'region' ? 'md:-mx-12' : ''}`}
+      >
         <div>
           <h2 className="text-lg font-bold text-slate-800">{meta.title}</h2>
           {meta.hint && <p className="mt-1 text-xs text-slate-400">{meta.hint}</p>}

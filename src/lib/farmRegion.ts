@@ -10,9 +10,9 @@ import type { RegionAnswer } from '../types/farmer';
 import type { GangwonRegion } from '../data/gangwonRegions';
 
 export interface FarmRegionSelection {
-  /** 지도에서 고른 시·군 (강원도 밖이면 null) */
+  /** 지도에서 고른 시·군 (아직 고르지 않았으면 null) */
   gangwonRegion: GangwonRegion | null;
-  /** 기본 지역 그룹(영동·영서, 또는 강원도 밖 중부·남부·그 외). 태백시 일반 재배지는 사용자가 고름 */
+  /** 기본 지역 그룹(영동·영서). 태백시 일반 재배지는 사용자가 고름 */
   regionGroup: RegionAnswer | null;
   isHighland: boolean | null;
 }

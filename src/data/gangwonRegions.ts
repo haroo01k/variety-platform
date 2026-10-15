@@ -84,6 +84,3 @@ export const HIGHLAND_AREAS: { city: string; area: string }[] = [
 
 export const findGangwonRegion = (regionId: GangwonRegionId | null) =>
   GANGWON_REGIONS.find((region) => region.regionId === regionId) ?? null;
-
-/** 강원도 밖 재배지를 위한 기존 지역 선택지 */
-export const NON_GANGWON_GROUPS: RegionAnswer[] = ['central', 'south', 'other'];
