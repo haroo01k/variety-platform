@@ -6,11 +6,20 @@ import { ROUTES } from '../lib/routes';
  * 헤더 아래부터 메인 카피, 설명, 캐릭터 일러스트까지 하나의 hero section으로
  * 이어지고, 선택 카드가 그 하단에 겹쳐지는 구성입니다. 모바일 우선(390px 기준)이며,
  * 넓은 화면에서는 모바일형 레이아웃을 중앙에 고정합니다.
+ *
+ * 첫 화면 높이 맞춤: 전체 높이를 `100dvh - 헤더 높이`로 두고, 캐릭터 여백이
+ * 최대 높이(300/340px)에서 최소 160px까지 줄어들며 선택 카드가 한 화면에 들어오게
+ * 합니다. 그보다 화면이 낮으면 최소 높이(580/610px)를 유지해 세로 스크롤됩니다.
  */
+const HEADER_HEIGHT = '57px'; // Header: py-3(24px) + 2줄 로고(31.25px) + 하단 border(1px)
+
 export function HomePage() {
   return (
-    <div className="mx-auto flex w-full max-w-[430px] flex-1 flex-col sm:max-w-[480px]">
-      <section aria-label="랜딩 소개" className="relative overflow-hidden">
+    <div
+      className="mx-auto flex min-h-[580px] w-full max-w-[430px] flex-col sm:min-h-[610px] sm:max-w-[480px]"
+      style={{ height: `calc(100dvh - ${HEADER_HEIGHT})` }}
+    >
+      <section aria-label="랜딩 소개" className="relative flex min-h-0 flex-col overflow-hidden">
         {/* 배경: 하늘/언덕에서 캐릭터·밭 풍경까지 이어지는 일러스트 */}
         <img
           src="/images/hero-farmer-consumer.png"
@@ -26,7 +35,7 @@ export function HomePage() {
           }}
         />
 
-        <div className="relative px-4 pb-2 pt-6 text-left sm:px-6 sm:pt-8">
+        <div className="relative shrink-0 px-4 pb-2 pt-[clamp(0.75rem,3dvh,1.5rem)] text-left sm:px-6 sm:pt-[clamp(1rem,3.5dvh,2rem)]">
           <h1 className="text-[30px] font-extrabold leading-[1.2] tracking-tight text-[#20251F] sm:text-[34px]">
             기후가 바뀌어도
             <br />
@@ -42,8 +51,11 @@ export function HomePage() {
           </p>
         </div>
 
-        {/* 캐릭터가 온전히 드러나는 여백 (클릭 동작 없음, 이동은 하단 선택 카드에서만) */}
-        <div aria-hidden="true" className="pointer-events-none relative h-[300px] sm:h-[340px]" />
+        {/* 캐릭터가 드러나는 여백 (클릭 동작 없음). 화면 높이가 부족하면 160px까지 줄어듦 */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none relative h-[300px] min-h-[160px] shrink sm:h-[340px]"
+        />
       </section>
 
       <section
@@ -103,7 +115,7 @@ export function HomePage() {
         </Link>
       </section>
 
-      <p className="mt-5 flex items-center justify-center gap-1.5 px-4 text-center text-[18px] leading-snug text-[#4F6B2A] min-[380px]:text-[19px] sm:px-6 md:text-[21px] lg:text-[24px]">
+      <p className="mt-[clamp(0.5rem,2.4dvh,1.25rem)] flex items-center justify-center gap-1.5 px-4 text-center text-[18px] leading-snug text-[#4F6B2A] min-[380px]:text-[19px] sm:px-6 md:text-[21px] lg:text-[24px]">
         <span aria-hidden="true" className="text-[22px] leading-none min-[380px]:text-[23px] md:text-[25px] lg:text-[29px]">🌿</span>
         <span className="font-handwriting-emotion">작은 선택이, 더 건강한 지구를 만듭니다.</span>
       </p>
