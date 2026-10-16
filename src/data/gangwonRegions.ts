@@ -44,8 +44,8 @@ export interface GangwonRegion {
   regionGroup: Extract<RegionAnswer, 'gangwon-yeongdong' | 'gangwon-yeongseo'> | null;
   /** 고랭지 재배지가 있어 재배환경 확인 질문을 먼저 보여줄지 여부 */
   highlandCheck: boolean;
-  /** 지도에 둥근 이름표로 표시할 대표 지역명(예: 강릉권). 없으면 작은 시·군명만 표시 */
-  labelName: string | null;
+  /** 지도 이름표와 선택 지역 표시에 쓰는 화면용 지역명(예: 강릉권). 식별·추천에는 regionId/regionName 사용 */
+  labelName: string;
   /** 기본 파스텔 색상 */
   color: string;
 }
@@ -62,14 +62,13 @@ export const GANGWON_REGIONS: GangwonRegion[] = [
   { regionId: 'gangneung', regionName: '강릉시', code: '32030', regionGroup: 'gangwon-yeongdong', highlandCheck: true, labelName: '강릉권', color: '#80BDF3' },
   { regionId: 'donghae', regionName: '동해시', code: '32040', regionGroup: 'gangwon-yeongdong', highlandCheck: false, labelName: '동해권', color: '#A5D7E8' },
   { regionId: 'taebaek', regionName: '태백시', code: '32050', regionGroup: null, highlandCheck: true, labelName: '태백권', color: '#B5B9E8' },
-  // 아래 시·군은 대표 이름표 목록에는 없지만 실제 행정구역이므로 지도에 모두 포함합니다.
-  { regionId: 'yanggu', regionName: '양구군', code: '32380', regionGroup: 'gangwon-yeongseo', highlandCheck: false, labelName: null, color: '#CFE8C0' },
-  { regionId: 'inje', regionName: '인제군', code: '32390', regionGroup: 'gangwon-yeongseo', highlandCheck: true, labelName: null, color: '#C3DDA6' },
-  { regionId: 'goseong', regionName: '고성군', code: '32400', regionGroup: 'gangwon-yeongdong', highlandCheck: false, labelName: null, color: '#C4CDF0' },
-  { regionId: 'yangyang', regionName: '양양군', code: '32410', regionGroup: 'gangwon-yeongdong', highlandCheck: false, labelName: null, color: '#B8E0E0' },
-  { regionId: 'samcheok', regionName: '삼척시', code: '32070', regionGroup: 'gangwon-yeongdong', highlandCheck: true, labelName: null, color: '#F4CFB5' },
-  { regionId: 'jeongseon', regionName: '정선군', code: '32350', regionGroup: 'gangwon-yeongseo', highlandCheck: true, labelName: null, color: '#E3E7A9' },
-  { regionId: 'yeongwol', regionName: '영월군', code: '32330', regionGroup: 'gangwon-yeongseo', highlandCheck: true, labelName: null, color: '#EBC9D6' },
+  { regionId: 'yanggu', regionName: '양구군', code: '32380', regionGroup: 'gangwon-yeongseo', highlandCheck: false, labelName: '양구권', color: '#CFE8C0' },
+  { regionId: 'inje', regionName: '인제군', code: '32390', regionGroup: 'gangwon-yeongseo', highlandCheck: true, labelName: '인제권', color: '#C3DDA6' },
+  { regionId: 'goseong', regionName: '고성군', code: '32400', regionGroup: 'gangwon-yeongdong', highlandCheck: false, labelName: '고성권', color: '#C4CDF0' },
+  { regionId: 'yangyang', regionName: '양양군', code: '32410', regionGroup: 'gangwon-yeongdong', highlandCheck: false, labelName: '양양권', color: '#B8E0E0' },
+  { regionId: 'samcheok', regionName: '삼척시', code: '32070', regionGroup: 'gangwon-yeongdong', highlandCheck: true, labelName: '삼척권', color: '#F4CFB5' },
+  { regionId: 'jeongseon', regionName: '정선군', code: '32350', regionGroup: 'gangwon-yeongseo', highlandCheck: true, labelName: '정선권', color: '#E3E7A9' },
+  { regionId: 'yeongwol', regionName: '영월군', code: '32330', regionGroup: 'gangwon-yeongseo', highlandCheck: true, labelName: '영월권', color: '#EBC9D6' },
 ];
 
 /**

@@ -10,13 +10,24 @@ interface GangwonRegionMapProps {
   onSelect: (region: GangwonRegion) => void;
 }
 
+/**
+ * 이름표 위치 보정(viewBox 좌표 기준 이동량). 좁은 화면에서 이웃 이름표와 겹치거나
+ * 면적이 작은 시·군 경계를 벗어나는 경우만 조정합니다.
+ */
+const LABEL_OFFSETS: Partial<Record<GangwonRegionId, [number, number]>> = {
+  hwacheon: [10, 8],
+  donghae: [-8, 0],
+  taebaek: [0, -8],
+};
+
 const MAP_REGIONS = GANGWON_REGIONS.map((region) => {
   const geo = GANGWON_GEO.find((feature) => feature.code === region.code);
   if (!geo) throw new Error(`지도 경계 데이터가 없습니다: ${region.regionName}`);
+  const [dx, dy] = LABEL_OFFSETS[region.regionId] ?? [0, 0];
   return {
     ...region,
     d: geo.d,
-    label: geo.label,
+    label: [geo.label[0] + dx, geo.label[1] + dy] as const,
     hoverColor: darkenHex(region.color, 0.1),
     selectedColor: darkenHex(region.color, 0.22),
     outlineColor: darkenHex(region.color, 0.4),
@@ -28,7 +39,7 @@ const { width: VIEW_W, height: VIEW_H } = GANGWON_VIEWBOX;
 /**
  * 강원특별자치도 18개 시·군 인터랙티브 지도(농업인 재배지역 선택용).
  * 실제 행정구역 경계(통계청 2013, gangwonGeo.ts)를 SVG path로 그리고,
- * 대표 지역 이름표(철원권·강릉권 등)는 글자 크기가 화면 폭에 따라 너무 작아지지 않도록
+ * 모든 시·군 이름표(철원권·강릉권 등, 같은 흰색 둥근 디자인)는 글자 크기가 화면 폭에 따라 너무 작아지지 않도록
  * SVG 위에 HTML로 겹쳐 배치합니다. 선택 상태는 부모가 관리합니다.
  */
 export function GangwonRegionMap({ selectedRegionId, onSelect }: GangwonRegionMapProps) {
@@ -115,25 +126,11 @@ export function GangwonRegionMap({ selectedRegionId, onSelect }: GangwonRegionMa
           onMouseLeave: () => setHoveredId((prev: GangwonRegionId | null) => (prev === region.regionId ? null : prev)),
         };
 
-        if (!region.labelName) {
-          return (
-            <span
-              key={region.regionId}
-              {...sharedProps}
-              className={`absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer whitespace-nowrap text-[9px] font-medium transition-colors duration-200 select-none sm:text-[11px] ${
-                isActive ? 'text-brand-green-dark' : 'text-slate-500'
-              }`}
-            >
-              {region.regionName}
-            </span>
-          );
-        }
-
         return (
           <span
             key={region.regionId}
             {...sharedProps}
-            className={`absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer whitespace-nowrap rounded-md border bg-[#fffdf6] px-1.5 py-0.5 text-[10px] leading-tight font-bold text-brand-green-dark transition-[box-shadow,border-color] duration-200 select-none sm:rounded-lg sm:px-2 sm:text-xs ${
+            className={`absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer whitespace-nowrap rounded-md border bg-[#fffdf6] px-1 py-0.5 text-[9px] leading-tight font-bold text-brand-green-dark transition-[box-shadow,border-color] duration-200 select-none sm:rounded-lg sm:px-2 sm:text-xs ${
               isSelected
                 ? 'border-brand-green-dark shadow-md'
                 : isActive

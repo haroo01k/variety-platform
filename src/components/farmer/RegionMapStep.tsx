@@ -69,7 +69,7 @@ export function RegionMapStep({ value, onChange }: RegionMapStepProps) {
       {selectedRegion && (
         <div aria-live="polite" className="rounded-2xl bg-brand-ivory px-4 py-3 text-sm">
           <p className="font-bold text-brand-green-dark">
-            선택한 지역: {selectedRegion.regionName}
+            선택한 지역: {selectedRegion.labelName}
             {resolved && <span className="font-medium text-slate-600"> · 추천 기준 {regionLabel(resolved)}</span>}
           </p>
 
