@@ -55,16 +55,24 @@ export function AboutPage() {
         </p>
       </header>
 
-      <ul className="mt-9 divide-y divide-slate-100">
+      {/*
+        팀원 소개: 768px 이하에서는 1열, 그보다 넓으면 2열 × 2행.
+        가로 간격(gap-x-12)과 행 사이 간격(py-6 위아래 합 48px)을 같게 맞추고,
+        구분선은 행 단위로 각 칸 위에 그어 2열에서도 열마다 정렬되도록 합니다.
+      */}
+      <ul className="mt-9 grid grid-cols-1 gap-x-12 min-[769px]:grid-cols-2">
         {TEAM_MEMBERS.map((member) => (
-          <li key={member.studentId} className="py-6 first:pt-0">
+          <li
+            key={member.studentId}
+            className="min-w-0 border-t border-slate-100 py-6 first:border-t-0 first:pt-0 min-[769px]:nth-2:border-t-0 min-[769px]:nth-2:pt-0"
+          >
             <h2 className="text-xl font-extrabold text-slate-900">{member.name}</h2>
             <dl className="mt-3 space-y-2.5 text-sm text-slate-600">
               <div>
                 <dt className="font-bold text-slate-700">
                   <span className="text-brand-green">▪</span> E-mail
                 </dt>
-                <dd className="mt-0.5">{member.email}</dd>
+                <dd className="mt-0.5 break-all">{member.email}</dd>
               </div>
               <div>
                 <dt className="font-bold text-slate-700">
