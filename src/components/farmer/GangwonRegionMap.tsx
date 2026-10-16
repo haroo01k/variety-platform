@@ -15,7 +15,14 @@ interface GangwonRegionMapProps {
  * 면적이 작은 시·군 경계를 벗어나는 경우만 조정합니다.
  */
 const LABEL_OFFSETS: Partial<Record<GangwonRegionId, [number, number]>> = {
-  hwacheon: [10, 8],
+  cheorwon: [-8, 0],
+  hwacheon: [2, 8],
+  chuncheon: [5, 5],
+  wonju: [8, 0],
+  hongcheon: [0, 8],
+  gangneung: [0, -8],
+  yangyang: [0, -8],
+  samcheok: [0, -8],
   donghae: [-8, 0],
   taebaek: [0, -8],
 };
