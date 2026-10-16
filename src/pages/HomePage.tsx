@@ -15,7 +15,7 @@ export function HomePage() {
         <img
           src="/images/hero-farmer-consumer.png"
           alt="수확물 바구니를 든 농업인과 소비자 캐릭터"
-          className="absolute inset-0 h-full w-full object-cover object-top"
+          className="pointer-events-none absolute inset-0 h-full w-full select-none object-cover object-top"
         />
         {/* 상단 텍스트 가독성을 위한 크림색 그라데이션 오버레이 */}
         <div
@@ -42,19 +42,8 @@ export function HomePage() {
           </p>
         </div>
 
-        {/* 캐릭터가 온전히 드러나는 여백 + 클릭 영역 */}
-        <div className="relative h-[300px] sm:h-[340px]">
-          <Link
-            to={ROUTES.farmerConditions}
-            aria-label="농업인 화면으로 이동"
-            className="absolute inset-y-0 left-0 w-1/2 transition-colors hover:bg-black/5 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-white"
-          />
-          <Link
-            to={ROUTES.consumer}
-            aria-label="소비자 화면으로 이동"
-            className="absolute inset-y-0 right-0 w-1/2 transition-colors hover:bg-black/5 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-white"
-          />
-        </div>
+        {/* 캐릭터가 온전히 드러나는 여백 (클릭 동작 없음, 이동은 하단 선택 카드에서만) */}
+        <div aria-hidden="true" className="pointer-events-none relative h-[300px] sm:h-[340px]" />
       </section>
 
       <section
