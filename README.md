@@ -71,6 +71,8 @@ src/
   types/          공용 TypeScript 타입 정의
   lib/            라우트 상수, 추천 채점 로직, 좋아요(Supabase) 연동 유틸리티
 supabase/         좋아요 기능용 SQL 스키마·RLS·함수, 설정 가이드
+pwa/              PWA(설치형 앱) 빌드 플러그인과 설정 가이드 (pwa/README.md)
+public/icons/     앱 아이콘 (이미지만 교체하면 반영)
 ```
 
 ## 화면 흐름

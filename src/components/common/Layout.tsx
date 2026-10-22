@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import { Header } from './Header';
+import { AppStatusBanner } from './AppStatusBanner';
 
 /**
  * 모든 라우트에 공통으로 적용되는 레이아웃.
@@ -12,6 +13,7 @@ export function Layout() {
       <div className="flex flex-1 flex-col">
         <Outlet />
       </div>
+      <AppStatusBanner />
     </div>
   );
 }
