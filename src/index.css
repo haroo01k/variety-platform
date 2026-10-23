@@ -143,6 +143,22 @@
   font-family: 'NanumSquareRound', 'Malgun Gothic', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
 }
 
+/* 나눔스퀘어라운드는 ExtraBold(800)가 가장 굵은 굵기라, 홈 메인 제목처럼 더 두툼해야 할 때
+   같은 색 그림자를 상하좌우로 0.015em씩 겹쳐 획을 넓힙니다(글자 크기는 그대로).
+   -webkit-text-stroke는 겹치는 획(ㅆ 등) 안쪽에 이음선이 보여 쓰지 않습니다.
+   currentColor라 줄마다 색이 달라도(검정·초록) 각 글자 색을 따라갑니다. */
+.text-weight-boost {
+  text-shadow:
+    0.015em 0 currentColor,
+    -0.015em 0 currentColor,
+    0 0.015em currentColor,
+    0 -0.015em currentColor,
+    0.015em 0.015em currentColor,
+    -0.015em -0.015em currentColor,
+    0.015em -0.015em currentColor,
+    -0.015em 0.015em currentColor;
+}
+
 .font-gowun-dodum {
   font-family: 'Gowun Dodum', 'Malgun Gothic', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
 }
