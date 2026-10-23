@@ -27,7 +27,7 @@ export function HomePage() {
         />
 
         <div className="relative px-4 pb-2 pt-6 text-left sm:px-6 sm:pt-8">
-          <h1 className="text-[30px] font-extrabold leading-[1.2] tracking-tight text-[#20251F] sm:text-[34px]">
+          <h1 className="font-nanum-round text-[30px] font-extrabold leading-[1.3] tracking-[-0.02em] text-[#20251F] sm:text-[34px]">
             기후가 바뀌어도
             <br />
             <span className="text-brand-green">좋은 먹거리는</span>
@@ -35,7 +35,7 @@ export function HomePage() {
             <span className="text-brand-green">계속될 수 있어요.</span>
           </h1>
 
-          <p className="mt-3 text-[14px] leading-snug text-[#6F756C]">
+          <p className="font-gowun-dodum mt-3 text-[15.5px] leading-[1.6] min-[380px]:text-[17px] tracking-normal text-[#4A5A4E]">
             기후에 강한 새로운 작물을 품종별로 만나보세요.
             <br />
             지금, 더 건강한 내일의 식탁을 함께 만들어가요.
@@ -62,8 +62,8 @@ export function HomePage() {
               className="h-11 w-11 object-contain"
             />
           </span>
-          <h2 className="mt-1 text-[15px] font-bold text-[#20251F]">농업인이세요?</h2>
-          <p className="text-[12px] leading-snug text-[#6F756C]">
+          <h2 className="font-nanum-round mt-1 text-[15px] font-bold text-[#20251F]">농업인이세요?</h2>
+          <p className="font-nanum-round text-[12px] font-normal leading-snug text-[#6F756C]">
             더 나은 농사를 위한
             <br />
             맞춤 정보를 만나보세요.
@@ -88,8 +88,8 @@ export function HomePage() {
               className="h-11 w-11 object-contain"
             />
           </span>
-          <h2 className="mt-1 text-[15px] font-bold text-[#20251F]">소비자세요?</h2>
-          <p className="text-[12px] leading-snug text-[#6F756C]">
+          <h2 className="font-nanum-round mt-1 text-[15px] font-bold text-[#20251F]">소비자세요?</h2>
+          <p className="font-nanum-round text-[12px] font-normal leading-snug text-[#6F756C]">
             맛있는 변화,
             <br />
             지금부터 함께해요.

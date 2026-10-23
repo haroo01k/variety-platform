@@ -83,12 +83,12 @@ export function AboutPage() {
 
         <div className={`about-intro-content ${CONTENT_CLASS} pt-12 sm:pt-16`}>
           <p className="text-xs font-semibold tracking-[0.2em] text-[#5f7f6c] sm:text-sm">ABOUT US</p>
-          <h1 className="font-about-round mt-5 text-[28px] leading-[1.4] font-bold tracking-[-0.02em] text-brand-green-dark md:text-[40px]">
+          <h1 className="font-nanum-round mt-5 text-[28px] leading-[1.4] font-bold tracking-[-0.02em] text-brand-green-dark md:text-[40px]">
             우리 땅에 맞는 발견,
             <br />
             우리 식탁의 새로운 가능성.
           </h1>
-          <div className="font-about-body mt-6 max-w-[34rem] space-y-5 text-[17px] leading-[1.8] font-normal text-[#3b6e4a] sm:mt-8 sm:space-y-6 md:text-[20px]">
+          <div className="font-gowun-dodum mt-6 max-w-[34rem] space-y-5 text-[17px] leading-[1.8] font-normal text-[#3b6e4a] sm:mt-8 sm:space-y-6 md:text-[20px]">
             <p>
               농업인에게는 우리 지역에 맞는 품종을,
               <br />
@@ -102,7 +102,7 @@ export function AboutPage() {
         </div>
       </section>
 
-      <section className={`font-about-round ${CONTENT_CLASS} pb-16`}>
+      <section className={`font-nanum-round ${CONTENT_CLASS} pb-16`}>
         <div className="border-t border-brand-green/40 pt-10 sm:pt-12">
           <h2 className="text-[24px] leading-[1.4] font-bold tracking-[-0.02em] text-brand-green-dark md:text-[28px]">
             TEAM 깻잎삼김

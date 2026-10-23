@@ -100,11 +100,12 @@
   font-weight: normal;
 }
 
-/* ABOUT 페이지 전용 글꼴 (모두 SIL OFL).
-   - 나눔스퀘어라운드: 네이버 배포 웹폰트 R(400)·B(700), 한글 11,172자 전체 포함
+/* 홈·ABOUT 화면 글꼴 (모두 SIL OFL). 아래 .font-nanum-round / .font-gowun-dodum
+   클래스를 붙인 요소에만 적용되며, 공통 헤더와 다른 화면은 기본 글꼴을 유지합니다.
+   - 나눔스퀘어라운드: 네이버 배포 웹폰트 R(400)·B(700)·EB(800), 한글 11,172자 전체 포함
    - 고운돋움: Regular(400)만 제공. KS X 1001 한글 2,350자 + 영문·기본 문장부호로
      서브셋해 용량을 줄였습니다(원본 TTF 7.2MB → 약 150KB).
-   @font-face는 해당 글꼴을 실제로 쓰는 ABOUT 페이지에서만 내려받습니다. */
+   @font-face는 해당 굵기를 실제로 쓰는 화면에서만 내려받습니다. */
 @font-face {
   font-family: 'NanumSquareRound';
   src: url('/fonts/NanumSquareRoundR.woff2') format('woff2');
@@ -122,6 +123,14 @@
 }
 
 @font-face {
+  font-family: 'NanumSquareRound';
+  src: url('/fonts/NanumSquareRoundEB.woff2') format('woff2');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: 'Gowun Dodum';
   src: url('/fonts/GowunDodum-Regular.woff2') format('woff2');
   font-weight: 400;
@@ -130,11 +139,11 @@
 }
 
 /* 명조(serif) 대체가 섞이지 않도록 대체 글꼴도 고딕 계열만 둡니다. */
-.font-about-round {
+.font-nanum-round {
   font-family: 'NanumSquareRound', 'Malgun Gothic', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
 }
 
-.font-about-body {
+.font-gowun-dodum {
   font-family: 'Gowun Dodum', 'Malgun Gothic', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
 }
 
