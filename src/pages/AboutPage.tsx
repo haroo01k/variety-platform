@@ -65,7 +65,12 @@ interface TeamToggleButtonProps {
   className: string;
 }
 
-/** TEAM 소개 펼침/접힘 버튼: 이중 V(접힘: 아래·위아래로 천천히 움직임 / 펼침: 위) + 안내 문구 */
+/**
+ * TEAM 소개 펼침/접힘 버튼: 한 줄 "» TEAM 소개 보기".
+ * 접힘: 오른쪽 이중 꺾쇠(좌우로 천천히 움직임) / 펼침: 아래로 90° 회전.
+ * 왼쪽 안쪽 여백이 없고, SVG viewBox를 선 끝(둥근 끝 포함)에 딱 맞춰 꺾쇠 선이 버튼 왼쪽 끝에서
+ * 바로 시작하므로 위 소개 문구의 첫 글자와 같은 세로선에 놓입니다.
+ */
 function TeamToggleButton({ isOpen, onClick, className }: TeamToggleButtonProps) {
   return (
     <button
@@ -73,23 +78,23 @@ function TeamToggleButton({ isOpen, onClick, className }: TeamToggleButtonProps)
       onClick={onClick}
       aria-expanded={isOpen}
       aria-controls="about-team-panel"
-      className={`${className} min-h-[64px] min-w-[132px] flex-col items-center justify-center gap-0.5 rounded-xl px-4 py-2 text-brand-green-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green`}
+      className={`${className} min-h-[44px] items-center gap-2 py-2 whitespace-nowrap text-brand-green-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green`}
     >
-      <span className={isOpen ? undefined : 'about-scroll-arrow'}>
+      <span className={isOpen ? 'block' : 'about-scroll-arrow'}>
         <svg
-          width="28"
-          height="28"
-          viewBox="0 0 24 24"
+          width="15"
+          height="19"
+          viewBox="5.7 4 12.6 16"
           fill="none"
           stroke="currentColor"
           strokeWidth="1.6"
           strokeLinecap="round"
           strokeLinejoin="round"
           aria-hidden="true"
-          className={`about-toggle-icon ${isOpen ? 'rotate-180' : ''}`}
+          className={`about-toggle-icon block ${isOpen ? 'rotate-90' : ''}`}
         >
-          <path d="M6 6.5l6 5 6-5" />
-          <path d="M6 12.5l6 5 6-5" />
+          <path d="M6.5 6l5 6-5 6" />
+          <path d="M12.5 6l5 6-5 6" />
         </svg>
       </span>
       <span className="font-nanum-round text-[12px] font-bold text-[#5f7f6c]">
@@ -187,12 +192,12 @@ export function AboutPage() {
           </div>
 
           {/*
-            TEAM 펼침 버튼: 소개 문구 바로 다음(문서 흐름 안), 소개 문단 폭(최대 34rem)의 가운데.
-            마지막 문장 글자 아래에서 이중 V까지 PC 약 30px, 모바일 약 24px
-            (행간 여백 + 버튼 안쪽 여백 + 아이콘 위 여백을 포함한 값).
+            TEAM 펼침 버튼: 소개 문구 바로 다음(문서 흐름 안), 소개 문구와 같은 왼쪽 기준선.
+            마지막 문장 글자 아래에서 꺾쇠까지 PC·모바일 모두 약 30px
+            (mt 10px + 행간 여백 7~8px + 버튼 높이 44px 안에서 아이콘 위 여백 약 12px).
           */}
-          <div className="mt-0.5 flex max-w-[34rem] justify-center md:mt-2">
-            <TeamToggleButton isOpen={isTeamOpen} onClick={toggleTeam} className="flex" />
+          <div className="mt-2.5">
+            <TeamToggleButton isOpen={isTeamOpen} onClick={toggleTeam} className="inline-flex" />
           </div>
         </div>
       </section>

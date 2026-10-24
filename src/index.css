@@ -235,16 +235,17 @@ body {
   mask-image: linear-gradient(to right, transparent, #000 12%);
 }
 
-/* ABOUT 구분선 가운데의 TEAM 펼침 버튼.
-   - .about-scroll-arrow: 접혀 있을 때 이중 V가 위아래로 5px 천천히 움직임
-   - .about-toggle-icon: 펼치면 위쪽 V로 0.5초 동안 돌아감 */
+/* ABOUT 소개 문구 아래의 TEAM 펼침 버튼("» TEAM 소개 보기").
+   - .about-scroll-arrow: 접혀 있을 때 오른쪽 이중 꺾쇠가 오른쪽으로 4px 천천히 움직였다 돌아옴
+     (기본 위치는 0이라 멈춰 있을 때 소개 문구 왼쪽 기준선과 맞음)
+   - .about-toggle-icon: 펼치면 아래 방향으로 0.5초 동안 돌아감 */
 @keyframes about-arrow-bob {
   0%,
   100% {
     translate: 0 0;
   }
   50% {
-    translate: 0 5px;
+    translate: 4px 0;
   }
 }
 
@@ -319,9 +320,9 @@ body {
 
   /* 흙 윗면은 구분선보다 (가로 × 약 0.073) 위에 있으므로, 글 아래에 그만큼 +
      여유를 둬서 태블릿 폭에서도 본문이 흙·새싹 위에 겹치지 않게 합니다.
-     소개 문구 아래 TEAM 버튼(위 여백 포함 약 72px)이 이 여백 일부를 차지하므로 그만큼 빼서
+     소개 문구 아래 TEAM 버튼(위 여백 포함 약 54px)이 이 여백 일부를 차지하므로 그만큼 빼서
      소개 영역 높이(=첫 화면 높이)는 버튼 추가 전과 같게 유지합니다. */
   .about-intro-content {
-    padding-bottom: max(1.5rem, calc(var(--about-art-w) * 0.08 + 1.5rem - 72px));
+    padding-bottom: max(1.5rem, calc(var(--about-art-w) * 0.08 + 1.5rem - 54px));
   }
 }
