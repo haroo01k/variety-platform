@@ -32,7 +32,12 @@ export function HomePage() {
         />
 
         <div className="relative px-4 pt-6 text-left sm:px-6 sm:pt-8">
-          <h1 className="font-gangwon-power text-[30px] leading-[1.3] tracking-[-0.02em] text-[#20251F] sm:text-[34px]">
+          {/*
+            제목만 10px 아래로(relative top: 주변 배치에 영향 없음).
+            행간 1.3→1.24로 줄어든 높이(3줄 × 0.06em = 0.18em)는 mb로 채워
+            아래 소개 글과 배경 그림 위치가 그대로 유지되게 합니다.
+          */}
+          <h1 className="font-gangwon-power relative top-[10px] mb-[0.18em] text-[30px] leading-[1.24] tracking-[-0.02em] text-[#20251F] sm:text-[34px]">
             기후가 바뀌어도
             <br />
             <span className="text-brand-green">좋은 먹거리는</span>
