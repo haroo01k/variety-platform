@@ -118,13 +118,26 @@ export function AboutPage() {
   /**
    * 구분선의 이중 V 버튼으로 TEAM 소개를 펼치거나 접습니다.
    * - 펼칠 때: 펼침(0.5초)이 끝난 뒤 TEAM 제목이 화면 아래쪽에 가려져 있을 때만 구분선이 위쪽에 오도록 스크롤
-   * - 접을 때: 이미 구분선 아래로 스크롤해 내려와 있었다면, 접히면서 화면이 튀지 않게 구분선으로 함께 스크롤
+   * - 접을 때: 접힌 뒤 페이지에서 가능한 최대 스크롤 위치보다 아래에 있다면, 접히는 동안 그 위치까지
+   *   함께 부드럽게 스크롤해 화면이 튀지 않게 합니다(PC는 첫 화면 맨 위로 돌아감).
    * 동작 줄이기 설정이면 애니메이션·부드러운 스크롤 없이 즉시 처리합니다.
    */
   const toggleTeam = () => {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const behavior: ScrollBehavior = prefersReducedMotion ? 'auto' : 'smooth';
     const nextOpen = !isTeamOpen;
+
+    if (!nextOpen) {
+      const panelHeight = document.getElementById('about-team-panel')?.offsetHeight ?? 0;
+      const maxScrollAfterCollapse = Math.max(
+        0,
+        document.documentElement.scrollHeight - panelHeight - window.innerHeight,
+      );
+      if (window.scrollY > maxScrollAfterCollapse) {
+        window.scrollTo({ top: maxScrollAfterCollapse, behavior });
+      }
+    }
+
     setIsTeamOpen(nextOpen);
 
     if (nextOpen) {
@@ -137,14 +150,15 @@ export function AboutPage() {
         },
         prefersReducedMotion ? 0 : 500,
       );
-    } else if (dividerRef.current && dividerRef.current.getBoundingClientRect().top < 0) {
-      dividerRef.current.scrollIntoView({ behavior, block: 'start' });
     }
   };
 
   return (
-    <div className="relative isolate flex-1 overflow-hidden">
-      <section className="about-intro">
+    // PC: 소개 영역이 (화면 높이 - 상단 메뉴) 남은 높이를 채워, TEAM이 접혀 있으면 구분선이 첫 화면 맨 아래에 오고
+    // 세로 스크롤이 생기지 않습니다. 펼치면 늘어난 만큼만 스크롤됩니다.
+    // overflow-hidden은 화면 폭보다 넓은 배경 그림의 가로 넘침을 자르기 위한 것입니다.
+    <div className="relative isolate flex flex-1 flex-col overflow-hidden">
+      <section className="about-intro min-[769px]:flex-1">
         <img
           src="/images/about/about-background.png"
           alt=""
@@ -186,7 +200,8 @@ export function AboutPage() {
         />
       </section>
 
-      <section className={`font-nanum-round ${CONTENT_CLASS} pb-16`}>
+      {/* 하단 여백: 모바일은 기존처럼 항상 64px, PC는 펼침 영역 안에 두어 접혀 있을 때 높이를 차지하지 않게 함 */}
+      <section className={`font-nanum-round ${CONTENT_CLASS} pb-16 min-[769px]:pb-0`}>
         {/* 구분선 + (모바일) 가운데 펼침/접힘 버튼. scroll-mt: 스크롤로 맞출 때 구분선이 화면 위쪽에 살짝 보이도록 24px 여유 */}
         <div ref={dividerRef} className="scroll-mt-6 border-t border-brand-green/40">
           <TeamToggleButton isOpen={isTeamOpen} onClick={toggleTeam} className="mx-auto mt-2 flex min-[769px]:hidden" />
@@ -203,56 +218,58 @@ export function AboutPage() {
           inert={!isTeamOpen}
         >
           <div className="min-h-0 overflow-hidden">
-            <div className="about-team-item pt-6 sm:pt-8">
-              <h2
-                ref={teamTitleRef}
-                className="text-[24px] leading-[1.4] font-bold tracking-[-0.02em] text-brand-green-dark md:text-[28px]"
-              >
-                TEAM 깻잎삼김
-              </h2>
-              <p className="mt-3 text-sm leading-relaxed text-[#5f7f6c] sm:text-[15px]">
-                강원대학교 식물자원응용과학전공
-                <br />
-                식물자원 취·창업 캡스톤디자인 · 지도교수 이세현
-              </p>
-            </div>
+            <div className="min-[769px]:pb-16">
+              <div className="about-team-item pt-6 sm:pt-8">
+                <h2
+                  ref={teamTitleRef}
+                  className="text-[24px] leading-[1.4] font-bold tracking-[-0.02em] text-brand-green-dark md:text-[28px]"
+                >
+                  TEAM 깻잎삼김
+                </h2>
+                <p className="mt-3 text-sm leading-relaxed text-[#5f7f6c] sm:text-[15px]">
+                  강원대학교 식물자원응용과학전공
+                  <br />
+                  식물자원 취·창업 캡스톤디자인 · 지도교수 이세현
+                </p>
+              </div>
 
-            {/*
-              팀원 소개: 박스 없이 페이지 배경 위에 바로 배치하고 여백으로만 구분합니다.
-              768px 미만 1열, 그 이상 2열.
-            */}
-            <ul className="about-team-item mt-10 grid grid-cols-1 gap-y-10 md:grid-cols-2 md:gap-x-16 md:gap-y-12">
-              {TEAM_MEMBERS.map((member) => (
-                <li key={member.studentId} className="min-w-0">
-                  <h3 className="text-[20px] leading-[1.4] font-bold text-slate-900">{member.name}</h3>
-                  <dl className="mt-3 space-y-2.5">
-                    <MemberField label="E-mail" value={member.email} breakAll />
-                    <MemberField label="Department" value={member.department} />
-                    <MemberField label="Student ID" value={member.studentId} />
-                  </dl>
-                </li>
-              ))}
-            </ul>
+              {/*
+                팀원 소개: 박스 없이 페이지 배경 위에 바로 배치하고 여백으로만 구분합니다.
+                768px 미만 1열, 그 이상 2열.
+              */}
+              <ul className="about-team-item mt-10 grid grid-cols-1 gap-y-10 md:grid-cols-2 md:gap-x-16 md:gap-y-12">
+                {TEAM_MEMBERS.map((member) => (
+                  <li key={member.studentId} className="min-w-0">
+                    <h3 className="text-[20px] leading-[1.4] font-bold text-slate-900">{member.name}</h3>
+                    <dl className="mt-3 space-y-2.5">
+                      <MemberField label="E-mail" value={member.email} breakAll />
+                      <MemberField label="Department" value={member.department} />
+                      <MemberField label="Student ID" value={member.studentId} />
+                    </dl>
+                  </li>
+                ))}
+              </ul>
 
-            <div className="about-team-item mt-8 grid grid-cols-2 gap-3 md:gap-5">
-              {TEAM_PHOTOS.map((src) =>
-                erroredPhotos[src] ? (
-                  <div
-                    key={src}
-                    className="flex aspect-[4/3] items-center justify-center rounded-2xl bg-slate-50 text-[11px] text-slate-400"
-                  >
-                    팀 사진을 준비 중입니다.
-                  </div>
-                ) : (
-                  <img
-                    key={src}
-                    src={src}
-                    alt={`${TEAM_NAME} 단체 사진`}
-                    onError={() => setErroredPhotos((prev) => ({ ...prev, [src]: true }))}
-                    className="aspect-[4/3] w-full rounded-2xl object-cover"
-                  />
-                ),
-              )}
+              <div className="about-team-item mt-8 grid grid-cols-2 gap-3 md:gap-5">
+                {TEAM_PHOTOS.map((src) =>
+                  erroredPhotos[src] ? (
+                    <div
+                      key={src}
+                      className="flex aspect-[4/3] items-center justify-center rounded-2xl bg-slate-50 text-[11px] text-slate-400"
+                    >
+                      팀 사진을 준비 중입니다.
+                    </div>
+                  ) : (
+                    <img
+                      key={src}
+                      src={src}
+                      alt={`${TEAM_NAME} 단체 사진`}
+                      onError={() => setErroredPhotos((prev) => ({ ...prev, [src]: true }))}
+                      className="aspect-[4/3] w-full rounded-2xl object-cover"
+                    />
+                  ),
+                )}
+              </div>
             </div>
           </div>
         </div>

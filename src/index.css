@@ -311,7 +311,10 @@ body {
   .about-intro {
     --about-art-w: clamp(1100px, 100vw, 1600px);
     padding-bottom: 0;
-    min-height: calc(var(--about-art-w) * 0.43);
+    /* 해가 잘리지 않는 최소 높이(가로 × 0.415). 화면이 더 높으면 AboutPage에서 flex-1로
+       남은 높이를 채워 구분선이 첫 화면 맨 아래에 옵니다. 1366×768에서도 첫 화면 안에 들어오도록
+       기존 0.43에서 해 기준 최소값으로 낮췄습니다. */
+    min-height: calc(var(--about-art-w) * 0.415);
   }
 
   /* 흙 윗면은 구분선보다 (가로 × 약 0.073) 위에 있으므로, 글 아래에 그만큼 +
