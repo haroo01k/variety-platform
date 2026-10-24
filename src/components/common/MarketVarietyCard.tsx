@@ -16,6 +16,8 @@ interface MarketVarietyCardProps {
  *   테두리(index.css의 .stamp-edge)와 품종명 텍스트를 직접 그려서 우표처럼 보이게 합니다.
  * 배지(숙기)·짧은 설명은 이름이 같은 VarietyRecord(추천 결과에서 쓰는 원본 품종 데이터)에서
  * 가져오고, 매칭되는 데이터가 없으면 조용히 생략합니다(임의로 만들어내지 않음).
+ * 카드는 그리드 행 높이만큼 늘어나고(flex column), 버튼은 mt-auto로 카드 하단에 붙여
+ * 설명 줄 수가 달라도 같은 행의 버튼이 같은 높이에 정렬됩니다.
  */
 export function MarketVarietyCard({ variety }: MarketVarietyCardProps) {
   const hasMarketUrl = Boolean(variety.marketUrl && variety.marketUrl !== '#');
@@ -52,7 +54,7 @@ export function MarketVarietyCard({ variety }: MarketVarietyCardProps) {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`${variety.varietyName} 판매처로 이동`}
-          className="flex min-h-[48px] w-full items-center justify-center gap-2 rounded-2xl bg-brand-green text-sm font-bold text-white transition-colors hover:bg-brand-green-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green"
+          className="mt-auto flex min-h-[48px] w-full items-center justify-center gap-2 rounded-2xl bg-brand-green text-sm font-bold text-white transition-colors hover:bg-brand-green-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green"
         >
           <CartIcon />
           판매처 보기
