@@ -32,7 +32,7 @@ export function HomePage() {
         />
 
         <div className="relative px-4 pt-6 text-left sm:px-6 sm:pt-8">
-          <h1 className="font-nanum-round text-weight-boost text-[30px] font-extrabold leading-[1.22] tracking-[-0.03em] text-[#20251F] sm:text-[34px]">
+          <h1 className="font-gangwon-power text-[30px] leading-[1.3] tracking-[-0.02em] text-[#20251F] sm:text-[34px]">
             기후가 바뀌어도
             <br />
             <span className="text-brand-green">좋은 먹거리는</span>

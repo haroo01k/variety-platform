@@ -138,7 +138,24 @@
   font-display: swap;
 }
 
+/* 강원교육튼튼체: 강원도교육청 무료 배포 서체(웹 사용 가능, 유료 재판매 금지).
+   단일 굵기만 있어 font-weight는 normal로 두고, 굵기 합성(faux bold)이 생기지 않게 합니다.
+   홈 메인 제목에만 쓰입니다. */
+@font-face {
+  font-family: 'GangwonEdu Power';
+  src: url('/fonts/GangwonEduPower.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* 명조(serif) 대체가 섞이지 않도록 대체 글꼴도 고딕 계열만 둡니다. */
+.font-gangwon-power {
+  font-family: 'GangwonEdu Power', 'Malgun Gothic', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  font-weight: normal;
+  font-synthesis: none;
+}
+
 .font-nanum-round {
   font-family: 'NanumSquareRound', 'Malgun Gothic', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
 }
