@@ -33,12 +33,12 @@ export function HomePage() {
 
         <div className="relative px-4 pt-6 text-left sm:px-6 sm:pt-8">
           {/*
-            제목만 10px 아래로(relative top: 주변 배치에 영향 없음). 행간 1.15로 줄을 바짝 붙입니다.
-            제목↔설명 사이 보이는 간격(약 26px)은 설명 문단의 mt로 잡고,
+            제목만 10px 아래로(relative top: 주변 배치에 영향 없음). 행간 1.22.
+            제목↔설명 사이 보이는 간격(약 19~20px)은 설명 문단의 mt로 잡고,
             글 영역이 원래(제목 30/34px·행간 1.3, 설명 16/17px·행간 1.6) 높이보다 낮아진 만큼
-            설명 문단의 mb로 채워 배경 그림·아래 카드 위치를 그대로 둡니다(모바일 19px, sm 26px).
+            설명 문단의 mb로 채워 배경 그림·아래 카드 위치를 그대로 둡니다(모바일 21px, sm 26px).
           */}
-          <h1 className="font-gangwon-power relative top-[10px] text-[32px] leading-[1.15] tracking-[-0.02em] text-[#20251F] sm:text-[36px]">
+          <h1 className="font-gangwon-power relative top-[10px] text-[32px] leading-[1.22] tracking-[-0.02em] text-[#20251F] sm:text-[36px]">
             기후가 바뀌어도
             <br />
             <span className="text-brand-green">좋은 먹거리는</span>
@@ -47,7 +47,7 @@ export function HomePage() {
           </h1>
 
           {/* 의미 단위 3줄. 마지막 문장은 좁은 화면에서 자연스럽게 줄바꿈됩니다. */}
-          <p className="font-gowun-dodum mt-8 mb-[19px] text-[10pt] leading-[1.3] tracking-[-0.02em] text-[#4A5A4E] sm:mb-[26px]">
+          <p className="font-gowun-dodum mt-6 mb-[21px] text-[10pt] leading-[1.3] tracking-[-0.02em] text-[#4A5A4E] sm:mb-[26px]">
             기후에 강한 새로운 작물을
             <br />
             품종별로 만나보세요.
