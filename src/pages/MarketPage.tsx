@@ -20,7 +20,8 @@ export function MarketPage() {
 
   return (
     <div className="mx-auto w-full max-w-[1200px] flex-1 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
-      <section className="w-full">
+      {/* 모바일(768px 이하)은 화면 너비 그대로, 데스크톱에서만 배너 최대 너비를 제한하고 가운데 정렬 */}
+      <section className="w-full min-[769px]:mx-auto min-[769px]:max-w-[1040px]">
         <img
           src="/images/market/market-hero.png"
           alt="작물별 품종 판매처 안내"
@@ -28,7 +29,7 @@ export function MarketPage() {
         />
       </section>
 
-      <div className="mt-5 flex flex-wrap gap-2 sm:mt-6" role="tablist" aria-label="작물 선택">
+      <div className="mt-5 flex flex-wrap gap-2 sm:mt-6 min-[769px]:mt-9" role="tablist" aria-label="작물 선택">
         {CROPS.map((crop) => {
           const isSelected = crop.id === selectedCrop;
           return (
