@@ -7,7 +7,7 @@ import type { CropId } from '../types/crop';
 
 /**
  * 판매처 화면 (`/market`).
- * 상단은 제목·설명·일러스트가 모두 포함된 완성형 히어로 배너 이미지 하나로 대체합니다.
+ * 상단은 제목·설명·일러스트가 모두 포함된 투명 배경 배너 이미지 하나로 대체합니다.
  * 그 아래 작물 선택 pill 탭으로 감자·옥수수·복숭아·사과·배추 중 하나를 고르면
  * 해당 작물 품종 5개 카드만 필터링해서 보여줍니다(기본 선택: 감자).
  * 다른 화면과 달리 데스크톱에서 넓게(최대 1200px) 펼쳐지는 전용 레이아웃을 씁니다.
@@ -20,16 +20,20 @@ export function MarketPage() {
 
   return (
     <div className="mx-auto w-full max-w-[1200px] flex-1 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
-      {/* 모바일(768px 이하)은 화면 너비 그대로, 데스크톱에서만 배너 최대 너비를 제한하고 가운데 정렬 */}
-      <section className="w-full min-[769px]:mx-auto min-[769px]:max-w-[1040px]">
+      {/*
+        투명 배경 배너라 카드·배경 없이 페이지 크림색 위에 바로 얹습니다.
+        모바일(768px 이하): 좌우 여백까지 써서 화면 너비를 가득 채웁니다.
+        데스크톱: 최대 1100px로 가운데 정렬하고, 이미지 위쪽 투명 여백만큼 끌어올려 내비게이션과의 간격을 줄입니다.
+      */}
+      <section className="-mx-4 sm:-mx-6 min-[769px]:mx-auto min-[769px]:-mt-16 min-[769px]:max-w-[1100px]">
         <img
-          src="/images/market/market-hero.png"
-          alt="작물별 품종 판매처 안내"
-          className="block h-auto w-full"
+          src="/images/market/market-banner.png"
+          alt="좋은 품종이 더 많은 사람에게 닿을 수 있도록, 판매처. 작물별 품종을 선택하고 판매처로 이동해보세요."
+          className="block h-auto w-full object-contain"
         />
       </section>
 
-      <div className="mt-5 flex flex-wrap gap-2 sm:mt-6 min-[769px]:mt-9" role="tablist" aria-label="작물 선택">
+      <div className="mt-5 flex flex-wrap gap-2 sm:mt-6" role="tablist" aria-label="작물 선택">
         {CROPS.map((crop) => {
           const isSelected = crop.id === selectedCrop;
           return (
