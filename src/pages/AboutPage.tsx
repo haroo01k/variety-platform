@@ -58,6 +58,47 @@ function MemberField({ label, value, breakAll = false }: MemberFieldProps) {
   );
 }
 
+interface TeamToggleButtonProps {
+  isOpen: boolean;
+  onClick: () => void;
+  /** 위치·표시(모바일/PC) 클래스 */
+  className: string;
+}
+
+/** TEAM 소개 펼침/접힘 버튼: 이중 V(접힘: 아래·위아래로 천천히 움직임 / 펼침: 위) + 안내 문구 */
+function TeamToggleButton({ isOpen, onClick, className }: TeamToggleButtonProps) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-expanded={isOpen}
+      aria-controls="about-team-panel"
+      className={`${className} min-h-[64px] min-w-[132px] flex-col items-center justify-center gap-0.5 rounded-xl px-4 py-2 text-brand-green-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green`}
+    >
+      <span className={isOpen ? undefined : 'about-scroll-arrow'}>
+        <svg
+          width="28"
+          height="28"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+          className={`about-toggle-icon ${isOpen ? 'rotate-180' : ''}`}
+        >
+          <path d="M6 6.5l6 5 6-5" />
+          <path d="M6 12.5l6 5 6-5" />
+        </svg>
+      </span>
+      <span className="font-nanum-round text-[12px] font-bold text-[#5f7f6c]">
+        {isOpen ? 'TEAM 소개 접기' : 'TEAM 소개 보기'}
+      </span>
+    </button>
+  );
+}
+
 /** 소개 영역과 팀 영역이 같은 폭·여백을 쓰도록 맞추는 내부 컨테이너 클래스 */
 const CONTENT_CLASS = 'relative z-10 mx-auto w-full max-w-[1100px] px-4 sm:px-6 lg:px-8';
 
@@ -131,39 +172,24 @@ export function AboutPage() {
             </p>
           </div>
         </div>
+
+        {/*
+          PC(769px 이상): 소개 영역 맨 아래, 구분선 바로 위 가운데에 둡니다(글자와 구분선 사이 약 16px).
+          소개 영역 하단에는 글이 흙 그림과 겹치지 않도록 확보한 여백(가로폭 × 0.08 + 24px, 최소 112px)이
+          있어 버튼(높이 64px)이 글과 겹치지 않고, 레이아웃 높이도 바뀌지 않습니다.
+          1366×768 화면에서도 구분선이 첫 화면 안(약 646px)에 있어 스크롤 없이 보입니다.
+        */}
+        <TeamToggleButton
+          isOpen={isTeamOpen}
+          onClick={toggleTeam}
+          className="absolute bottom-2 left-1/2 z-20 hidden -translate-x-1/2 min-[769px]:flex"
+        />
       </section>
 
       <section className={`font-nanum-round ${CONTENT_CLASS} pb-16`}>
-        {/* 구분선 + 가운데 펼침/접힘 버튼. scroll-mt: 스크롤로 맞출 때 구분선이 화면 위쪽에 살짝 보이도록 24px 여유 */}
+        {/* 구분선 + (모바일) 가운데 펼침/접힘 버튼. scroll-mt: 스크롤로 맞출 때 구분선이 화면 위쪽에 살짝 보이도록 24px 여유 */}
         <div ref={dividerRef} className="scroll-mt-6 border-t border-brand-green/40">
-          <button
-            type="button"
-            onClick={toggleTeam}
-            aria-expanded={isTeamOpen}
-            aria-controls="about-team-panel"
-            className="mx-auto mt-2 flex min-h-[64px] min-w-[132px] flex-col items-center justify-center gap-0.5 rounded-xl px-4 py-2 text-brand-green-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green"
-          >
-            <span className={isTeamOpen ? undefined : 'about-scroll-arrow'}>
-              <svg
-                width="28"
-                height="28"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-                className={`about-toggle-icon ${isTeamOpen ? 'rotate-180' : ''}`}
-              >
-                <path d="M6 6.5l6 5 6-5" />
-                <path d="M6 12.5l6 5 6-5" />
-              </svg>
-            </span>
-            <span className="text-[12px] font-bold text-[#5f7f6c]">
-              {isTeamOpen ? 'TEAM 소개 접기' : 'TEAM 소개 보기'}
-            </span>
-          </button>
+          <TeamToggleButton isOpen={isTeamOpen} onClick={toggleTeam} className="mx-auto mt-2 flex min-[769px]:hidden" />
         </div>
 
         {/*
