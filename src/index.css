@@ -235,26 +235,74 @@ body {
   mask-image: linear-gradient(to right, transparent, #000 12%);
 }
 
-/* ABOUT 소개 영역 하단의 이중 V 스크롤 화살표: 위아래로 5px 천천히 움직임.
-   Tailwind의 -translate-x-1/2도 translate 속성을 쓰므로, 애니메이션 중에도 가로 -50%를 함께 유지합니다.
-   (동작 줄이기 설정이면 애니메이션 없이 -translate-x-1/2만으로 가운데 정렬) */
+/* ABOUT 구분선 가운데의 TEAM 펼침 버튼.
+   - .about-scroll-arrow: 접혀 있을 때 이중 V가 위아래로 5px 천천히 움직임
+   - .about-toggle-icon: 펼치면 위쪽 V로 0.5초 동안 돌아감 */
 @keyframes about-arrow-bob {
   0%,
   100% {
-    translate: -50% 0;
+    translate: 0 0;
   }
   50% {
-    translate: -50% 5px;
+    translate: 0 5px;
   }
 }
 
 .about-scroll-arrow {
+  display: block;
   animation: about-arrow-bob 2.4s ease-in-out infinite;
+}
+
+.about-toggle-icon {
+  transition: rotate 0.5s ease-in-out;
+}
+
+/* TEAM 소개 펼침 영역: grid-template-rows 0fr↔1fr로 실제 내용 높이만큼 0.5초 ease-in-out 펼침/접힘.
+   안쪽 항목(제목 → 팀원 → 사진)은 조금씩 늦게 나타나 순서대로 펼쳐지는 느낌을 줍니다. */
+.about-team-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.5s ease-in-out;
+}
+
+.about-team-panel.is-open {
+  grid-template-rows: 1fr;
+}
+
+.about-team-item {
+  opacity: 0;
+  translate: 0 8px;
+  transition:
+    opacity 0.35s ease-in-out,
+    translate 0.35s ease-in-out;
+}
+
+.about-team-panel.is-open .about-team-item {
+  opacity: 1;
+  translate: 0 0;
+}
+
+.about-team-panel.is-open .about-team-item:nth-child(1) {
+  transition-delay: 0.1s;
+}
+
+.about-team-panel.is-open .about-team-item:nth-child(2) {
+  transition-delay: 0.2s;
+}
+
+.about-team-panel.is-open .about-team-item:nth-child(3) {
+  transition-delay: 0.3s;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .about-scroll-arrow {
     animation: none;
+  }
+
+  .about-toggle-icon,
+  .about-team-panel,
+  .about-team-item {
+    transition: none;
   }
 }
 
