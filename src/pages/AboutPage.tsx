@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 interface TeamMember {
   name: string;
@@ -69,6 +69,13 @@ const CONTENT_CLASS = 'relative z-10 mx-auto w-full max-w-[1100px] px-4 sm:px-6 
  */
 export function AboutPage() {
   const [erroredPhotos, setErroredPhotos] = useState<Record<string, boolean>>({});
+  const teamRef = useRef<HTMLDivElement>(null);
+
+  /** 이중 V 화살표: 구분선이 있는 TEAM 영역 시작점으로 스크롤(동작 줄이기 설정이면 즉시 이동) */
+  const scrollToTeam = () => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    teamRef.current?.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'start' });
+  };
 
   return (
     <div className="relative isolate flex-1 overflow-hidden">
@@ -100,10 +107,34 @@ export function AboutPage() {
             </p>
           </div>
         </div>
+
+        {/* 소개 영역 하단 중앙의 이중 V 화살표 → 아래 TEAM 영역으로 이동 */}
+        <button
+          type="button"
+          onClick={scrollToTeam}
+          aria-label="팀 소개로 이동"
+          className="about-scroll-arrow absolute bottom-3 left-1/2 z-20 -translate-x-1/2 p-2 text-brand-green-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green sm:bottom-5"
+        >
+          <svg
+            width="28"
+            height="28"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
+            <path d="M6 6.5l6 5 6-5" />
+            <path d="M6 12.5l6 5 6-5" />
+          </svg>
+        </button>
       </section>
 
       <section className={`font-nanum-round ${CONTENT_CLASS} pb-16`}>
-        <div className="border-t border-brand-green/40 pt-10 sm:pt-12">
+        {/* scroll-mt: 화살표로 이동했을 때 구분선이 화면 위쪽에 살짝 보이도록 24px 여유 */}
+        <div ref={teamRef} className="scroll-mt-6 border-t border-brand-green/40 pt-10 sm:pt-12">
           <h2 className="text-[24px] leading-[1.4] font-bold tracking-[-0.02em] text-brand-green-dark md:text-[28px]">
             TEAM 깻잎삼김
           </h2>

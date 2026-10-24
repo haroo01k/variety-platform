@@ -235,6 +235,29 @@ body {
   mask-image: linear-gradient(to right, transparent, #000 12%);
 }
 
+/* ABOUT 소개 영역 하단의 이중 V 스크롤 화살표: 위아래로 5px 천천히 움직임.
+   Tailwind의 -translate-x-1/2도 translate 속성을 쓰므로, 애니메이션 중에도 가로 -50%를 함께 유지합니다.
+   (동작 줄이기 설정이면 애니메이션 없이 -translate-x-1/2만으로 가운데 정렬) */
+@keyframes about-arrow-bob {
+  0%,
+  100% {
+    translate: -50% 0;
+  }
+  50% {
+    translate: -50% 5px;
+  }
+}
+
+.about-scroll-arrow {
+  animation: about-arrow-bob 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-scroll-arrow {
+    animation: none;
+  }
+}
+
 @media (min-width: 768px) {
   /* 데스크톱: 그림은 오른쪽, 글은 왼쪽. 1100px 미만 화면에서는 그림 왼쪽(흙만 있는 부분)이 잘림 */
   .about-intro {
