@@ -116,7 +116,7 @@ export function AboutPage() {
   const teamTitleRef = useRef<HTMLHeadingElement>(null);
 
   /**
-   * 구분선의 이중 V 버튼으로 TEAM 소개를 펼치거나 접습니다.
+   * 소개 문구 아래 이중 V 버튼으로 구분선 아래 TEAM 소개를 펼치거나 접습니다.
    * - 펼칠 때: 펼침(0.5초)이 끝난 뒤 TEAM 제목이 화면 아래쪽에 가려져 있을 때만 구분선이 위쪽에 오도록 스크롤
    * - 접을 때: 접힌 뒤 페이지에서 가능한 최대 스크롤 위치보다 아래에 있다면, 접히는 동안 그 위치까지
    *   함께 부드럽게 스크롤해 화면이 튀지 않게 합니다(PC는 첫 화면 맨 위로 돌아감).
@@ -185,27 +185,22 @@ export function AboutPage() {
               <br />그 가치를 알아보는 사람들을 연결합니다.
             </p>
           </div>
-        </div>
 
-        {/*
-          PC(769px 이상): 소개 영역 맨 아래, 구분선 바로 위 가운데에 둡니다(글자와 구분선 사이 약 16px).
-          소개 영역 하단에는 글이 흙 그림과 겹치지 않도록 확보한 여백(가로폭 × 0.08 + 24px, 최소 112px)이
-          있어 버튼(높이 64px)이 글과 겹치지 않고, 레이아웃 높이도 바뀌지 않습니다.
-          1366×768 화면에서도 구분선이 첫 화면 안(약 646px)에 있어 스크롤 없이 보입니다.
-        */}
-        <TeamToggleButton
-          isOpen={isTeamOpen}
-          onClick={toggleTeam}
-          className="absolute bottom-2 left-1/2 z-20 hidden -translate-x-1/2 min-[769px]:flex"
-        />
+          {/*
+            TEAM 펼침 버튼: 소개 문구 바로 다음(문서 흐름 안), 소개 문단 폭(최대 34rem)의 가운데.
+            마지막 문장 글자 아래에서 이중 V까지 PC 약 30px, 모바일 약 24px
+            (행간 여백 + 버튼 안쪽 여백 + 아이콘 위 여백을 포함한 값).
+          */}
+          <div className="mt-0.5 flex max-w-[34rem] justify-center md:mt-2">
+            <TeamToggleButton isOpen={isTeamOpen} onClick={toggleTeam} className="flex" />
+          </div>
+        </div>
       </section>
 
       {/* 하단 여백: 모바일은 기존처럼 항상 64px, PC는 펼침 영역 안에 두어 접혀 있을 때 높이를 차지하지 않게 함 */}
       <section className={`font-nanum-round ${CONTENT_CLASS} pb-16 min-[769px]:pb-0`}>
-        {/* 구분선 + (모바일) 가운데 펼침/접힘 버튼. scroll-mt: 스크롤로 맞출 때 구분선이 화면 위쪽에 살짝 보이도록 24px 여유 */}
-        <div ref={dividerRef} className="scroll-mt-6 border-t border-brand-green/40">
-          <TeamToggleButton isOpen={isTeamOpen} onClick={toggleTeam} className="mx-auto mt-2 flex min-[769px]:hidden" />
-        </div>
+        {/* 구분선. scroll-mt: 스크롤로 맞출 때 구분선이 화면 위쪽에 살짝 보이도록 24px 여유 */}
+        <div ref={dividerRef} className="scroll-mt-6 border-t border-brand-green/40" />
 
         {/*
           펼침 영역: grid-template-rows 0fr↔1fr 전환으로 내용 높이(화면 폭에 따라 달라짐)에 맞춰
