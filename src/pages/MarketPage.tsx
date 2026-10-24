@@ -23,16 +23,19 @@ export function MarketPage() {
       {/*
         투명 배경 일러스트라 카드·배경 없이 페이지 크림색 위에 바로 얹습니다.
         원본 1983×793, 그림 둘레 투명 여백: 위 87 · 아래 19 · 왼쪽 42 · 오른쪽 63px.
-        모바일(768px 이하): 화면 좌우 끝까지 쓰고, 좌우 투명 여백만 화면 밖으로 밀어내
-          그림(가로 1878px 부분)이 화면 너비를 꽉 채우게 합니다. 그림 자체는 잘리지 않습니다.
-          (너비 1983/1878 ≈ 105.6%, 왼쪽 -42/1878 ≈ -2.24%)
+        모바일(768px 이하): 화면 좌우 끝까지 쓰고 그림을 117%로 키워, 원본 x 145~1840px 구간을
+          보여줍니다. '판매처' 제목·설명(x≈245~)과 가판대·간판(~x≈1765)은 모두 화면 안에 들어오고,
+          좌우 맨 끝 풀숲·잎 일부만 가려집니다. (왼쪽 -145/1983 × 117% ≈ -8.55%)
+          아래 투명 여백(19/1983 × 117% ≈ 1.12%)은 음수 margin으로 걷어내 작물 버튼과 20~24px 간격을 맞춥니다.
         PC(769px 이상): 최대 1100px로 가운데 정렬하고, 위쪽 투명 여백을 감안해 24px 끌어올립니다.
+          시각적 중앙을 맞추려 오른쪽으로 최대 40px 옮기되, 화면 오른쪽 여유가 부족한 폭(약 1180px 이하)에서는
+          이동량을 줄여 가로 스크롤이 생기지 않게 합니다(1280px 이상에서 40px).
       */}
-      <section className="-mx-4 overflow-hidden sm:-mx-6 min-[769px]:mx-auto min-[769px]:-mt-6 min-[769px]:max-w-[1100px]">
+      <section className="-mx-4 -mb-[1.12%] overflow-hidden sm:-mx-6 min-[769px]:mx-auto min-[769px]:-mt-6 min-[769px]:mb-0 min-[769px]:max-w-[1100px] min-[769px]:translate-x-[clamp(0px,calc((100vw-1180px)/2),40px)] min-[769px]:overflow-visible">
         <img
           src="/images/market/market-hero-scene.png"
           alt="판매처. 작물별 품종을 선택하고 판매처로 이동해보세요."
-          className="-ml-[2.24%] block h-auto w-[105.6%] max-w-none object-contain min-[769px]:ml-0 min-[769px]:w-full"
+          className="-ml-[8.55%] block h-auto w-[117%] max-w-none object-contain min-[769px]:ml-0 min-[769px]:w-full"
         />
       </section>
 
