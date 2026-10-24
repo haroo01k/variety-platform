@@ -22,14 +22,17 @@ export function MarketPage() {
     <div className="mx-auto w-full max-w-[1200px] flex-1 px-4 py-4 sm:px-6 sm:py-6 lg:px-8">
       {/*
         투명 배경 배너라 카드·배경 없이 페이지 크림색 위에 바로 얹습니다.
-        모바일(768px 이하): 좌우 여백까지 써서 화면 너비를 가득 채웁니다.
-        데스크톱: 최대 1100px로 가운데 정렬하고, 이미지 위쪽 투명 여백만큼 끌어올려 내비게이션과의 간격을 줄입니다.
+        모바일(768px 이하): 화면 너비를 가득 채운 뒤 120%로 키워 가운데 정렬합니다.
+          좌우 끝 장식(잎·풀)만 조금 가려지고, 문구·가판대·간판은 모두 화면 안에 들어옵니다.
+        태블릿·데스크톱(769px 이상): 1200px 페이지 컨테이너를 벗어나 화면 너비에 맞춰 커지되
+          최대 1400px로 제한하고, 좌우 32px 이상을 남겨 가로 스크롤이 생기지 않게 합니다.
+          이미지 위쪽 투명 여백만큼 끌어올려 내비게이션과의 간격을 줄입니다.
       */}
-      <section className="-mx-4 sm:-mx-6 min-[769px]:mx-auto min-[769px]:-mt-16 min-[769px]:max-w-[1100px]">
+      <section className="-mx-4 overflow-hidden sm:-mx-6 min-[769px]:relative min-[769px]:left-1/2 min-[769px]:mx-0 min-[769px]:-mt-8 min-[769px]:w-[min(1400px,calc(100vw-64px))] min-[769px]:-translate-x-1/2">
         <img
           src="/images/market/market-banner.png"
           alt="좋은 품종이 더 많은 사람에게 닿을 수 있도록, 판매처. 작물별 품종을 선택하고 판매처로 이동해보세요."
-          className="block h-auto w-full object-contain"
+          className="-ml-[10%] block h-auto w-[120%] max-w-none object-contain min-[769px]:ml-0 min-[769px]:w-full"
         />
       </section>
 
