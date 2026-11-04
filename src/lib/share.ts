@@ -51,19 +51,28 @@ export async function loadCardImageFile(src: string, fileName: string): Promise<
   }
 }
 
+/** 카드 이미지 공유 결과. 'downloaded'는 공유 대신 PNG를 내려받은 경우입니다. */
+export type ShareCardResult = 'shared' | 'cancelled' | 'downloaded';
+
 /**
  * 카드 이미지 공유. 이미지 파일 공유를 지원하는 환경(Android Chrome, iOS Safari 등)에서는 PNG 파일을 공유 시트로 보내고,
  * 지원하지 않으면 같은 PNG를 내려받습니다. iOS Safari는 클릭 직후에만 공유를 허용하므로 file은 미리 받아 둔 것을 씁니다.
  */
-export async function shareCardImage(varietyName: string, file: File | null, src: string, fileName: string): Promise<void> {
+export async function shareCardImage(
+  varietyName: string,
+  file: File | null,
+  src: string,
+  fileName: string,
+): Promise<ShareCardResult> {
   if (file && navigator.canShare?.({ files: [file] })) {
     try {
       await navigator.share({ files: [file], title: `${varietyName} 신품종 카드`, text: `내가 발견한 신품종, ${varietyName}!` });
+      return 'shared';
     } catch (error) {
       // 사용자가 공유를 취소했으면(AbortError) 그대로 두고, 브라우저가 공유를 막았으면 내려받기로 대신합니다.
-      if (!(error instanceof DOMException && error.name === 'AbortError')) downloadCardImage(src, fileName);
+      if (error instanceof DOMException && error.name === 'AbortError') return 'cancelled';
     }
-    return;
   }
   downloadCardImage(src, fileName);
+  return 'downloaded';
 }

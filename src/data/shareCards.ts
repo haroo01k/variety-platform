@@ -12,6 +12,26 @@ export interface ShareCardImage {
 }
 
 export const SHARE_CARD_IMAGES: Record<string, ShareCardImage> = {
+  // 원교20054호 (중생종)
+  'CAB-01': { src: '/images/share-cards/cabbage/cabbage-wongyo20054-card.png', fileName: '배추_신품종카드_원교20054호.png' },
+  // 원교20049호 (중생종)
+  'CAB-02': { src: '/images/share-cards/cabbage/cabbage-wongyo20049-card.png', fileName: '배추_신품종카드_원교20049호.png' },
+  // FH112 (중생종)
+  'CAB-03': { src: '/images/share-cards/cabbage/cabbage-fh112-card.png', fileName: '배추_신품종카드_FH112.png' },
+  // 순정아삭 (조중생종)
+  'CAB-04': { src: '/images/share-cards/cabbage/cabbage-sunjeongasak-card.png', fileName: '배추_신품종카드_순정아삭.png' },
+  // 하라듀 (조생종, 노란색 캐릭터 최종본)
+  'CAB-05': { src: '/images/share-cards/cabbage/cabbage-haradyu-card.png', fileName: '배추_신품종카드_하라듀.png' },
+  // 선풍 (중생종)
+  'POT-01': { src: '/images/share-cards/potato/potato-seonpung-card.png', fileName: '감자_신품종카드_선풍.png' },
+  // 장원 (조중생종)
+  'POT-02': { src: '/images/share-cards/potato/potato-jangwon-card.png', fileName: '감자_신품종카드_장원.png' },
+  // 포슬이 (조생종)
+  'POT-03': { src: '/images/share-cards/potato/potato-poseuri-card.png', fileName: '감자_신품종카드_포슬이.png' },
+  // 풍농 (중생종)
+  'POT-04': { src: '/images/share-cards/potato/potato-pungnong-card.png', fileName: '감자_신품종카드_풍농.png' },
+  // 자미 (중생종)
+  'POT-05': { src: '/images/share-cards/potato/potato-jami-card.png', fileName: '감자_신품종카드_자미.png' },
   // 미백2호 (중생종)
   'COR-01': { src: '/images/share-cards/corn/corn-mibaek2-card.png', fileName: '옥수수_신품종카드_미백2호.png' },
   // 미흑찰 (중만생종)

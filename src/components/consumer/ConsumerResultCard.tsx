@@ -22,7 +22,7 @@ const ACTION_BUTTON =
  * 이미지·이름·추천 이유를 충분히 크게 잡고, 좋아요·카드 저장·공유(동일 크기) + 판매처 보기(큰 CTA)로 구성합니다.
  * "이 품종 자세히 보기"를 누르면 카드가 Y축으로 뒤집혀 맛·식감·향(특징)·활용·추천 레시피 등
  * 실제 데이터 기반 간단 정보와 판매처 보기·돌아가기를 보여줍니다.
- * isFlipped는 이 컴포넌트 내부 상태라, 다른 순위로 바꾸면(부모에서 key로 재마운트) 항상 앞면부터 시작합니다.
+ * 소비자 결과 화면에서는 TOP 1 품종 포토카드로 쓰입니다.
  */
 export function ConsumerResultCard({ emoji, recommendation, rank }: ConsumerResultCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
@@ -32,7 +32,7 @@ export function ConsumerResultCard({ emoji, recommendation, rank }: ConsumerResu
   const hasMarketUrl = Boolean(variety.marketUrl && variety.marketUrl !== '#');
   /** 판매처 화면에서 이미 쓰고 있는 같은 품종의 "우표" 이미지(있으면만 재사용). */
   const stampImage = findMarketVariety(variety.cropId, variety.name)?.image;
-  /** 저장·공유용 최종 승인 카드 PNG(현재 옥수수·복숭아·사과 각 5종). 없으면 기존 저장·공유 동작을 그대로 씁니다. */
+  /** 저장·공유용 최종 승인 카드 PNG(5개 작물 25개 품종 전체). 없으면 기존 저장·공유 동작을 그대로 씁니다. */
   const shareCard = findShareCardImage(variety.id);
   const [shareCardFile, setShareCardFile] = useState<File | null>(null);
 
@@ -47,6 +47,25 @@ export function ConsumerResultCard({ emoji, recommendation, rank }: ConsumerResu
       cancelled = true;
     };
   }, [shareCard]);
+
+  // 이미지 공유가 안 되는 환경에서 PNG를 대신 내려받았을 때 잠시 보여주는 안내
+  const [shareNotice, setShareNotice] = useState<string | null>(null);
+  useEffect(() => {
+    if (!shareNotice) return;
+    const timer = window.setTimeout(() => setShareNotice(null), 7000);
+    return () => window.clearTimeout(timer);
+  }, [shareNotice]);
+
+  const handleShare = async () => {
+    if (!shareCard) {
+      shareVariety(variety.name);
+      return;
+    }
+    const result = await shareCardImage(variety.name, shareCardFile, shareCard.src, shareCard.fileName);
+    if (result === 'downloaded') {
+      setShareNotice('이 기기에서는 이미지 바로 공유가 지원되지 않아 카드 이미지를 내려받았어요. 저장된 이미지를 카카오톡 등에서 직접 보내 주세요.');
+    }
+  };
 
   return (
     <div className="flip-card mx-auto w-full max-w-[520px]">
@@ -94,16 +113,15 @@ export function ConsumerResultCard({ emoji, recommendation, rank }: ConsumerResu
             <button
               type="button"
               aria-label={`${variety.name} 공유`}
-              onClick={() =>
-                shareCard
-                  ? shareCardImage(variety.name, shareCardFile, shareCard.src, shareCard.fileName)
-                  : shareVariety(variety.name)
-              }
+              onClick={handleShare}
               className={`${ACTION_BUTTON} text-slate-600`}
             >
               <ShareIcon />
             </button>
           </div>
+          <p role="status" className={shareNotice ? 'mt-2 rounded-2xl bg-[#FBF8EF] px-3 py-2 text-left text-xs text-slate-600' : 'sr-only'}>
+            {shareNotice}
+          </p>
 
           {hasMarketUrl && (
             <a
