@@ -4,6 +4,7 @@ import { Container } from '../../components/common/Container';
 import { Button } from '../../components/common/Button';
 import { ConsumerRankPickerCard } from '../../components/consumer/ConsumerRankPickerCard';
 import { ConsumerResultCard } from '../../components/consumer/ConsumerResultCard';
+import { InterestRanking } from '../../components/common/InterestRanking';
 import { CROPS } from '../../data/crops';
 import { findTasteType } from '../../data/consumerQuiz';
 import { ROUTES } from '../../lib/routes';
@@ -16,7 +17,8 @@ interface LocationState {
 /**
  * 소비자 취향 테스트 결과 화면.
  * ① "나의 농산물 취향은?" → ② 취향 유형명 → ③ 한 줄 소개 → ④ 취향 키워드 3개
- * → ⑤ 가운데 큰 품종 카드(기본 TOP 1) + 아래 작은 가로 카드(나머지 순위) → ⑥ 다시 테스트하기 순서입니다.
+ * → ⑤ 가운데 큰 품종 카드(기본 TOP 1) + 아래 작은 가로 카드(나머지 순위) → ⑥ 다시 테스트하기
+ * → ⑦ 소비자가 주목하는 신품종(전체 이용자 관심도 순위, 보기 전용) 순서입니다.
  * 취향 유형(응답으로 결정)과 추천 품종(추천 알고리즘으로 결정)은 서로 다른 결과라 영역을 나눠 보여줍니다.
  * 작은 카드를 누르면 가운데 카드만 바뀌며, 좋아요·저장·공유·판매처·자세히 보기는 TOP 1을 선택했을 때만 제공합니다.
  */
@@ -130,6 +132,8 @@ export function ConsumerResultPage() {
       <Button variant="secondary" onClick={retake} className="w-full max-w-sm">
         다시 테스트하기
       </Button>
+
+      <InterestRanking subtitle="다른 사람들은 어떤 품종을 먹어보고 싶어 할까요?" emptyMessage="아직 집계된 관심도가 없어요." />
     </Container>
   );
 }

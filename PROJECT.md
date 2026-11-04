@@ -68,9 +68,11 @@
   이모지, 품종별 캐릭터색 HEX 반영)로 구성
 - 소비자 "좋아요" 기능(4단계 일부 선반영): 로그인 없이 기기별 익명
   ID로 Supabase에 좋아요를 기록·집계 ([supabase/schema.sql](supabase/schema.sql),
-  [src/lib/likes.ts](src/lib/likes.ts)). 농업인 결과 화면에는 같은 작물의
-  소비자 관심 TOP3를 보여주는 읽기 전용 코너([ConsumerInterestSection](src/components/farmer/ConsumerInterestSection.tsx))가
-  있고, 좋아요는 추천 점수·순위에 전혀 반영되지 않습니다. `/admin`에서
+  [src/lib/likes.ts](src/lib/likes.ts)). 하트 참여는 소비자 결과 TOP 1에서만 가능하고,
+  소비자·농업인 결과 화면 하단에 보기 전용 "소비자가 주목하는 신품종" 관심도 순위
+  ([InterestRanking](src/components/common/InterestRanking.tsx), 전체 TOP 5·작물별 필터)가 있습니다.
+  농업인 추천 카드에도 품종별 "소비자 관심 ♡ N"을 작게 표시하지만, 좋아요는
+  추천 점수·순위에 전혀 반영되지 않습니다. `/admin`에서
   작물·품종별 누적 좋아요 수를 조회할 수 있습니다(수정·삭제 기능 없음,
   로그인 보호 없음 — 아래 "제외 기능" 참고).
 - PWA(5단계 일부 선반영): '기후농사' 앱으로 PC·Android·iOS 홈 화면에 설치,

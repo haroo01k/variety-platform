@@ -7,6 +7,8 @@ interface FarmerResultCardProps {
   emoji: string;
   recommendation: FarmerRecommendation;
   onOpenDetail: () => void;
+  /** 소비자 "먹어보고 싶어요" 누적 수(보기 전용). null이면 아직 모르거나 불러오지 못함 */
+  consumerInterest: number | null;
 }
 
 const HAZARD_ITEMS: { key: HazardKey; label: string }[] = [
@@ -31,7 +33,7 @@ function HazardDots({ score }: { score: number }) {
  * 소비자용 카드(맛·감성 중심)와 달리 권장지역·기후 대응력·재배 정보 등 재배 판단에
  * 필요한 정보를 우선 보여주고, 좋아요·공유·판매처 보기 대신 "품종 상세보기"를 메인 액션으로 둡니다.
  */
-export function FarmerResultCard({ rank, emoji, recommendation, onOpenDetail }: FarmerResultCardProps) {
+export function FarmerResultCard({ rank, emoji, recommendation, onOpenDetail, consumerInterest }: FarmerResultCardProps) {
   const { variety, totalScore, reasons } = recommendation;
   const statusText = reasons[0] ?? `${variety.regionText} 재배에 참고할 수 있는 품종이에요.`;
 
@@ -60,6 +62,10 @@ export function FarmerResultCard({ rank, emoji, recommendation, onOpenDetail }: 
       <div className="text-center">
         <h3 className="text-xl font-extrabold text-[#20251F]">{variety.name}</h3>
         <p className="mt-1 text-xs text-slate-500">{statusText}</p>
+        {/* 재배 적합도와 별개인 참고 정보(보기 전용, 점수·순위에 반영하지 않음) */}
+        <p className="mt-1 text-xs text-slate-400">
+          소비자 관심 <span className="text-rose-400">♡</span> {consumerInterest ?? '–'}
+        </p>
       </div>
 
       <div>

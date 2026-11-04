@@ -44,6 +44,10 @@ export async function getMyLikes(varietyIds: string[]): Promise<LikeResult<Set<s
   }
 }
 
+/** 좋아요 수가 바뀌었을 때 같은 화면의 다른 영역(관심도 순위 등)에 알리는 이벤트 */
+export const LIKE_CHANGED_EVENT = 'variety-like-changed';
+export type LikeChangedDetail = { varietyId: string; likeCount: number };
+
 /** 좋아요 토글. 반환되는 like_count는 항상 서버에서 다시 센 실제 값입니다. */
 export async function toggleLike(varietyId: string): Promise<LikeResult<{ liked: boolean; likeCount: number }>> {
   try {
@@ -53,7 +57,9 @@ export async function toggleLike(varietyId: string): Promise<LikeResult<{ liked:
     });
     const row = rows[0];
     if (!row) return { ok: false };
-    return { ok: true, value: { liked: row.liked, likeCount: Number(row.like_count) } };
+    const likeCount = Number(row.like_count);
+    window.dispatchEvent(new CustomEvent<LikeChangedDetail>(LIKE_CHANGED_EVENT, { detail: { varietyId, likeCount } }));
+    return { ok: true, value: { liked: row.liked, likeCount } };
   } catch {
     return { ok: false };
   }

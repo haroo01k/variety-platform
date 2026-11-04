@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Container } from '../../components/common/Container';
 import { Button } from '../../components/common/Button';
@@ -6,8 +6,9 @@ import { BottomSheet } from '../../components/common/BottomSheet';
 import { ResultRankTabs } from '../../components/common/ResultRankTabs';
 import { FarmerResultCard } from '../../components/farmer/FarmerResultCard';
 import { FarmerResultDetail } from '../../components/farmer/FarmerResultDetail';
-import { ConsumerInterestSection } from '../../components/farmer/ConsumerInterestSection';
+import { InterestRanking } from '../../components/common/InterestRanking';
 import { CROPS } from '../../data/crops';
+import { getLikeCounts, isSupabaseConfigured } from '../../lib/likes';
 import { ROUTES } from '../../lib/routes';
 import type { FarmerAnswers, FarmerResult } from '../../types/farmer';
 
@@ -22,12 +23,29 @@ interface LocationState {
  * TOP 3 중 선택된 순위 1장만 큰 카드로 보여주고, 순위 탭을 누르면 같은 자리에서
  * 카드 내용만 바뀝니다(페이지 이동 없음). 기본 선택은 1순위입니다.
  * 카드의 "품종 상세보기"를 누르면 해당 품종의 상세 정보를 바텀시트로 볼 수 있습니다.
+ * 하단에는 소비자 "먹어보고 싶어요" 관심도 순위를 보기 전용으로 보여주고, TOP 3 카드에도 각 품종의
+ * 소비자 관심 수를 작게 표시합니다. 관심도는 재배 적합도 점수·순위와 따로 조회하며 점수에 반영하지 않습니다.
  */
 export function FarmerResultPage() {
   const location = useLocation();
   const state = location.state as LocationState | null;
   const [selectedRank, setSelectedRank] = useState(0);
   const [showDetail, setShowDetail] = useState(false);
+  /** 추천 TOP 3 품종의 소비자 관심 수(Supabase 집계). null이면 아직 모르거나 불러오지 못함 */
+  const [interestCounts, setInterestCounts] = useState<Record<string, number> | null>(null);
+  const top3Ids = state?.result.top3.map((r) => r.variety.id).join(',') ?? '';
+
+  useEffect(() => {
+    if (!isSupabaseConfigured || !top3Ids) return;
+    let cancelled = false;
+    (async () => {
+      const counts = await getLikeCounts(top3Ids.split(','));
+      if (!cancelled && counts.ok) setInterestCounts(counts.value);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [top3Ids]);
 
   if (!state) {
     return (
@@ -74,18 +92,10 @@ export function FarmerResultPage() {
               emoji={crop.emoji}
               recommendation={selected}
               onOpenDetail={() => setShowDetail(true)}
+              consumerInterest={interestCounts?.[selected.variety.id] ?? null}
             />
           </div>
         </>
-      )}
-
-      {first && (
-        <ConsumerInterestSection
-          cropId={crop.id}
-          emoji={crop.emoji}
-          farmerTop1Id={first.variety.id}
-          farmerTop1Name={first.variety.name}
-        />
       )}
 
       {result.excluded.length > 0 && (
@@ -102,6 +112,12 @@ export function FarmerResultPage() {
       <Button variant="secondary" to={ROUTES.farmerConditions} className="w-full">
         조건 다시 입력하기
       </Button>
+
+      <InterestRanking
+        subtitle="소비자들은 어떤 신품종을 먹어보고 싶어 할까요?"
+        emptyMessage="아직 소비자 관심도를 집계하고 있어요."
+        footnote="본 순위는 소비자의 먹어보고 싶어요 참여를 기준으로 하며, 실제 판매량이나 구매 수요를 의미하지 않습니다."
+      />
 
       <BottomSheet
         open={showDetail}
