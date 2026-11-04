@@ -76,7 +76,7 @@ export function HomePage() {
               className="h-11 w-11 object-contain"
             />
           </span>
-          <h2 className="font-nanum-round mt-1 fs-15 font-bold text-[#20251F]">농업인이세요?</h2>
+          <h2 className="font-nanum-round mt-1 fs-15 font-bold text-[#20251F]">농업인</h2>
           <p className="font-nanum-round fs-12 font-normal leading-snug text-[#6F756C]">
             더 나은 농사를 위한
             <br />
@@ -102,7 +102,7 @@ export function HomePage() {
               className="h-11 w-11 object-contain"
             />
           </span>
-          <h2 className="font-nanum-round mt-1 fs-15 font-bold text-[#20251F]">소비자세요?</h2>
+          <h2 className="font-nanum-round mt-1 fs-15 font-bold text-[#20251F]">소비자</h2>
           <p className="font-nanum-round fs-12 font-normal leading-snug text-[#6F756C]">
             맛있는 변화,
             <br />
