@@ -12,6 +12,16 @@ export interface ShareCardImage {
 }
 
 export const SHARE_CARD_IMAGES: Record<string, ShareCardImage> = {
+  // 옐로드림 (조생종)
+  'PEA-01': { src: '/images/share-cards/peach/peach-yellowdream-card.png', fileName: '복숭아_신품종카드_옐로드림.png' },
+  // 이노센스 (중생종)
+  'PEA-02': { src: '/images/share-cards/peach/peach-innocence-card.png', fileName: '복숭아_신품종카드_이노센스.png' },
+  // 홍슬 (중생종)
+  'PEA-03': { src: '/images/share-cards/peach/peach-hongsul-card.png', fileName: '복숭아_신품종카드_홍슬.png' },
+  // 설홍 (만생종)
+  'PEA-04': { src: '/images/share-cards/peach/peach-seolhong-card.png', fileName: '복숭아_신품종카드_설홍.png' },
+  // 마루황도 (만생종)
+  'PEA-05': { src: '/images/share-cards/peach/peach-maruhwangdo-card.png', fileName: '복숭아_신품종카드_마루황도.png' },
   // 썸머킹 (조생종)
   'APP-01': { src: '/images/share-cards/apple/summer-king-card.png', fileName: '사과_신품종카드_썸머킹.png' },
   // 골든볼 (조생종)

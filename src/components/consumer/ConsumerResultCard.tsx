@@ -32,7 +32,7 @@ export function ConsumerResultCard({ emoji, recommendation, rank }: ConsumerResu
   const hasMarketUrl = Boolean(variety.marketUrl && variety.marketUrl !== '#');
   /** 판매처 화면에서 이미 쓰고 있는 같은 품종의 "우표" 이미지(있으면만 재사용). */
   const stampImage = findMarketVariety(variety.cropId, variety.name)?.image;
-  /** 저장·공유용 최종 승인 카드 PNG(현재 사과 5종). 없으면 기존 저장·공유 동작을 그대로 씁니다. */
+  /** 저장·공유용 최종 승인 카드 PNG(현재 복숭아·사과 각 5종). 없으면 기존 저장·공유 동작을 그대로 씁니다. */
   const shareCard = findShareCardImage(variety.id);
   const [shareCardFile, setShareCardFile] = useState<File | null>(null);
 
