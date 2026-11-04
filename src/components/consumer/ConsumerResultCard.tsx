@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PlaceholderImage } from '../common/PlaceholderImage';
 import { LikeButton } from '../common/LikeButton';
 import { BookmarkIcon, ShareIcon, CartIcon } from '../common/icons';
-import { shareVariety } from '../../lib/share';
+import { downloadCardImage, loadCardImageFile, shareCardImage, shareVariety } from '../../lib/share';
+import { findShareCardImage } from '../../data/shareCards';
 import { findMarketVariety } from '../../lib/varietyLookup';
 import type { ConsumerRecommendation } from '../../types/consumer';
 
@@ -31,6 +32,21 @@ export function ConsumerResultCard({ emoji, recommendation, rank }: ConsumerResu
   const hasMarketUrl = Boolean(variety.marketUrl && variety.marketUrl !== '#');
   /** 판매처 화면에서 이미 쓰고 있는 같은 품종의 "우표" 이미지(있으면만 재사용). */
   const stampImage = findMarketVariety(variety.cropId, variety.name)?.image;
+  /** 저장·공유용 최종 승인 카드 PNG(현재 사과 5종). 없으면 기존 저장·공유 동작을 그대로 씁니다. */
+  const shareCard = findShareCardImage(variety.id);
+  const [shareCardFile, setShareCardFile] = useState<File | null>(null);
+
+  // iOS Safari는 버튼을 누른 직후에만 공유 시트를 열 수 있어, 카드 PNG를 미리 받아 둡니다.
+  useEffect(() => {
+    if (!shareCard) return;
+    let cancelled = false;
+    loadCardImageFile(shareCard.src, shareCard.fileName).then((file) => {
+      if (!cancelled) setShareCardFile(file);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [shareCard]);
 
   return (
     <div className="flip-card mx-auto w-full max-w-[520px]">
@@ -67,13 +83,22 @@ export function ConsumerResultCard({ emoji, recommendation, rank }: ConsumerResu
 
           <div className="mt-5 flex items-center gap-2">
             <LikeButton varietyId={variety.id} iconOnly className="flex-1" />
-            <button type="button" aria-label={`${variety.name} 카드 저장`} className={`${ACTION_BUTTON} text-brand-green`}>
+            <button
+              type="button"
+              aria-label={shareCard ? `${variety.name} 카드 이미지 저장` : `${variety.name} 카드 저장`}
+              onClick={shareCard ? () => downloadCardImage(shareCard.src, shareCard.fileName) : undefined}
+              className={`${ACTION_BUTTON} text-brand-green`}
+            >
               <BookmarkIcon />
             </button>
             <button
               type="button"
               aria-label={`${variety.name} 공유`}
-              onClick={() => shareVariety(variety.name)}
+              onClick={() =>
+                shareCard
+                  ? shareCardImage(variety.name, shareCardFile, shareCard.src, shareCard.fileName)
+                  : shareVariety(variety.name)
+              }
               className={`${ACTION_BUTTON} text-slate-600`}
             >
               <ShareIcon />
