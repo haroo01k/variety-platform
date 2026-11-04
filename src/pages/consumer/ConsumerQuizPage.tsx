@@ -69,23 +69,34 @@ export function ConsumerQuizPage() {
   if (!started) {
     return (
       <Container className="flex flex-col gap-6 py-8 md:py-12">
-        <section className="flex flex-col items-center gap-4 rounded-3xl border-2 border-brand-yellow/30 bg-white px-5 py-10 text-center shadow-sm">
-          <span aria-hidden="true" className="flex h-20 w-20 items-center justify-center rounded-3xl bg-brand-yellow/20 text-5xl">
-            🧺
+        {/* 시작 화면(강조형): 작은 새싹 장식 + 초록 제목과 연한 노란 밑줄 + 하단 연두색 언덕 */}
+        <section className="relative flex flex-col items-center gap-3 overflow-hidden rounded-3xl border border-[#F0E9D8] bg-white px-5 pt-10 pb-24 text-center sm:pb-28">
+          <span aria-hidden="true" className="text-2xl">
+            🌱
           </span>
           <p className="text-sm font-bold text-brand-orange">나의 농산물 취향 발견하기</p>
-          <h1 className="text-2xl font-extrabold text-brand-green-dark sm:text-3xl">
+          <h1 className="text-xl font-bold leading-snug text-brand-green-dark sm:text-2xl">
             나는 어떤 농산물과
             <br />잘 맞을까요?
           </h1>
-          <p className="text-sm text-slate-500 sm:text-base">
+          <span aria-hidden="true" className="-mt-1 block h-1.5 w-24 rounded-full bg-brand-yellow/40" />
+          <p className="mt-1 text-sm leading-relaxed text-slate-500">
             일상 속 상황 {TOTAL}가지에 A·B 중 하나만 골라주세요.
             <br />
-            답을 모두 마치면 나의 취향 유형과 어울리는 신품종을 알려드려요.
+            나의 취향 유형과 어울리는 신품종을 알려드려요.
           </p>
-          <Button variant="accent" onClick={() => setStarted(true)} className="mt-2 w-full max-w-xs">
+          <Button variant="accent" onClick={() => setStarted(true)} className="relative z-10 mt-3 w-full max-w-xs rounded-full">
             테스트 시작하기 →
           </Button>
+          <svg
+            aria-hidden="true"
+            viewBox="0 0 400 80"
+            preserveAspectRatio="none"
+            className="pointer-events-none absolute inset-x-0 bottom-0 h-20 w-full sm:h-24"
+          >
+            <path d="M0 48 C 70 18, 140 22, 210 44 S 340 66, 400 34 L400 80 L0 80 Z" fill="#E5F0DE" />
+            <path d="M0 62 C 90 40, 170 48, 250 62 S 360 70, 400 56 L400 80 L0 80 Z" fill="#D4E8C8" />
+          </svg>
         </section>
       </Container>
     );
@@ -114,13 +125,14 @@ export function ConsumerQuizPage() {
 
       <section
         key={question.id}
-        className="flex flex-col gap-5 rounded-3xl border-2 border-brand-yellow/30 bg-white p-5 shadow-sm motion-safe:animate-[result-card-in_0.25s_ease-out] sm:p-6"
+        className="flex flex-col gap-5 rounded-3xl border border-[#F0E9D8] bg-white p-5 motion-safe:animate-[result-card-in_0.25s_ease-out] sm:p-6"
       >
-        <h2 className="text-xl font-extrabold text-slate-800 sm:text-2xl">
+        <h2 className="text-lg font-semibold leading-snug break-keep text-slate-800 sm:text-xl">
           <span className="mr-1.5 text-brand-orange">Q{index + 1}.</span>
           {question.text}
         </h2>
-        <div className="flex flex-col gap-3">
+        {/* 카드형: A/B를 세로형 카드 두 장으로 나란히(아주 좁은 화면에서는 1열) */}
+        <div className="grid grid-cols-1 gap-3 min-[360px]:grid-cols-2">
           {(['A', 'B'] as const).map((choice) => (
             <ConsumerAnswerCard
               key={choice}
