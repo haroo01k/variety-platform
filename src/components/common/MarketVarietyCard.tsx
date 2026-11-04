@@ -31,13 +31,13 @@ export function MarketVarietyCard({ variety }: MarketVarietyCardProps) {
         {variety.isFullCard ? (
           <img src={variety.image} alt={variety.varietyName} className="h-auto w-full object-contain" />
         ) : (
-          <div className="stamp-edge flex h-[128px] w-full flex-col items-center justify-center gap-1.5 border border-[#F0E9D8] bg-[#FBF8EF] px-2 py-3 text-center shadow-sm sm:h-[140px] sm:gap-2 sm:px-3">
+          <div className="no-text-scale stamp-edge flex h-[128px] w-full flex-col items-center justify-center gap-1.5 border border-[#F0E9D8] bg-[#FBF8EF] px-2 py-3 text-center shadow-sm sm:h-[140px] sm:gap-2 sm:px-3">
             {variety.image && <img src={variety.image} alt="" className="h-12 w-12 object-contain sm:h-16 sm:w-16" />}
-            <span className="text-[11px] font-bold leading-tight text-[#20251F] sm:text-xs">{variety.varietyName}</span>
+            <span className="fs-11 font-bold leading-tight text-[#20251F] sm:text-xs">{variety.varietyName}</span>
           </div>
         )}
         {badgeLabel && (
-          <span className="absolute left-2 top-2 rounded-full bg-white px-2.5 py-1 text-[11px] font-bold text-[#20251F] shadow-sm">
+          <span className="no-text-scale absolute left-2 top-2 rounded-full bg-white px-2.5 py-1 fs-11 font-bold text-[#20251F] shadow-sm">
             {badgeLabel}
           </span>
         )}

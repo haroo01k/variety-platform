@@ -38,7 +38,7 @@ export function HomePage() {
             글 영역이 원래(제목 30/34px·행간 1.3, 설명 16/17px·행간 1.6) 높이보다 낮아진 만큼
             설명 문단의 mb로 채워 배경 그림·아래 카드 위치를 그대로 둡니다(모바일 21px, sm 26px).
           */}
-          <h1 className="font-gangwon-power relative top-[10px] text-[32px] leading-[1.22] tracking-[-0.02em] text-[#20251F] sm:text-[36px]">
+          <h1 className="font-gangwon-power relative top-[10px] fs-32 leading-[1.22] tracking-[-0.02em] text-[#20251F] sm:fs-36">
             기후가 바뀌어도
             <br />
             <span className="text-brand-green">좋은 먹거리는</span>
@@ -47,7 +47,7 @@ export function HomePage() {
           </h1>
 
           {/* 의미 단위 3줄. 마지막 문장은 좁은 화면에서 자연스럽게 줄바꿈됩니다. */}
-          <p className="font-gowun-dodum mt-6 mb-[21px] text-[10pt] leading-[1.3] tracking-[-0.02em] text-[#4A5A4E] sm:mb-[26px]">
+          <p className="font-gowun-dodum mt-6 mb-[21px] fs-[10pt] leading-[1.3] tracking-[-0.02em] text-[#4A5A4E] sm:mb-[26px]">
             기후에 강한 새로운 작물을
             <br />
             품종별로 만나보세요.
@@ -76,8 +76,8 @@ export function HomePage() {
               className="h-11 w-11 object-contain"
             />
           </span>
-          <h2 className="font-nanum-round mt-1 text-[15px] font-bold text-[#20251F]">농업인이세요?</h2>
-          <p className="font-nanum-round text-[12px] font-normal leading-snug text-[#6F756C]">
+          <h2 className="font-nanum-round mt-1 fs-15 font-bold text-[#20251F]">농업인이세요?</h2>
+          <p className="font-nanum-round fs-12 font-normal leading-snug text-[#6F756C]">
             더 나은 농사를 위한
             <br />
             맞춤 정보를 만나보세요.
@@ -102,8 +102,8 @@ export function HomePage() {
               className="h-11 w-11 object-contain"
             />
           </span>
-          <h2 className="font-nanum-round mt-1 text-[15px] font-bold text-[#20251F]">소비자세요?</h2>
-          <p className="font-nanum-round text-[12px] font-normal leading-snug text-[#6F756C]">
+          <h2 className="font-nanum-round mt-1 fs-15 font-bold text-[#20251F]">소비자세요?</h2>
+          <p className="font-nanum-round fs-12 font-normal leading-snug text-[#6F756C]">
             맛있는 변화,
             <br />
             지금부터 함께해요.
@@ -117,12 +117,12 @@ export function HomePage() {
         </Link>
       </section>
 
-      <p className="mt-5 flex items-center justify-center gap-1.5 px-4 text-center text-[18px] leading-snug text-[#4F6B2A] min-[380px]:text-[19px] sm:px-6 md:text-[21px] lg:text-[24px]">
-        <span aria-hidden="true" className="text-[22px] leading-none min-[380px]:text-[23px] md:text-[25px] lg:text-[29px]">🌿</span>
+      <p className="mt-5 flex items-center justify-center gap-1.5 px-4 text-center fs-18 leading-snug text-[#4F6B2A] min-[380px]:fs-19 sm:px-6 md:fs-21 lg:fs-24">
+        <span aria-hidden="true" className="fs-22 leading-none min-[380px]:fs-23 md:fs-25 lg:fs-29">🌿</span>
         <span className="font-handwriting-emotion">작은 선택이, 더 건강한 지구를 만듭니다.</span>
       </p>
 
-      <p className="mt-2 px-4 pb-4 text-center text-[11px] leading-snug text-[#A3A89E] sm:px-6 sm:text-[12px]">
+      <p className="mt-2 px-4 pb-4 text-center fs-11 leading-snug text-[#A3A89E] sm:px-6 sm:fs-12">
         © 2026 깻잎삼김 All rights reserved.
       </p>
     </div>

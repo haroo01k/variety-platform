@@ -45,24 +45,6 @@ function searchRegions(query: string): GangwonRegion[] {
   return SORTED_REGIONS.filter((region) => region.regionName.includes(keyword));
 }
 
-const LARGE_TEXT_STORAGE_KEY = 'farmer-large-text';
-
-function readLargeTextPreference(): boolean {
-  try {
-    return window.localStorage.getItem(LARGE_TEXT_STORAGE_KEY) === 'on';
-  } catch {
-    return false;
-  }
-}
-
-function saveLargeTextPreference(on: boolean) {
-  try {
-    window.localStorage.setItem(LARGE_TEXT_STORAGE_KEY, on ? 'on' : 'off');
-  } catch {
-    // 저장소를 쓸 수 없는 환경(사생활 보호 모드 등)에서는 이번 화면에서만 적용합니다.
-  }
-}
-
 /**
  * 농업인 F1(재배 지역) 단계.
  * 고령 농업인이 작은 지도 대신 "지역명 검색" 또는 "첫 글자(초성) 버튼 → 큰 지역명 버튼"으로
@@ -70,7 +52,7 @@ function saveLargeTextPreference(on: boolean) {
  * - 검색어를 입력하면 초성 선택을 해제하고 검색 결과를, 초성을 누르면 검색어를 지우고 초성별 목록을 보여줍니다.
  * - 고랭지 재배지가 있는 시·군(highlandCheck)은 재배환경(고랭지/일반)을 먼저 확인합니다.
  * - 그 외 시·군은 "재배환경 직접 선택"을 눌렀을 때만 고를 수 있고, 미확인(null)이면 고랭지 조건을 자동 적용하지 않습니다.
- * - "가+ 큰 글씨"를 켜면 제목·안내·버튼·선택 확인 문구가 함께 커지고, 설정은 이 기기에 기억합니다.
+ * 큰글씨 보기는 헤더의 '큰글씨' 버튼으로 화면 전체에 함께 적용됩니다(src/lib/largeText.ts, src/index.css).
  */
 export function RegionSelectStep({ value, onChange }: RegionSelectStepProps) {
   const { gangwonRegionId, regionGroup, isHighland } = value;
@@ -79,7 +61,6 @@ export function RegionSelectStep({ value, onChange }: RegionSelectStepProps) {
   const [query, setQuery] = useState('');
   // 이전 단계에서 돌아왔을 때는 이미 고른 시·군의 초성 목록을 펼쳐 둡니다.
   const [activeInitial, setActiveInitial] = useState<string | null>(selectedRegion ? initialOf(selectedRegion) : null);
-  const [largeText, setLargeText] = useState(readLargeTextPreference);
   // 고랭지 확인 대상이 아닌 시·군에서 재배환경 선택을 펼쳤는지 여부
   const [envEditOpen, setEnvEditOpen] = useState(false);
 
@@ -90,13 +71,6 @@ export function RegionSelectStep({ value, onChange }: RegionSelectStepProps) {
     : activeInitial
       ? SORTED_REGIONS.filter((region) => initialOf(region) === activeInitial)
       : [];
-
-  const toggleLargeText = () => {
-    setLargeText((prev) => {
-      saveLargeTextPreference(!prev);
-      return !prev;
-    });
-  };
 
   const clearRegion = () => {
     onChange({ gangwonRegionId: null, regionGroup: null, isHighland: null });
@@ -141,57 +115,18 @@ export function RegionSelectStep({ value, onChange }: RegionSelectStepProps) {
   const highlandExample = selectedRegion && HIGHLAND_AREAS.find((area) => area.city === selectedRegion.regionName);
   const resolved = resolveRegionAnswer({ gangwonRegion: selectedRegion, regionGroup, isHighland });
 
-  const sizes = largeText
-    ? {
-        title: 'text-2xl sm:text-3xl',
-        hint: 'text-lg sm:text-xl',
-        label: 'text-lg sm:text-xl',
-        input: 'h-[72px] text-xl',
-        initial: 'text-3xl sm:text-4xl',
-        region: 'min-h-[76px] text-2xl',
-        summary: 'text-xl sm:text-2xl',
-        detail: 'text-base sm:text-lg',
-      }
-    : {
-        title: 'text-xl sm:text-2xl',
-        hint: 'text-base',
-        label: 'text-base',
-        input: 'h-16 text-lg',
-        initial: 'text-2xl sm:text-3xl',
-        region: 'min-h-[64px] text-xl',
-        summary: 'text-lg',
-        detail: 'text-sm sm:text-base',
-      };
-
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-2">
-        <div className="min-w-0 flex-1">
-          <h2 className={`font-bold break-keep text-slate-800 ${sizes.title}`}>어느 지역에서 재배하시나요?</h2>
-          <p className={`mt-1 break-keep text-slate-600 ${sizes.hint}`}>지역명 첫 글자를 누르거나 직접 검색해 주세요.</p>
-        </div>
-        <button
-          type="button"
-          onClick={toggleLargeText}
-          aria-pressed={largeText}
-          className={`inline-flex min-h-[48px] shrink-0 items-center gap-1 rounded-full border-2 px-4 text-base font-bold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green ${
-            largeText
-              ? 'border-brand-green bg-brand-green text-white'
-              : 'border-brand-green bg-white text-brand-green-dark hover:bg-brand-green-light'
-          }`}
-        >
-          <span aria-hidden="true" className="text-lg leading-none">
-            가+
-          </span>
-          큰 글씨
-        </button>
+      <div>
+        <h2 className="font-bold break-keep text-slate-800 text-xl sm:text-2xl">어느 지역에서 재배하시나요?</h2>
+        <p className="mt-1 break-keep text-slate-600 text-base">지역명 첫 글자를 누르거나 직접 검색해 주세요.</p>
       </div>
 
       <div className="relative">
         <label htmlFor="region-search" className="sr-only">
           지역명 검색
         </label>
-        <SearchIcon className="pointer-events-none absolute top-1/2 left-4 h-6 w-6 -translate-y-1/2 text-slate-500" />
+        <SearchIcon className="pointer-events-none absolute top-1/2 left-3.5 h-6 w-6 -translate-y-1/2 text-slate-500" />
         <input
           id="region-search"
           type="search"
@@ -200,12 +135,12 @@ export function RegionSelectStep({ value, onChange }: RegionSelectStepProps) {
           placeholder="지역명 검색 (예: 춘천)"
           autoComplete="off"
           enterKeyHint="search"
-          className={`w-full rounded-2xl border-2 border-slate-300 bg-white pr-4 pl-12 font-medium text-slate-800 placeholder:text-slate-500 focus:border-brand-green focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-green/20 ${sizes.input}`}
+          className="w-full rounded-2xl border-2 border-slate-300 bg-white pr-3 pl-11 font-medium text-slate-800 placeholder:text-slate-500 focus:border-brand-green focus:outline-none focus-visible:ring-4 focus-visible:ring-brand-green/20 min-h-16 text-base sm:text-lg"
         />
       </div>
 
       <div>
-        <p id="region-initial-label" className={`mb-2 font-bold text-slate-700 ${sizes.label}`}>
+        <p id="region-initial-label" className="mb-2 font-bold text-slate-700 text-base">
           지역명 첫 글자 선택
         </p>
         {/* 9개 초성을 5열로 두어 모바일·PC 모두 2줄 안에 정사각형 버튼으로 보여줍니다. */}
@@ -219,7 +154,7 @@ export function RegionSelectStep({ value, onChange }: RegionSelectStepProps) {
                 onClick={() => handleSelectInitial(initial)}
                 aria-pressed={active}
                 aria-label={`${initial}으로 시작하는 지역 보기`}
-                className={`flex aspect-square items-center justify-center rounded-2xl border-2 font-bold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green ${sizes.initial} ${
+                className={`flex aspect-square items-center justify-center rounded-2xl border-2 font-bold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green text-2xl sm:text-3xl ${
                   active
                     ? 'border-brand-green bg-brand-green text-white shadow-sm'
                     : 'border-slate-300 bg-white text-slate-800 hover:border-brand-green hover:bg-brand-green-light'
@@ -234,7 +169,7 @@ export function RegionSelectStep({ value, onChange }: RegionSelectStepProps) {
 
       {(isSearching || activeInitial) && (
         <div>
-          <p className={`mb-2 font-bold text-slate-700 ${sizes.label}`} aria-live="polite">
+          <p className="mb-2 font-bold text-slate-700 text-base" aria-live="polite">
             {isSearching ? `‘${query.trim()}’ 검색 결과 ${searchResults.length}곳` : `‘${activeInitial}’으로 시작하는 지역`}
           </p>
           {visibleRegions.length > 0 ? (
@@ -247,7 +182,7 @@ export function RegionSelectStep({ value, onChange }: RegionSelectStepProps) {
                     type="button"
                     onClick={() => handleSelectRegion(region)}
                     aria-pressed={selected}
-                    className={`flex items-center justify-center gap-2 rounded-2xl border-2 px-3 py-2 font-bold break-keep transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green ${sizes.region} ${
+                    className={`flex items-center justify-center gap-2 rounded-2xl border-2 px-3 py-2 font-bold break-keep transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green min-h-[64px] text-xl ${
                       selected
                         ? 'border-brand-green bg-brand-green-light text-brand-green-dark shadow-sm'
                         : 'border-slate-300 bg-white text-slate-800 hover:border-brand-green/60'
@@ -260,7 +195,7 @@ export function RegionSelectStep({ value, onChange }: RegionSelectStepProps) {
               })}
             </div>
           ) : (
-            <p className={`rounded-2xl bg-slate-50 px-4 py-4 text-slate-600 ${sizes.detail}`}>
+            <p className="rounded-2xl bg-slate-50 px-4 py-4 text-slate-600 text-sm sm:text-base">
               찾는 지역이 없어요. 강원도 시·군 이름을 확인하시거나 위의 첫 글자 버튼을 눌러 주세요.
             </p>
           )}
@@ -270,25 +205,25 @@ export function RegionSelectStep({ value, onChange }: RegionSelectStepProps) {
       <div aria-live="polite" className="rounded-2xl bg-brand-ivory px-4 py-4">
         {selectedRegion ? (
           <>
-            <p className={`font-bold break-keep text-brand-green-dark ${sizes.summary}`}>
+            <p className="font-bold break-keep text-brand-green-dark text-lg">
               선택한 재배지역: {selectedRegion.regionName}
             </p>
-            {resolved && <p className={`mt-1 text-slate-600 ${sizes.detail}`}>추천 기준: {regionLabel(resolved)}</p>}
+            {resolved && <p className="mt-1 text-slate-600 text-sm sm:text-base">추천 기준: {regionLabel(resolved)}</p>}
           </>
         ) : (
-          <p className={`font-bold text-slate-600 ${sizes.summary}`}>아직 선택한 지역이 없습니다.</p>
+          <p className="font-bold text-slate-600 text-lg">아직 선택한 지역이 없습니다.</p>
         )}
 
         {selectedRegion &&
           (showEnvChoice ? (
             <div className="mt-3">
-              <p className={`break-keep text-slate-700 ${sizes.detail}`}>
+              <p className="break-keep text-slate-700 text-sm sm:text-base">
                 {selectedRegion.highlandCheck
                   ? `${selectedRegion.regionName}에는 고랭지와 일반 재배지가 함께 있어요. 실제로 재배하시는 곳은 어떤 환경인가요?`
                   : '실제로 재배하시는 곳의 환경을 골라주세요.'}
               </p>
               {highlandExample && (
-                <p className={`mt-1 text-slate-500 ${sizes.detail}`}>
+                <p className="mt-1 text-slate-500 text-sm sm:text-base">
                   고랭지 예: {highlandExample.city} {highlandExample.area} 등
                 </p>
               )}
@@ -309,7 +244,7 @@ export function RegionSelectStep({ value, onChange }: RegionSelectStepProps) {
             <button
               type="button"
               onClick={() => setEnvEditOpen(true)}
-              className={`mt-2 min-h-[44px] font-medium text-slate-600 underline underline-offset-2 hover:text-brand-green-dark ${sizes.detail}`}
+              className="mt-2 min-h-[44px] font-medium text-slate-600 underline underline-offset-2 hover:text-brand-green-dark text-sm sm:text-base"
             >
               재배환경 직접 선택하기
             </button>
@@ -317,7 +252,7 @@ export function RegionSelectStep({ value, onChange }: RegionSelectStepProps) {
 
         {selectedRegion && !selectedRegion.regionGroup && isHighland === false && (
           <div className="mt-3">
-            <p className={`break-keep text-slate-700 ${sizes.detail}`}>
+            <p className="break-keep text-slate-700 text-sm sm:text-base">
               {selectedRegion.regionName}은(는) 기존 추천 자료에 영동·영서 구분이 정해져 있지 않아요. 가까운 기준을
               골라주세요.
             </p>

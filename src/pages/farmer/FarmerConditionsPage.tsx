@@ -376,7 +376,8 @@ export function FarmerConditionsPage() {
         onPrev={handlePrev}
         onNext={handleNext}
         nextDisabled={!isStepValid(currentStepId)}
-        nextLabel={isLastStep ? '추천 결과 보기 →' : currentStepId === 'region' ? '다음 단계로 →' : '다음 →'}
+        // 큰글씨 보기에서 버튼 글자가 줄바꿈될 때 화살표만 따로 떨어지지 않게 줄바꿈 없는 공백( )을 씁니다.
+        nextLabel={isLastStep ? '추천 결과 보기 →' : currentStepId === 'region' ? '다음 단계로 →' : '다음 →'}
       />
     </Container>
   );

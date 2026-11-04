@@ -63,12 +63,12 @@ export function FarmerResultCard({ rank, emoji, recommendation, onOpenDetail }: 
       </div>
 
       <div>
-        <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">권장지역</p>
+        <p className="fs-11 font-semibold uppercase tracking-wide text-slate-400">권장지역</p>
         <p className="mt-0.5 text-sm font-medium text-[#20251F]">{variety.regionText}</p>
       </div>
 
       <div>
-        <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">기후 대응력</p>
+        <p className="fs-11 font-semibold uppercase tracking-wide text-slate-400">기후 대응력</p>
         <div className="mt-2 space-y-1.5">
           {HAZARD_ITEMS.map(({ key, label }) => (
             <div key={key} className="flex items-center justify-between text-xs font-medium text-slate-600">

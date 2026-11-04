@@ -49,11 +49,11 @@ interface MemberFieldProps {
 function MemberField({ label, value, breakAll = false }: MemberFieldProps) {
   return (
     <div>
-      <dt className="flex items-center gap-1.5 text-[14px] font-bold text-slate-700">
+      <dt className="flex items-center gap-1.5 fs-14 font-bold text-slate-700">
         <span aria-hidden="true" className="h-1.5 w-1.5 shrink-0 bg-brand-green" />
         {label}
       </dt>
-      <dd className={`mt-0.5 text-[15px] font-normal text-slate-600 ${breakAll ? 'break-all' : ''}`}>{value}</dd>
+      <dd className={`mt-0.5 fs-15 font-normal text-slate-600 ${breakAll ? 'break-all' : ''}`}>{value}</dd>
     </div>
   );
 }
@@ -97,7 +97,7 @@ function TeamToggleButton({ isOpen, onClick, className }: TeamToggleButtonProps)
           <path d="M12.5 6l5 6-5 6" />
         </svg>
       </span>
-      <span className="font-nanum-round text-[12px] font-bold text-[#5f7f6c]">
+      <span className="font-nanum-round fs-12 font-bold text-[#5f7f6c]">
         {isOpen ? 'TEAM 소개 접기' : 'TEAM 소개 보기'}
       </span>
     </button>
@@ -174,12 +174,12 @@ export function AboutPage() {
 
         <div className={`about-intro-content ${CONTENT_CLASS} pt-12 sm:pt-16`}>
           <p className="text-xs font-semibold tracking-[0.2em] text-[#5f7f6c] sm:text-sm">ABOUT US</p>
-          <h1 className="font-nanum-round mt-5 text-[28px] leading-[1.4] font-bold tracking-[-0.02em] text-brand-green-dark md:text-[40px]">
+          <h1 className="font-nanum-round mt-5 fs-28 leading-[1.4] font-bold tracking-[-0.02em] text-brand-green-dark md:fs-40">
             우리 땅에 맞는 발견,
             <br />
             우리 식탁의 새로운 가능성.
           </h1>
-          <div className="font-gowun-dodum mt-6 max-w-[34rem] space-y-5 text-[17px] leading-[1.8] font-normal text-[#3b6e4a] sm:mt-8 sm:space-y-6 md:text-[20px]">
+          <div className="font-gowun-dodum mt-6 max-w-[34rem] space-y-5 fs-17 leading-[1.8] font-normal text-[#3b6e4a] sm:mt-8 sm:space-y-6 md:fs-20">
             <p>
               농업인에게는 우리 지역에 맞는 품종을,
               <br />
@@ -222,11 +222,11 @@ export function AboutPage() {
               <div className="about-team-item pt-6 sm:pt-8">
                 <h2
                   ref={teamTitleRef}
-                  className="text-[24px] leading-[1.4] font-bold tracking-[-0.02em] text-brand-green-dark md:text-[28px]"
+                  className="fs-24 leading-[1.4] font-bold tracking-[-0.02em] text-brand-green-dark md:fs-28"
                 >
                   TEAM 깻잎삼김
                 </h2>
-                <p className="mt-3 text-sm leading-relaxed text-[#5f7f6c] sm:text-[15px]">
+                <p className="mt-3 text-sm leading-relaxed text-[#5f7f6c] sm:fs-15">
                   강원대학교 식물자원응용과학전공
                   <br />
                   식물자원 취·창업 캡스톤디자인 · 지도교수 이세현
@@ -240,7 +240,7 @@ export function AboutPage() {
               <ul className="about-team-item mt-10 grid grid-cols-1 gap-y-10 md:grid-cols-2 md:gap-x-16 md:gap-y-12">
                 {TEAM_MEMBERS.map((member) => (
                   <li key={member.studentId} className="min-w-0">
-                    <h3 className="text-[20px] leading-[1.4] font-bold text-slate-900">{member.name}</h3>
+                    <h3 className="fs-20 leading-[1.4] font-bold text-slate-900">{member.name}</h3>
                     <dl className="mt-3 space-y-2.5">
                       <MemberField label="E-mail" value={member.email} breakAll />
                       <MemberField label="Department" value={member.department} />
@@ -255,7 +255,7 @@ export function AboutPage() {
                   erroredPhotos[src] ? (
                     <div
                       key={src}
-                      className="flex aspect-[4/3] items-center justify-center rounded-2xl bg-slate-50 text-[11px] text-slate-400"
+                      className="flex aspect-[4/3] items-center justify-center rounded-2xl bg-slate-50 fs-11 text-slate-400"
                     >
                       팀 사진을 준비 중입니다.
                     </div>

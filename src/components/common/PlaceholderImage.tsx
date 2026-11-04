@@ -15,6 +15,7 @@ interface PlaceholderImageProps {
  * 실제 이미지 파일이 준비되기 전까지 사용하는 임시 이미지 영역입니다.
  * 나중에 실제 사진/일러스트로 교체할 때는 이 컴포넌트를 쓰는 자리에서
  * <img src="..." /> 로 바꾸면 됩니다.
+ * 이모지는 그림 역할이라 큰글씨 보기에서도 크기를 키우지 않습니다(no-text-scale).
  */
 export function PlaceholderImage({
   emoji,
@@ -29,7 +30,7 @@ export function PlaceholderImage({
       aria-label={label}
       aria-hidden={label ? undefined : true}
       style={hexColor ? { backgroundColor: hexColor } : undefined}
-      className={`flex items-center justify-center rounded-3xl ${hexColor ? '' : colorClass} ${className}`}
+      className={`no-text-scale flex items-center justify-center rounded-3xl ${hexColor ? '' : colorClass} ${className}`}
     >
       <span aria-hidden="true">{emoji}</span>
     </div>
