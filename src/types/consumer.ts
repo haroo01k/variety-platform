@@ -1,57 +1,39 @@
-import type { CropId } from './crop';
 import type { VarietyRecord } from './variety';
-import type { OrchardHarvestMonthAnswer } from './farmer';
+
+/** 각 문항의 A/B 선택 */
+export type QuizChoice = 'A' | 'B';
+
+/** 8개 문항 응답(순서대로). 아직 답하지 않은 문항은 null */
+export type ConsumerAnswers = (QuizChoice | null)[];
 
 /**
- * C5 새로움 선호. "상관없어요"는 'any', 그 외에는 해당 작물에서 실제로 쓰이는
- * 새로움 태그 값(예: '기본', '이색색상', '이색무늬', '대과', '소형', '간편', '조기')을 그대로 사용합니다.
+ * 취향 속성 7가지. 모든 값은 0~1로 정규화합니다.
+ * - texture: 1 = 아삭·씹는 재미, 0 = 부드러움
+ * - flavor: 1 = 상큼·산뜻, 0 = 달콤·포근
+ * - 나머지는 1에 가까울수록 해당 성향이 강함
  */
-export type NoveltyPreferenceAnswer = string;
+export type TasteAttribute = 'novelty' | 'texture' | 'flavor' | 'versatile' | 'easy' | 'looks' | 'explore';
 
-/**
- * 소비자 취향 테스트 응답.
- * harvestMonth·storage는 과수(사과·복숭아)에서만 사용합니다(C6·C7).
- */
-export interface ConsumerAnswers {
-  cropId: CropId;
-  /** C1: 품종의 취향유형 문자열과 그대로 비교 */
-  tasteType: string;
-  /** C2: 작물별 활용 옵션 value */
-  activity: string;
-  /** C3: 작물별 맛 옵션 value */
-  flavor: string;
-  /** C4: 작물별 식감 옵션 id (CROP_TEXTURE_OPTIONS) */
-  texture: string;
-  /** C5 */
-  novelty: NoveltyPreferenceAnswer;
-  /** C6 (과수 전용) */
-  harvestMonth: OrchardHarvestMonthAnswer;
-  /** C7 (과수 전용) */
-  storage: string;
-}
+export type TasteProfile = Record<TasteAttribute, number>;
 
-export interface ConsumerScoreBreakdown {
-  tasteType: number;
-  activity: number;
-  flavor: number;
-  texture: number;
-  novelty: number;
-  /** C6 + C7 합계 (과수만) */
-  orchard: number;
-}
+export type TasteTypeId = 'explorer' | 'cook' | 'refresh' | 'sweet' | 'homey';
 
 export interface ConsumerRecommendation {
   variety: VarietyRecord;
+  /** 사용자 취향과 품종 속성의 일치도(0~1). 화면에는 숫자로 보여주지 않습니다. */
   totalScore: number;
-  breakdown: ConsumerScoreBreakdown;
-  /** 화면에 보여줄 취향 일치 이유(최대 2개). 점수를 대체하는 표시용 문구입니다. */
+  /** 화면에 보여줄 추천 이유 한 줄(기존 품종 데이터 태그로만 만듭니다) */
   reasons: string[];
 }
 
 export interface ConsumerResult {
+  typeId: TasteTypeId;
+  profile: TasteProfile;
+  /** 유형별 적합도(0~1) */
+  typeFits: Record<TasteTypeId, number>;
+  /** 응답에서 두드러진 취향 키워드 3개 */
+  keywords: string[];
   ranked: ConsumerRecommendation[];
+  /** 서로 다른 작물에서 고른 상위 3개 */
   top3: ConsumerRecommendation[];
-  isCloseCall: boolean;
-  /** 선택한 식감과 정확히 일치하는 품종이 하나라도 있는지 */
-  hasTextureMatch: boolean;
 }

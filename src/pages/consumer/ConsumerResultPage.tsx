@@ -4,103 +4,101 @@ import { Container } from '../../components/common/Container';
 import { Button } from '../../components/common/Button';
 import { ConsumerRankPickerCard } from '../../components/consumer/ConsumerRankPickerCard';
 import { ConsumerResultCard } from '../../components/consumer/ConsumerResultCard';
-import { ConsumerResultMiniCard } from '../../components/consumer/ConsumerResultMiniCard';
 import { CROPS } from '../../data/crops';
-import { findTextureOption } from '../../data/consumerOptions';
+import { findTasteType } from '../../data/consumerQuiz';
 import { ROUTES } from '../../lib/routes';
-import type { ConsumerAnswers, ConsumerResult } from '../../types/consumer';
+import type { ConsumerResult } from '../../types/consumer';
 
 interface LocationState {
-  cropId: string;
-  answers: ConsumerAnswers;
   result: ConsumerResult;
 }
 
 /**
- * 소비자 추천 결과 화면.
- * 1순위는 기본으로 화면 중앙에 큰 카드로 보이고, 그 아래에는 현재 메인에 없는
- * "나머지 두 추천"만 작은 카드로 뜹니다(현재 선택된 품종은 하단에서 제외 — 중복 표시 방지).
- * 작은 카드를 누르면 페이지 이동 없이 큰 메인 결과 영역만 바뀝니다.
+ * 소비자 취향 테스트 결과 화면.
+ * ① 취향 유형 공개 → ② 유형 소개 → ③ 취향 키워드 3개 → ④ 어울리는 신품종 TOP 3 → ⑤ 다시 테스트하기 순서입니다.
+ * TOP 3는 선택한 품종 1장을 큰 카드로 보여주고, 나머지 두 품종은 아래 작은 카드로 눌러서 바꿔 볼 수 있습니다.
  */
 export function ConsumerResultPage() {
   const location = useLocation();
   const state = location.state as LocationState | null;
   const [selectedRank, setSelectedRank] = useState(0);
 
-  if (!state) {
+  if (!state?.result) {
     return (
       <Container className="flex flex-1 flex-col items-center justify-center gap-4 py-10 text-center">
         <p className="text-sm text-slate-500">취향 테스트 응답을 찾을 수 없어요. 다시 시도해주세요.</p>
         <Button to={ROUTES.consumer} variant="primary">
-          작물 다시 선택하기
+          취향 테스트 하러 가기
         </Button>
       </Container>
     );
   }
 
-  const { cropId, result } = state;
-  const crop = CROPS.find((c) => c.id === cropId) ?? CROPS[0];
-  const textureLabel = findTextureOption(crop.id, state.answers.texture)?.label;
+  const { result } = state;
+  const type = findTasteType(result.typeId);
   const selected = result.top3[selectedRank] ?? result.top3[0];
-  const alternatives = result.top3
-    .map((r, index) => ({ r, index }))
-    .filter(({ index }) => index !== selectedRank);
+  const emojiOf = (cropId: string) => CROPS.find((c) => c.id === cropId)?.emoji ?? '🌱';
+  const alternatives = result.top3.map((r, index) => ({ r, index })).filter(({ index }) => index !== selectedRank);
 
   return (
-    <Container className="flex flex-1 flex-col items-center gap-6 py-8 text-center md:py-12">
-      <header>
-        <h1 className="text-2xl font-extrabold text-brand-green-dark sm:text-3xl">당신과 가장 잘 맞는 품종이에요</h1>
-      </header>
+    <Container className="flex flex-1 flex-col items-center gap-8 py-8 text-center md:py-12">
+      <section className="flex w-full max-w-[520px] flex-col items-center gap-3 rounded-3xl border-2 border-brand-yellow/30 bg-white px-5 py-8 shadow-sm motion-safe:animate-[result-card-in_0.3s_ease-out]">
+        <p className="text-sm font-bold text-brand-orange">당신의 농산물 취향은?</p>
+        <span aria-hidden="true" className="flex h-20 w-20 items-center justify-center rounded-3xl bg-brand-yellow/20 text-5xl">
+          {type.emoji}
+        </span>
+        <h1 className="text-3xl font-extrabold text-brand-green-dark sm:text-4xl">{type.name}</h1>
+        <p className="text-sm leading-relaxed text-slate-600 sm:text-base">{type.description}</p>
+        {result.keywords.length > 0 && (
+          <div className="mt-1 flex flex-col items-center gap-2">
+            <p className="text-xs font-semibold text-slate-400">나의 취향 키워드</p>
+            <ul className="flex flex-wrap justify-center gap-2">
+              {result.keywords.map((keyword) => (
+                <li key={keyword} className="rounded-full bg-brand-green-light px-3 py-1.5 text-sm font-bold text-brand-green-dark">
+                  {keyword}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </section>
 
-      {result.hasTextureMatch === false && (
-        <p className="w-full max-w-[520px] rounded-2xl bg-white px-4 py-3 text-sm text-slate-500 shadow-sm">
-          선택하신 식감{textureLabel ? `(${textureLabel})` : ''}과 정확히 일치하는 품종은 아직 없어요. 다른 취향을
-          기준으로 가까운 품종을 추천했어요.
-        </p>
-      )}
+      <section className="flex w-full max-w-[520px] flex-col items-center gap-4">
+        <div>
+          <h2 className="text-2xl font-extrabold text-brand-green-dark">나에게 어울리는 신품종 TOP 3</h2>
+          <p className="mt-1 text-sm text-slate-500">답변과 품종별 맛·식감·활용 특징을 비교해 서로 다른 작물에서 골랐어요.</p>
+        </div>
 
-      {result.isCloseCall && (
-        <p className="w-full max-w-[520px] rounded-2xl bg-brand-yellow/20 px-4 py-3 text-sm text-brand-orange">
-          상위 품종끼리 취향 일치 정도가 비슷해요. 마음에 드는 쪽으로 골라보세요.
-        </p>
-      )}
+        {!selected ? (
+          <p className="w-full rounded-2xl bg-white p-5 text-sm text-slate-500 shadow-sm">추천할 품종을 찾지 못했어요.</p>
+        ) : (
+          <div className="w-full">
+            <div key={selected.variety.id} className="motion-safe:animate-[result-card-in_0.2s_ease-out]">
+              <ConsumerResultCard emoji={emojiOf(selected.variety.cropId)} recommendation={selected} rank={selectedRank + 1} />
+            </div>
 
-      {!selected ? (
-        <p className="w-full max-w-[520px] rounded-2xl bg-white p-5 text-sm text-slate-500 shadow-sm">
-          조건에 맞는 품종을 찾지 못했어요.
-        </p>
-      ) : (
-        <div className="w-full max-w-[520px]">
-          <div key={selectedRank} className="motion-safe:animate-[result-card-in_0.2s_ease-out]">
-            {selectedRank === 0 ? (
-              <ConsumerResultCard emoji={crop.emoji} recommendation={selected} />
-            ) : (
-              <ConsumerResultMiniCard cropId={crop.id} recommendation={selected} />
+            {alternatives.length > 0 && (
+              <>
+                <p className="mt-6 text-sm font-semibold text-slate-500">다른 추천도 살펴보세요</p>
+                <div className="mt-3 grid w-full max-w-full grid-cols-2 gap-3">
+                  {alternatives.map(({ r, index }) => (
+                    <ConsumerRankPickerCard
+                      key={r.variety.id}
+                      cropId={r.variety.cropId}
+                      varietyName={r.variety.name}
+                      trait={`${index + 1}위 · ${r.variety.cropName}`}
+                      onSelect={() => setSelectedRank(index)}
+                    />
+                  ))}
+                </div>
+              </>
             )}
           </div>
-
-          {alternatives.length > 0 && (
-            <>
-              <p className="mt-6 text-sm font-semibold text-slate-500">다른 추천도 살펴보세요</p>
-              <p className="mt-1 text-xs text-slate-400">취향에 따라 이런 품종도 잘 맞을 수 있어요.</p>
-              <div className="mt-3 grid w-full max-w-full grid-cols-2 gap-3">
-                {alternatives.map(({ r, index }) => (
-                  <ConsumerRankPickerCard
-                    key={r.variety.id}
-                    cropId={crop.id}
-                    varietyName={r.variety.name}
-                    trait={r.reasons[0] ?? r.variety.tasteSummary}
-                    onSelect={() => setSelectedRank(index)}
-                  />
-                ))}
-              </div>
-            </>
-          )}
-        </div>
-      )}
+        )}
+      </section>
 
       <Button variant="secondary" to={ROUTES.consumer} className="w-full max-w-sm">
-        취향 테스트 다시 하기
+        다시 테스트하기
       </Button>
     </Container>
   );

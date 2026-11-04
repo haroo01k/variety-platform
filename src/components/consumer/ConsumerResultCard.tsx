@@ -9,20 +9,21 @@ import type { ConsumerRecommendation } from '../../types/consumer';
 interface ConsumerResultCardProps {
   emoji: string;
   recommendation: ConsumerRecommendation;
+  /** 추천 순위(1~3) */
+  rank: number;
 }
 
 const ACTION_BUTTON =
   'flex h-11 flex-1 items-center justify-center rounded-2xl border border-slate-200 bg-white transition-colors hover:border-brand-green';
 
 /**
- * 소비자 추천 결과의 "핵심 콘텐츠" 카드(1순위 전용). 선택된 순위 1장만 크게 보여주는 용도라
- * 이미지·이름·설명을 충분히 크게 잡고, 좋아요·카드 저장·공유(동일 크기) + 판매처 보기(큰 CTA)로 구성합니다.
- * "이 품종 자세히 보기"를 누르면 카드가 Y축으로 뒤집혀 맛·식감·향(특징)·활용 등
+ * 소비자 추천 결과의 "핵심 콘텐츠" 카드. 선택된 순위 1장만 크게 보여주는 용도라
+ * 이미지·이름·추천 이유를 충분히 크게 잡고, 좋아요·카드 저장·공유(동일 크기) + 판매처 보기(큰 CTA)로 구성합니다.
+ * "이 품종 자세히 보기"를 누르면 카드가 Y축으로 뒤집혀 맛·식감·향(특징)·활용·추천 레시피 등
  * 실제 데이터 기반 간단 정보와 판매처 보기·돌아가기를 보여줍니다.
- * isFlipped는 이 컴포넌트 내부 상태라, 다른 순위로 이동했다가 다시 1순위로 돌아오면
- * (부모에서 key로 재마운트) 항상 앞면부터 시작합니다.
+ * isFlipped는 이 컴포넌트 내부 상태라, 다른 순위로 바꾸면(부모에서 key로 재마운트) 항상 앞면부터 시작합니다.
  */
-export function ConsumerResultCard({ emoji, recommendation }: ConsumerResultCardProps) {
+export function ConsumerResultCard({ emoji, recommendation, rank }: ConsumerResultCardProps) {
   const [isFlipped, setIsFlipped] = useState(false);
   const { variety, reasons } = recommendation;
   const badgeLabel = variety.maturityStage ? `${variety.maturityStage}종` : null;
@@ -58,7 +59,10 @@ export function ConsumerResultCard({ emoji, recommendation }: ConsumerResultCard
             )}
           </div>
 
-          <h2 className="mt-4 text-center text-2xl font-extrabold text-[#20251F] sm:text-[28px]">{variety.name}</h2>
+          <p className="mt-4 text-center text-xs font-bold text-brand-orange">
+            {rank}위 · {variety.cropName}
+          </p>
+          <h2 className="mt-1 text-center text-2xl font-extrabold text-[#20251F] sm:text-[28px]">{variety.name}</h2>
           <p className="mt-2 text-center text-sm text-slate-500 sm:text-base">{description}</p>
 
           <div className="mt-5 flex items-center gap-2">
@@ -125,6 +129,12 @@ export function ConsumerResultCard({ emoji, recommendation }: ConsumerResultCard
               <div className="flex items-center justify-between px-3 py-2.5">
                 <dt className="text-slate-500">활용</dt>
                 <dd className="font-semibold text-[#20251F]">{variety.activityTags.join(' · ')}</dd>
+              </div>
+            )}
+            {variety.recipes.length > 0 && (
+              <div className="flex items-center justify-between gap-3 px-3 py-2.5">
+                <dt className="shrink-0 text-slate-500">추천 레시피</dt>
+                <dd className="text-right font-semibold text-[#20251F]">{variety.recipes.join(' · ')}</dd>
               </div>
             )}
           </dl>

@@ -1,281 +1,143 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container } from '../../components/common/Container';
-import { CropCard } from '../../components/common/CropCard';
-import { ProgressBar } from '../../components/common/ProgressBar';
+import { Button } from '../../components/common/Button';
 import { NavigationButtons } from '../../components/common/NavigationButtons';
-import { ConsumerPreferenceCard } from '../../components/consumer/ConsumerPreferenceCard';
-import { ConsumerChoiceButton } from '../../components/consumer/ConsumerChoiceButton';
-import { CROPS } from '../../data/crops';
-import type { CropId } from '../../types/crop';
-import type { ConsumerAnswers } from '../../types/consumer';
-import type { OrchardHarvestMonthAnswer } from '../../types/farmer';
-import {
-  ACTIVITY_OPTIONS,
-  CONSUMER_HARVEST_MONTH_OPTIONS,
-  CONSUMER_STORAGE_OPTIONS,
-  FLAVOR_OPTIONS,
-  NOVELTY_OPTIONS,
-  TASTE_TYPE_OPTIONS,
-  CROP_TEXTURE_OPTIONS,
-} from '../../data/consumerOptions';
-import { isOrchardCrop } from '../../data/farmerOptions';
+import { ConsumerAnswerCard } from '../../components/consumer/ConsumerAnswerCard';
+import { QUIZ_QUESTIONS } from '../../data/consumerQuiz';
 import { getConsumerRecommendation } from '../../lib/consumerScoring';
 import { ROUTES } from '../../lib/routes';
+import type { ConsumerAnswers, QuizChoice } from '../../types/consumer';
 
-type StepId = 'crop' | 'tasteType' | 'activity' | 'flavor' | 'texture' | 'novelty' | 'harvestMonth' | 'storage';
-
-const BASE_STEPS: StepId[] = ['crop', 'tasteType', 'activity', 'flavor', 'texture', 'novelty'];
-const ORCHARD_EXTRA_STEPS: StepId[] = ['harvestMonth', 'storage'];
-
-const STEP_TITLE: Record<StepId, string> = {
-  crop: '어떤 작물이 궁금하세요?',
-  tasteType: '나와 가장 가까운 취향은 무엇인가요?',
-  activity: '주로 어떻게 먹고 싶나요?',
-  flavor: '어떤 맛이나 특징이 좋나요?',
-  texture: '좋아하는 식감은 무엇인가요?',
-  novelty: '새로운 색이나 모양도 괜찮나요?',
-  harvestMonth: '언제 먹고 싶나요?',
-  storage: '보관은 어떻게 하나요?',
-};
+const TOTAL = QUIZ_QUESTIONS.length;
+/** 선택한 카드의 색 변화가 보이도록 다음 질문으로 넘어가기 전 잠깐 기다리는 시간(ms) */
+const ADVANCE_DELAY = 280;
 
 /**
- * 소비자 취향 테스트 화면.
- * 농업인 화면과 같은 단계형(wizard) 구성으로, 작물 선택도 첫 질문으로 포함합니다.
- * 응답을 모두 마치면 실제 채점 로직(getConsumerRecommendation)으로 추천 결과를 계산합니다.
- * 디자인 리소스(폰트·일러스트 등)는 아직 정해지지 않아 emoji placeholder를 씁니다.
+ * 소비자 농산물 취향 테스트 화면.
+ * 시작 화면 → 상황 선택형 A/B 8문항(한 화면에 한 문항) 순서로 진행하고,
+ * 선택지를 누르면 자동으로 다음 문항으로 넘어갑니다. 이전 문항으로 돌아가 답을 바꿀 수 있습니다.
+ * 취향 유형은 모든 문항에 답한 뒤 결과 화면에서 처음 공개합니다.
  */
 export function ConsumerQuizPage() {
   const navigate = useNavigate();
-
-  const [stepIndex, setStepIndex] = useState(0);
-  const [cropId, setCropId] = useState<CropId | null>(null);
-  const [tasteType, setTasteType] = useState<string | null>(null);
-  const [activity, setActivity] = useState<string | null>(null);
-  const [flavor, setFlavor] = useState<string | null>(null);
-  const [texture, setTexture] = useState<string | null>(null);
-  const [novelty, setNovelty] = useState<string | null>(null);
-  const [harvestMonth, setHarvestMonth] = useState<OrchardHarvestMonthAnswer | null>(null);
-  const [storage, setStorage] = useState<string | null>(null);
-
-  const isOrchard = cropId ? isOrchardCrop(cropId) : false;
-  const steps = useMemo<StepId[]>(
-    () => (isOrchard ? [...BASE_STEPS, ...ORCHARD_EXTRA_STEPS] : BASE_STEPS),
-    [isOrchard],
-  );
-  const currentStepId = steps[stepIndex];
+  const [started, setStarted] = useState(false);
+  const [index, setIndex] = useState(0);
+  const [answers, setAnswers] = useState<ConsumerAnswers>(() => Array(TOTAL).fill(null));
+  const [advancing, setAdvancing] = useState(false);
+  const timerRef = useRef<number | null>(null);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [stepIndex]);
+  }, [index, started]);
 
-  const handleSelectCrop = (nextCropId: CropId) => {
-    if (cropId !== null && cropId !== nextCropId) {
-      // 작물이 바뀌면 작물별 선택지(활용·맛·식감·새로움·과수 질문)는 더 이상 유효하지 않으므로 초기화합니다.
-      setActivity(null);
-      setTexture(null);
-      setFlavor(null);
-      setNovelty(null);
-      setHarvestMonth(null);
-      setStorage(null);
-    }
-    setCropId(nextCropId);
+  useEffect(() => () => {
+    if (timerRef.current !== null) window.clearTimeout(timerRef.current);
+  }, []);
+
+  const finish = (finalAnswers: ConsumerAnswers) => {
+    const result = getConsumerRecommendation(finalAnswers);
+    navigate(ROUTES.consumerResult, { state: { result } });
   };
 
-  const isStepValid = (id: StepId): boolean => {
-    switch (id) {
-      case 'crop':
-        return cropId !== null;
-      case 'tasteType':
-        return tasteType !== null;
-      case 'activity':
-        return activity !== null;
-      case 'flavor':
-        return flavor !== null;
-      case 'texture':
-        return texture !== null;
-      case 'novelty':
-        return novelty !== null;
-      case 'harvestMonth':
-        return harvestMonth !== null;
-      case 'storage':
-        return storage !== null;
-      default:
-        return false;
-    }
+  const goNext = (currentAnswers: ConsumerAnswers) => {
+    if (index < TOTAL - 1) setIndex(index + 1);
+    else finish(currentAnswers);
+  };
+
+  const handleSelect = (choice: QuizChoice) => {
+    if (advancing) return;
+    const next = [...answers];
+    next[index] = choice;
+    setAnswers(next);
+    setAdvancing(true);
+    timerRef.current = window.setTimeout(() => {
+      setAdvancing(false);
+      goNext(next);
+    }, ADVANCE_DELAY);
   };
 
   const handlePrev = () => {
-    setStepIndex((i) => Math.max(0, i - 1));
+    if (advancing) return;
+    if (index === 0) setStarted(false);
+    else setIndex(index - 1);
   };
 
-  const handleNext = () => {
-    if (stepIndex < steps.length - 1) {
-      setStepIndex((i) => i + 1);
-      return;
-    }
-    if (!cropId || !tasteType || !activity || !flavor || !texture || !novelty) return;
+  if (!started) {
+    return (
+      <Container className="flex flex-col gap-6 py-8 md:py-12">
+        <section className="flex flex-col items-center gap-4 rounded-3xl border-2 border-brand-yellow/30 bg-white px-5 py-10 text-center shadow-sm">
+          <span aria-hidden="true" className="flex h-20 w-20 items-center justify-center rounded-3xl bg-brand-yellow/20 text-5xl">
+            🧺
+          </span>
+          <p className="text-sm font-bold text-brand-orange">나의 농산물 취향 발견하기</p>
+          <h1 className="text-2xl font-extrabold text-brand-green-dark sm:text-3xl">
+            나는 어떤 농산물과
+            <br />잘 맞을까요?
+          </h1>
+          <p className="text-sm text-slate-500 sm:text-base">
+            일상 속 상황 {TOTAL}가지에 A·B 중 하나만 골라주세요.
+            <br />
+            답을 모두 마치면 나의 취향 유형과 어울리는 신품종을 알려드려요.
+          </p>
+          <Button variant="accent" onClick={() => setStarted(true)} className="mt-2 w-full max-w-xs">
+            테스트 시작하기 →
+          </Button>
+        </section>
+      </Container>
+    );
+  }
 
-    const answers: ConsumerAnswers = {
-      cropId,
-      tasteType,
-      activity,
-      flavor,
-      texture,
-      novelty,
-      harvestMonth: isOrchard ? (harvestMonth ?? '6-7') : '6-7',
-      storage: isOrchard ? (storage ?? 'eat-now') : 'eat-now',
-    };
-    const result = getConsumerRecommendation(answers);
-    navigate(ROUTES.consumerResult, { state: { cropId, answers, result } });
-  };
-
-  const renderStep = () => {
-    switch (currentStepId) {
-      case 'crop': {
-        const firstFour = CROPS.slice(0, 4);
-        const last = CROPS[4];
-        return (
-          <div className="grid grid-cols-2 gap-3" role="list" aria-label="작물 선택">
-            {firstFour.map((crop) => (
-              <CropCard key={crop.id} crop={crop} selected={cropId === crop.id} onSelect={() => handleSelectCrop(crop.id)} />
-            ))}
-            {last && (
-              <div className="col-span-2 mx-auto w-[calc(50%-6px)]">
-                <CropCard crop={last} selected={cropId === last.id} onSelect={() => handleSelectCrop(last.id)} />
-              </div>
-            )}
-          </div>
-        );
-      }
-      case 'tasteType':
-        return (
-          <div className="flex flex-col gap-2">
-            {TASTE_TYPE_OPTIONS.map((option) => (
-              <ConsumerPreferenceCard
-                key={option.value}
-                emoji={option.emoji}
-                title={option.label}
-                description={option.description}
-                selected={tasteType === option.value}
-                onSelect={() => setTasteType(option.value)}
-              />
-            ))}
-          </div>
-        );
-      case 'activity':
-        if (!cropId) return null;
-        return (
-          <div className="flex flex-col gap-2">
-            {ACTIVITY_OPTIONS[cropId].map((option) => (
-              <ConsumerChoiceButton
-                key={option.value}
-                label={option.label}
-                selected={activity === option.value}
-                onSelect={() => setActivity(option.value)}
-              />
-            ))}
-          </div>
-        );
-      case 'flavor':
-        if (!cropId) return null;
-        return (
-          <div className="flex flex-col gap-2">
-            {FLAVOR_OPTIONS[cropId].map((option) => (
-              <ConsumerChoiceButton
-                key={option.value}
-                label={option.label}
-                selected={flavor === option.value}
-                onSelect={() => setFlavor(option.value)}
-              />
-            ))}
-          </div>
-        );
-      case 'texture':
-        if (!cropId) return null;
-        return (
-          <div className="flex flex-col gap-2">
-            {CROP_TEXTURE_OPTIONS[cropId].textures.map((option) => (
-              <ConsumerChoiceButton
-                key={option.id}
-                label={option.label}
-                selected={texture === option.id}
-                onSelect={() => setTexture(option.id)}
-              />
-            ))}
-          </div>
-        );
-      case 'novelty':
-        if (!cropId) return null;
-        return (
-          <div className="flex flex-col gap-2">
-            {NOVELTY_OPTIONS[cropId].map((option) => (
-              <ConsumerChoiceButton
-                key={option.value}
-                label={option.label}
-                selected={novelty === option.value}
-                onSelect={() => setNovelty(option.value)}
-              />
-            ))}
-          </div>
-        );
-      case 'harvestMonth':
-        return (
-          <div className="flex flex-col gap-2">
-            {CONSUMER_HARVEST_MONTH_OPTIONS.map((option) => (
-              <ConsumerChoiceButton
-                key={option.value}
-                label={option.label}
-                selected={harvestMonth === option.value}
-                onSelect={() => setHarvestMonth(option.value)}
-              />
-            ))}
-          </div>
-        );
-      case 'storage':
-        return (
-          <div className="flex flex-col gap-2">
-            {CONSUMER_STORAGE_OPTIONS.map((option) => (
-              <ConsumerChoiceButton
-                key={option.value}
-                label={option.label}
-                selected={storage === option.value}
-                onSelect={() => setStorage(option.value)}
-              />
-            ))}
-          </div>
-        );
-      default:
-        return null;
-    }
-  };
-
-  const isLastStep = stepIndex === steps.length - 1;
+  const question = QUIZ_QUESTIONS[index];
+  const selected = answers[index];
+  const percent = Math.round(((index + 1) / TOTAL) * 100);
 
   return (
     <Container className="flex flex-col gap-6 py-8 md:py-12">
       <header>
-        <h1 className="text-2xl font-extrabold text-brand-green-dark sm:text-3xl">
-          나에게 맞는 신품종을 찾아볼까요?
-        </h1>
-        <p className="mt-2 text-sm text-slate-500">
-          몇 가지만 답하면 취향에 딱 맞는 품종을 알려드려요.
-        </p>
+        <p className="text-sm font-bold text-brand-orange">나의 농산물 취향 발견하기</p>
+        <div className="mt-3" role="progressbar" aria-valuenow={index + 1} aria-valuemin={1} aria-valuemax={TOTAL}>
+          <div className="flex items-center justify-between text-xs font-semibold text-brand-green">
+            <span>
+              Q{index + 1} / {TOTAL}
+            </span>
+            <span>{percent}%</span>
+          </div>
+          <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-brand-green-light">
+            <div className="h-full rounded-full bg-brand-green transition-all duration-300" style={{ width: `${percent}%` }} />
+          </div>
+        </div>
       </header>
 
-      <ProgressBar current={stepIndex + 1} total={steps.length} />
-
-      <section className="flex flex-col gap-4 rounded-3xl border-2 border-brand-yellow/30 bg-white p-5 shadow-sm">
-        <h2 className="text-lg font-bold text-slate-800">{STEP_TITLE[currentStepId]}</h2>
-        {renderStep()}
+      <section
+        key={question.id}
+        className="flex flex-col gap-5 rounded-3xl border-2 border-brand-yellow/30 bg-white p-5 shadow-sm motion-safe:animate-[result-card-in_0.25s_ease-out] sm:p-6"
+      >
+        <h2 className="text-xl font-extrabold text-slate-800 sm:text-2xl">
+          <span className="mr-1.5 text-brand-orange">Q{index + 1}.</span>
+          {question.text}
+        </h2>
+        <div className="flex flex-col gap-3">
+          {(['A', 'B'] as const).map((choice) => (
+            <ConsumerAnswerCard
+              key={choice}
+              label={choice}
+              icon={question[choice].icon}
+              text={question[choice].text}
+              selected={selected === choice}
+              disabled={advancing}
+              onSelect={() => handleSelect(choice)}
+            />
+          ))}
+        </div>
       </section>
 
       <NavigationButtons
-        showPrev={stepIndex > 0}
+        showPrev
         onPrev={handlePrev}
-        onNext={handleNext}
-        nextDisabled={!isStepValid(currentStepId)}
-        nextLabel={isLastStep ? '내 취향 품종 찾기 →' : '다음 →'}
+        onNext={() => goNext(answers)}
+        nextDisabled={selected === null || advancing}
+        nextLabel={index === TOTAL - 1 ? '결과 보기 →' : '다음 →'}
         nextVariant="accent"
       />
     </Container>
