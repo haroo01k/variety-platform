@@ -12,6 +12,16 @@ export interface ShareCardImage {
 }
 
 export const SHARE_CARD_IMAGES: Record<string, ShareCardImage> = {
+  // 미백2호 (중생종)
+  'COR-01': { src: '/images/share-cards/corn/corn-mibaek2-card.png', fileName: '옥수수_신품종카드_미백2호.png' },
+  // 미흑찰 (중만생종)
+  'COR-02': { src: '/images/share-cards/corn/corn-miheukchal-card.png', fileName: '옥수수_신품종카드_미흑찰.png' },
+  // 흑점2호 (중생종)
+  'COR-03': { src: '/images/share-cards/corn/corn-heukjeom2-card.png', fileName: '옥수수_신품종카드_흑점2호.png' },
+  // 흑점3호 (중생종)
+  'COR-04': { src: '/images/share-cards/corn/corn-heukjeom3-card.png', fileName: '옥수수_신품종카드_흑점3호.png' },
+  // 황금맛찰 (중생종)
+  'COR-05': { src: '/images/share-cards/corn/corn-hwanggeummatchal-card.png', fileName: '옥수수_신품종카드_황금맛찰.png' },
   // 옐로드림 (조생종)
   'PEA-01': { src: '/images/share-cards/peach/peach-yellowdream-card.png', fileName: '복숭아_신품종카드_옐로드림.png' },
   // 이노센스 (중생종)
