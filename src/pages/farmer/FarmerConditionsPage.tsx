@@ -30,8 +30,8 @@ import {
   WINTER_MIN_OPTIONS,
   isOrchardCrop,
 } from '../../data/farmerOptions';
-import { RegionMapStep } from '../../components/farmer/RegionMapStep';
-import type { RegionStepValue } from '../../components/farmer/RegionMapStep';
+import { RegionSelectStep } from '../../components/farmer/RegionSelectStep';
+import type { RegionStepValue } from '../../components/farmer/RegionSelectStep';
 import { findGangwonRegion } from '../../data/gangwonRegions';
 import { isRegionSelectionComplete, resolveRegionAnswer } from '../../lib/farmRegion';
 import { getFarmerRecommendation } from '../../lib/farmerScoring';
@@ -56,7 +56,7 @@ const ORCHARD_EXTRA_STEPS: StepId[] = ['winterMin', 'reduceWork', 'logistics'];
 
 const STEP_META: Record<StepId, { title: string; hint?: string }> = {
   crop: { title: '어떤 작물을 재배하시나요?' },
-  region: { title: '재배 지역은 어디인가요?', hint: '지도에서 재배하는 시·군을 눌러주세요' },
+  region: { title: '어느 지역에서 재배하시나요?', hint: '지역명 첫 글자를 누르거나 직접 검색해 주세요.' },
   climate: { title: '가장 걱정되는 기상위험은 무엇인가요?', hint: '여러 개 선택할 수 있어요' },
   irrigation: { title: '관수 여건은 어떤가요?' },
   harvest: { title: '원하는 수확 시기는 언제인가요?' },
@@ -214,7 +214,7 @@ export function FarmerConditionsPage() {
       }
       case 'region':
         return (
-          <RegionMapStep value={regionStep} onChange={setRegionStep} />
+          <RegionSelectStep value={regionStep} onChange={setRegionStep} />
         );
       case 'climate':
         return (
@@ -359,14 +359,14 @@ export function FarmerConditionsPage() {
 
       <ProgressBar current={stepIndex + 1} total={steps.length} />
 
-      {/* 지역 단계는 지도가 핵심이라 태블릿·PC에서 카드만 좌우로 넓혀 지도를 크게 보여줍니다. */}
-      <section
-        className={`flex flex-col gap-4 rounded-3xl bg-white p-5 shadow-sm ${currentStepId === 'region' ? 'md:-mx-12' : ''}`}
-      >
-        <div>
-          <h2 className="text-lg font-bold text-slate-800">{meta.title}</h2>
-          {meta.hint && <p className="mt-1 text-xs text-slate-400">{meta.hint}</p>}
-        </div>
+      <section className="flex flex-col gap-4 rounded-3xl bg-white p-5 shadow-sm">
+        {/* 지역 단계는 큰 글씨 보기 버튼과 함께 제목·안내 문구를 직접 그립니다. */}
+        {currentStepId !== 'region' && (
+          <div>
+            <h2 className="text-lg font-bold text-slate-800">{meta.title}</h2>
+            {meta.hint && <p className="mt-1 text-xs text-slate-400">{meta.hint}</p>}
+          </div>
+        )}
 
         {renderStep()}
       </section>
@@ -376,7 +376,7 @@ export function FarmerConditionsPage() {
         onPrev={handlePrev}
         onNext={handleNext}
         nextDisabled={!isStepValid(currentStepId)}
-        nextLabel={isLastStep ? '추천 결과 보기 →' : '다음 →'}
+        nextLabel={isLastStep ? '추천 결과 보기 →' : currentStepId === 'region' ? '다음 단계로 →' : '다음 →'}
       />
     </Container>
   );

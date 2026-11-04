@@ -1,5 +1,5 @@
 /**
- * 강원도 재배지역 지도에서 쓰는 시·군 메타데이터(이름표, 색상, 추천 지역 그룹 매핑, 고랭지 확인 여부).
+ * 강원도 재배지역 선택(초성·검색, 이전 지도 UI)에서 쓰는 시·군 메타데이터(이름표, 색상, 추천 지역 그룹 매핑, 고랭지 확인 여부).
  * 경계 좌표는 src/data/gangwonGeo.ts(자동 생성)에 있고, code(통계청 행정구역 코드)로 연결합니다.
  *
  * regionGroup은 기존 추천 로직(src/lib/farmerScoring.ts의 F1 지역 값)으로 변환할 그룹입니다.
@@ -10,7 +10,7 @@
  *
  * highlandCheck: true는 "시·군 전체가 고랭지"라는 뜻이 아니라, 고랭지 재배지가 있어
  * 재배환경(고랭지/일반) 확인 질문을 먼저 보여준다는 뜻입니다. false인 시·군도 고지대 재배지가
- * 있을 수 있으므로 사용자가 직접 재배환경을 바꿀 수 있습니다(src/components/farmer/RegionMapStep.tsx).
+ * 있을 수 있으므로 사용자가 직접 재배환경을 바꿀 수 있습니다(src/components/farmer/RegionSelectStep.tsx).
  */
 import type { RegionAnswer } from '../types/farmer';
 

@@ -52,3 +52,22 @@ export function ChevronRightIcon({ className = 'h-4 w-4' }: IconProps) {
     </svg>
   );
 }
+
+/** 검색(돋보기) 아이콘. */
+export function SearchIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg {...ICON_PROPS} className={className} aria-hidden="true">
+      <circle cx="11" cy="11" r="7" />
+      <path d="M20 20l-3.5-3.5" />
+    </svg>
+  );
+}
+
+/** 선택 완료를 나타내는 체크 아이콘. */
+export function CheckIcon({ className = 'h-5 w-5' }: IconProps) {
+  return (
+    <svg {...ICON_PROPS} strokeWidth={2.6} className={className} aria-hidden="true">
+      <path d="M5 12.5l4.5 4.5L19 7.5" />
+    </svg>
+  );
+}
