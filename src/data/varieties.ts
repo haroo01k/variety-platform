@@ -18,9 +18,9 @@ export const VARIETIES: VarietyRecord[] = [
     regionText: '전국 (평난지 봄재배)',
     regionTags: ['전국', '평난지'],
     hazards: {
-      heat: { score: 0, evidenceType: 'indirect', reasonText: '0(평난지 봄재배에 적합)' },
-      drought: { score: 1, evidenceType: 'common', reasonText: '1(일반적인 감자처럼 뿌리가 얕은 편이라 생육 기간 중 적절한 관수가 필수적)' },
-      wet: { score: 1, evidenceType: 'indirect', reasonText: '1(습한 환경에 적합)' },
+      heat: { score: 1, evidenceType: 'indirect', reasonText: '1(자료조사팀 보완자료 등급 1/3, 출처 미기재)', pendingReview: { grade: 1, source: '자료조사팀 보완자료 V3(근거·출처 미기재)', status: '검토 필요' } },
+      drought: { score: 2, evidenceType: 'common', reasonText: '2(자료조사팀 보완자료 등급 2/3, 출처 미기재)', pendingReview: { grade: 2, source: '자료조사팀 보완자료 V3(근거·출처 미기재)', status: '검토 필요' } },
+      wet: { score: 0, evidenceType: 'indirect', reasonText: '0(자료조사팀 보완자료 등급 0/3, 출처 미기재)', pendingReview: { grade: 0, source: '자료조사팀 보완자료 V3(근거·출처 미기재)', status: '검토 필요' } },
     },
     usageText: '식용·가공',
     usageTags: ['생식', '가공'],
@@ -52,8 +52,8 @@ export const VARIETIES: VarietyRecord[] = [
     regionText: '전국 (제주도 제외)',
     regionTags: ['전국'],
     hazards: {
-      heat: { score: 0, evidenceType: 'common', reasonText: '0(감자 작물의 생리적 한계)' },
-      drought: { score: 1, evidenceType: 'common', reasonText: '1(감자는 뿌리가 얕아 생육기간 중 적절한 수분 공급이 필요한 작물공통 특성. 해당 품종의 가뭄 저항성 직접근거는 확인되지 않음)' },
+      heat: { score: 1, evidenceType: 'common', reasonText: '1(자료조사팀 보완자료 등급 1/3, 출처 미기재)', pendingReview: { grade: 1, source: '자료조사팀 보완자료 V3(근거·출처 미기재)', status: '검토 필요' } },
+      drought: { score: 2, evidenceType: 'common', reasonText: '2(자료조사팀 보완자료 등급 2/3, 출처 미기재)', pendingReview: { grade: 2, source: '자료조사팀 보완자료 V3(근거·출처 미기재)', status: '검토 필요' } },
       wet: { score: 0, evidenceType: 'direct', reasonText: '0' },
     },
     usageText: '식용',
@@ -87,7 +87,7 @@ export const VARIETIES: VarietyRecord[] = [
     regionTags: ['전국'],
     hazards: {
       heat: { score: 1, evidenceType: 'indirect', reasonText: '1(조생종이라 상대적으로 여름철 본격적인 폭염 시기를 비켜나 벼락치듯 일찍 수확할 수 있다는 재배적 회피 능력이 있음)' },
-      drought: { score: 1, evidenceType: 'common', reasonText: '1(감자는 뿌리가 얕아 생육기간 중 적절한 수분 공급이 필요한 작물공통 특성. 해당 품종의 가뭄 저항성 직접근거는 확인되지 않음)' },
+      drought: { score: 2, evidenceType: 'common', reasonText: '2(자료조사팀 보완자료 등급 2/3, 출처 미기재)', pendingReview: { grade: 2, source: '자료조사팀 보완자료 V3(근거·출처 미기재)', status: '검토 필요' } },
       wet: { score: 0, evidenceType: 'indirect', reasonText: '0(장마가 시작되기 전 수확을 마치는 조기 재배 작기로 리스크를 줄이는 편)' },
     },
     usageText: '식용',
@@ -122,7 +122,7 @@ export const VARIETIES: VarietyRecord[] = [
     hazards: {
       heat: { score: 2, evidenceType: 'indirect', reasonText: '2(기후변화에 안정적이고 괴경 생리장해가 적은" 품종으로 육성)' },
       drought: { score: 2, evidenceType: 'indirect', reasonText: '2(기후변화에 안정적인 내재해성 품종으로, 특히 자료의 품질 및 생리장해 항목을 보면 기형서 발생률(1.5%), 열개서 발생률(1.9%), 중심공동(1.0%), 내부갈색반점(1.0%) 등 각종 생리장해 수치가 비교적 낮음)' },
-      wet: { score: 1, evidenceType: 'indirect', reasonText: '1(역병과 더뎅이병에 대해 모두 ‘중’ 수준의 저항성을 보입니다. 대조 품종인 수미가 더뎅이병에는 강하지만 역병에 ‘약’한 것과 비교했을 때, 병해에 대한 종합적인 균형감이 조금 더 나은 편)' },
+      wet: { score: 0, evidenceType: 'indirect', reasonText: '0(자료조사팀 보완자료 등급 0/3, 출처 미기재)', pendingReview: { grade: 0, source: '자료조사팀 보완자료 V3(근거·출처 미기재)', status: '검토 필요' } },
     },
     usageText: '식용',
     usageTags: ['생식'],
@@ -155,8 +155,8 @@ export const VARIETIES: VarietyRecord[] = [
     regionTags: ['강원'],
     hazards: {
       heat: { score: 1, evidenceType: 'indirect', reasonText: '1(강원지역 적응 품종으로 재배 안정성이 있으나, 고온에 대한 직접적인 내성 근거는 제한적)' },
-      drought: { score: 1, evidenceType: 'common', reasonText: '1(일반적인 감자 품종 수준으로 판단되며, 가뭄 저항성이 특별히 높다는 근거는 확인되지 않음)' },
-      wet: { score: 1, evidenceType: 'indirect', reasonText: '1(중생종(재배기간 약 110일)**이며, 기존 컬러감자 품종인 ‘자영(만생종, 120일)’에 비해 재배 기간이 상대적으로 짧아 고온기 및 기상 리스크에 노출되는 기간이 조금 더 짧음)' },
+      drought: { score: 2, evidenceType: 'common', reasonText: '2(자료조사팀 보완자료 등급 2/3, 출처 미기재)', pendingReview: { grade: 2, source: '자료조사팀 보완자료 V3(근거·출처 미기재)', status: '검토 필요' } },
+      wet: { score: 0, evidenceType: 'indirect', reasonText: '0(자료조사팀 보완자료 등급 0/3, 출처 미기재)', pendingReview: { grade: 0, source: '자료조사팀 보완자료 V3(근거·출처 미기재)', status: '검토 필요' } },
     },
     usageText: '식용·가공',
     usageTags: ['생식', '가공'],
@@ -188,8 +188,8 @@ export const VARIETIES: VarietyRecord[] = [
     regionText: '강원',
     regionTags: ['강원'],
     hazards: {
-      heat: { score: 1, evidenceType: 'common', reasonText: '1 (중생종으로 일반적인 고온기 재배 적응성을 가지나, 한여름 극단적 고온에서는 생육 스트레스 주의 [미백2호_품종해설서])' },
-      drought: { score: 1, evidenceType: 'common', reasonText: '1 (파종 후 초기 수분 관리가 강조되며 건조에 아주 강한편은 아님 [미백2호_품종해설서])' },
+      heat: { score: 2, evidenceType: 'common', reasonText: '2(자료조사팀 보완자료 등급 3/3, 출처 미기재)', pendingReview: { grade: 3, source: '자료조사팀 보완자료 V3(근거·출처 미기재)', status: '검토 필요' } },
+      drought: { score: 2, evidenceType: 'common', reasonText: '2(자료조사팀 보완자료 등급 3/3, 출처 미기재)', pendingReview: { grade: 3, source: '자료조사팀 보완자료 V3(근거·출처 미기재)', status: '검토 필요' } },
       wet: { score: 0, evidenceType: 'direct', reasonText: '0 (습해에 약하므로 파종 후 수분 관리 주의 [미백2호_품종해설서])' },
     },
     usageText: '식용 (간식용 풋옥수수)',
@@ -222,8 +222,8 @@ export const VARIETIES: VarietyRecord[] = [
     regionText: '전국',
     regionTags: ['전국'],
     hazards: {
-      heat: { score: 1, evidenceType: 'common', reasonText: '1 (중만생종으로 여름철 고온기 재배 시 생육 기간이 길어 기상 조건에 민감함 [미흑찰_육성보고서])' },
-      drought: { score: 1, evidenceType: 'common', reasonText: '1 (습해에 약한 반면 건조 조건에서도 일반적인 관수 관리가 필수적임 [미흑찰_육성보고서])' },
+      heat: { score: 2, evidenceType: 'common', reasonText: '2(자료조사팀 보완자료 등급 3/3, 출처 미기재)', pendingReview: { grade: 3, source: '자료조사팀 보완자료 V3(근거·출처 미기재)', status: '검토 필요' } },
+      drought: { score: 2, evidenceType: 'common', reasonText: '2(자료조사팀 보완자료 등급 3/3, 출처 미기재)', pendingReview: { grade: 3, source: '자료조사팀 보완자료 V3(근거·출처 미기재)', status: '검토 필요' } },
       wet: { score: 0, evidenceType: 'direct', reasonText: '0점 (습해에 약하므로 과습조건 회피 [미흑찰_육성보고서])' },
     },
     usageText: '식용 (간식용 풋옥수수)',
@@ -256,8 +256,8 @@ export const VARIETIES: VarietyRecord[] = [
     regionText: '강원',
     regionTags: ['강원'],
     hazards: {
-      heat: { score: 1, evidenceType: 'common', reasonText: '1 (전국 적응성을 지닌 중생종이나 고온기 수분 증발에 따른 관리 필요 [흑점2호_육성보고서])' },
-      drought: { score: 1, evidenceType: 'common', reasonText: '1 (파종 후 수분 관리에 주의가 필요하며 가뭄 시 수량 영향 받음 [흑점2호_육성보고서])' },
+      heat: { score: 2, evidenceType: 'common', reasonText: '2(자료조사팀 보완자료 등급 3/3, 출처 미기재)', pendingReview: { grade: 3, source: '자료조사팀 보완자료 V3(근거·출처 미기재)', status: '검토 필요' } },
+      drought: { score: 2, evidenceType: 'common', reasonText: '2(자료조사팀 보완자료 등급 3/3, 출처 미기재)', pendingReview: { grade: 3, source: '자료조사팀 보완자료 V3(근거·출처 미기재)', status: '검토 필요' } },
       wet: { score: 0, evidenceType: 'direct', reasonText: '0 (습해에 약하므로 파종 후 수분 관리 주의 [흑점2호_육성보고서])' },
     },
     usageText: '식용 (간식용 풋옥수수)',
@@ -290,9 +290,9 @@ export const VARIETIES: VarietyRecord[] = [
     regionText: '강원',
     regionTags: ['강원'],
     hazards: {
-      heat: { score: 1, evidenceType: 'indirect', reasonText: '1 (기후 적합형으로 육성되어 재배 안정성을 갖추었으나 고온기 일반 관리 필요 [흑점3호_영농활용])' },
-      drought: { score: 1, evidenceType: 'common', reasonText: '1점 (전국 지역 적응성을 가지나 가뭄 시 적절한 토양 수분 유지 필요 [흑점3호_영농활용])' },
-      wet: { score: 2, evidenceType: 'indirect', reasonText: '2 (도복 및 습한 환경 적응력이 개량되어 쓰러짐에 강함 [흑점3호_영농활용])' },
+      heat: { score: 2, evidenceType: 'indirect', reasonText: '2(자료조사팀 보완자료 등급 3/3, 출처 미기재)', pendingReview: { grade: 3, source: '자료조사팀 보완자료 V3(근거·출처 미기재)', status: '검토 필요' } },
+      drought: { score: 2, evidenceType: 'common', reasonText: '2(자료조사팀 보완자료 등급 3/3, 출처 미기재)', pendingReview: { grade: 3, source: '자료조사팀 보완자료 V3(근거·출처 미기재)', status: '검토 필요' } },
+      wet: { score: 0, evidenceType: 'indirect', reasonText: '0(자료조사팀 보완자료 등급 0/3, 출처 미기재)', pendingReview: { grade: 0, source: '자료조사팀 보완자료 V3(근거·출처 미기재)', status: '검토 필요' } },
     },
     usageText: '식용 (간식용 풋옥수수)',
     usageTags: ['생식', '간식'],
@@ -324,9 +324,9 @@ export const VARIETIES: VarietyRecord[] = [
     regionText: '전국',
     regionTags: ['전국'],
     hazards: {
-      heat: { score: 1, evidenceType: 'common', reasonText: '1 (일반적인 기능성 찰옥수수의 생리적 특성을 따름 [황금맛찰_품종해설서])' },
-      drought: { score: 1, evidenceType: 'common', reasonText: '1 (일반 옥수수 재배 기준의 수분 조건 요구 [황금맛찰_품종해설서])' },
-      wet: { score: 1, evidenceType: 'common', reasonText: '1점 (일반적인 재배 환경 기준 적용 [황금맛찰_품종해설서])' },
+      heat: { score: 2, evidenceType: 'common', reasonText: '2(자료조사팀 보완자료 등급 3/3, 출처 미기재)', pendingReview: { grade: 3, source: '자료조사팀 보완자료 V3(근거·출처 미기재)', status: '검토 필요' } },
+      drought: { score: 2, evidenceType: 'common', reasonText: '2(자료조사팀 보완자료 등급 3/3, 출처 미기재)', pendingReview: { grade: 3, source: '자료조사팀 보완자료 V3(근거·출처 미기재)', status: '검토 필요' } },
+      wet: { score: 2, evidenceType: 'common', reasonText: '2(자료조사팀 보완자료 등급 3/3, 출처 미기재)', pendingReview: { grade: 3, source: '자료조사팀 보완자료 V3(근거·출처 미기재)', status: '검토 필요' } },
     },
     usageText: '식용·가공용',
     usageTags: ['생식', '가공'],
@@ -736,7 +736,7 @@ export const VARIETIES: VarietyRecord[] = [
     hazards: {
       heat: { score: 1, evidenceType: 'indirect', reasonText: '1 (여름철 고랭지 및 다양한 작형에서 결구 유지력을 고려한 재배 적응성 [원교20049호_품종요약서])' },
       drought: { score: 1, evidenceType: 'common', reasonText: '1 (건조 조건 발생 시 안정적인 수분 유지를 위한 통상적 재배 관리 요구 [원교20049호_품종요약서])' },
-      wet: { score: 1, evidenceType: 'common', reasonText: '1 (집중호우나 장마철 과습 피해 예방을 위한 통상적 배수 관리 필요 [원교20049호_품종요약서])' },
+      wet: { score: 0, evidenceType: 'common', reasonText: '0(자료조사팀 보완자료 등급 0/3, 출처 미기재)', pendingReview: { grade: 0, source: '자료조사팀 보완자료 V3(근거·출처 미기재)', status: '검토 필요' } },
     },
     usageText: '식용 (신선채소용)',
     usageTags: ['생식'],
@@ -770,7 +770,7 @@ export const VARIETIES: VarietyRecord[] = [
     hazards: {
       heat: { score: 1, evidenceType: 'indirect', reasonText: '1 (다양한 계절별 재배 작형에서 생육 안정성을 유지하도록 육성됨 [FH112_품종요약서])' },
       drought: { score: 1, evidenceType: 'common', reasonText: '1 (일반적인 배추 생리 특성에 준하여 건조기 적절한 수분 공급 필요 [FH112_품종요약서])' },
-      wet: { score: 1, evidenceType: 'common', reasonText: '1 (토양 과습 시 생육 부진 방지를 위해 일반 배추 기준의 배수 관리 요구 [FH112_품종요약서])' },
+      wet: { score: 0, evidenceType: 'common', reasonText: '0(자료조사팀 보완자료 등급 0/3, 출처 미기재)', pendingReview: { grade: 0, source: '자료조사팀 보완자료 V3(근거·출처 미기재)', status: '검토 필요' } },
     },
     usageText: '식용',
     usageTags: ['생식'],
@@ -804,7 +804,7 @@ export const VARIETIES: VarietyRecord[] = [
     hazards: {
       heat: { score: 1, evidenceType: 'indirect', reasonText: '1 (조중생종 특성 및 결구 성향을 바탕으로 고온기 재배 리스크 완화 [순정아삭_품종요약서])' },
       drought: { score: 1, evidenceType: 'common', reasonText: '1 (초기 생육 및 결구 시기 적정 토양 수분 조건 유지 필요 [순정아삭_품종요약서])' },
-      wet: { score: 1, evidenceType: 'common', reasonText: '1 (습한 토양 조건에 대비하여 파종 후 철저한 배수 관리 필요 [순정아삭_품종요약서])' },
+      wet: { score: 0, evidenceType: 'common', reasonText: '0(자료조사팀 보완자료 등급 0/3, 출처 미기재)', pendingReview: { grade: 0, source: '자료조사팀 보완자료 V3(근거·출처 미기재)', status: '검토 필요' } },
     },
     usageText: '식용 (신선채소용)',
     usageTags: ['생식'],
@@ -858,6 +858,6 @@ export const VARIETIES: VarietyRecord[] = [
     farmerSource: '농사로(농촌진흥청), 품종요약서(하라듀)',
     consumerSource: '농사로(농촌진흥청), 품종요약서(하라듀)',
     reviewStatus: '사용 가능',
-    reviewMemo: '순정아삭 자료의 잘못된 인용을 제거하고 자료없음으로 처리했으며 용도 문구 괄호를 수정함. 품종 특이 직접 근거로 점수 반영 가능.',
+    reviewMemo: '순정아삭 자료의 잘못된 인용을 제거하고 자료없음으로 처리했으며 용도 문구 괄호를 수정함. 품종 특이 직접 근거로 점수 반영 가능. 자료조사팀 보완자료 내습성 3/3은 기존 척도 최고점(2)과 같아 점수 변화 없음.',
   }
 ];

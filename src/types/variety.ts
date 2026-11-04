@@ -6,12 +6,27 @@ export type HazardKey = 'heat' | 'drought' | 'wet';
 /** 근거유형. 직접근거 1.0배, 간접근거 0.5배, 작물공통·자료없음은 0배로 반영합니다. */
 export type EvidenceType = 'direct' | 'indirect' | 'common';
 
+/**
+ * 보완 자료조사에서 받아 score에 임시 반영했지만 근거·출처가 아직 확인되지 않은 등급.
+ * 이 값이 있는 항목은 추천 점수에는 들어가되 "근거가 있어요" 추천 이유로는 쓰지 않습니다(src/lib/farmerScoring.ts).
+ * 전문가 검토로 근거가 확인되면 reasonText·evidenceType을 고치고 이 값을 지웁니다.
+ */
+export interface PendingHazardGrade {
+  /** 보완자료 원등급(0~3, "n/3" 표기의 n). score에는 기존 0~2점 척도로 맞춰(3→2) 반영 */
+  grade: number;
+  /** 등급을 가져온 자료 */
+  source: string;
+  status: '검토 필요';
+}
+
 export interface HazardInfo {
   /** 0~2점 원점수 */
   score: number;
   evidenceType: EvidenceType;
   /** 카드에 표시할 근거 원문 */
   reasonText: string;
+  /** 근거 확인 전인 보완자료 등급(내부 관리용). 있으면 score·reasonText가 이 등급 기준 */
+  pendingReview?: PendingHazardGrade;
 }
 
 /**

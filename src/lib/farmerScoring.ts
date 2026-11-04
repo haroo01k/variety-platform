@@ -246,7 +246,8 @@ function buildReasons(variety: VarietyRecord, answers: FarmerAnswers, breakdown:
   }
   answers.climateRisks.forEach((hazard) => {
     const info = variety.hazards[hazard];
-    if (info.evidenceType !== 'common' && info.score >= 1) {
+    // 근거·출처가 확인되지 않은 보완자료 등급(pendingReview)은 점수에는 반영하되 추천 이유로 내세우지 않습니다.
+    if (info.evidenceType !== 'common' && info.score >= 1 && !info.pendingReview) {
       candidates.push({
         score: climateBaseGain(info.score) * EVIDENCE_COEFFICIENT[info.evidenceType],
         text: `${HAZARD_LABEL[hazard]} 관련 ${info.evidenceType === 'direct' ? '직접' : '간접'} 근거가 있어요: ${info.reasonText}`,
