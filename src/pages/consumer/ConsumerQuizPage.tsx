@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Container } from '../../components/common/Container';
 import { Button } from '../../components/common/Button';
 import { NavigationButtons } from '../../components/common/NavigationButtons';
@@ -21,7 +21,10 @@ const ADVANCE_DELAY = 280;
  */
 export function ConsumerQuizPage() {
   const navigate = useNavigate();
-  const [started, setStarted] = useState(false);
+  const location = useLocation();
+  // 결과 화면의 "다시 테스트하기"로 들어오면 시작 화면 없이 첫 질문부터 보여줍니다.
+  const startAtFirstQuestion = (location.state as { startAtFirstQuestion?: boolean } | null)?.startAtFirstQuestion === true;
+  const [started, setStarted] = useState(startAtFirstQuestion);
   const [index, setIndex] = useState(0);
   const [answers, setAnswers] = useState<ConsumerAnswers>(() => Array(TOTAL).fill(null));
   const [advancing, setAdvancing] = useState(false);

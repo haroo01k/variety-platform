@@ -12,6 +12,8 @@ interface ConsumerResultCardProps {
   recommendation: ConsumerRecommendation;
   /** 추천 순위(1~3) */
   rank: number;
+  /** TOP 2·3 카드의 "다시 테스트하기" 동작 */
+  onRetake: () => void;
 }
 
 const ACTION_BUTTON =
@@ -22,9 +24,11 @@ const ACTION_BUTTON =
  * 이미지·이름·추천 이유를 충분히 크게 잡고, 좋아요·카드 저장·공유(동일 크기) + 판매처 보기(큰 CTA)로 구성합니다.
  * "이 품종 자세히 보기"를 누르면 카드가 Y축으로 뒤집혀 맛·식감·향(특징)·활용·추천 레시피 등
  * 실제 데이터 기반 간단 정보와 판매처 보기·돌아가기를 보여줍니다.
- * 소비자 결과 화면에서는 TOP 1 품종 포토카드로 쓰입니다.
+ * 좋아요·저장·공유·판매처 보기·자세히 보기는 TOP 1에서만 제공합니다. TOP 2·3은 같은 카드 모양으로 보여주되
+ * 이 기능들(버튼과 동작 모두) 대신 "다시 테스트하기"를 안내합니다.
  */
-export function ConsumerResultCard({ emoji, recommendation, rank }: ConsumerResultCardProps) {
+export function ConsumerResultCard({ emoji, recommendation, rank, onRetake }: ConsumerResultCardProps) {
+  const isTop1 = rank === 1;
   const [isFlipped, setIsFlipped] = useState(false);
   const { variety, reasons } = recommendation;
   const badgeLabel = variety.maturityStage ? `${variety.maturityStage}종` : null;
@@ -32,8 +36,8 @@ export function ConsumerResultCard({ emoji, recommendation, rank }: ConsumerResu
   const hasMarketUrl = Boolean(variety.marketUrl && variety.marketUrl !== '#');
   /** 판매처 화면에서 이미 쓰고 있는 같은 품종의 "우표" 이미지(있으면만 재사용). */
   const stampImage = findMarketVariety(variety.cropId, variety.name)?.image;
-  /** 저장·공유용 최종 승인 카드 PNG(5개 작물 25개 품종 전체). 없으면 기존 저장·공유 동작을 그대로 씁니다. */
-  const shareCard = findShareCardImage(variety.id);
+  /** 저장·공유용 최종 승인 카드 PNG(5개 작물 25개 품종 전체). TOP 2·3에는 저장·공유를 제공하지 않습니다. */
+  const shareCard = isTop1 ? findShareCardImage(variety.id) : undefined;
   const [shareCardFile, setShareCardFile] = useState<File | null>(null);
 
   // iOS Safari는 버튼을 누른 직후에만 공유 시트를 열 수 있어, 카드 PNG를 미리 받아 둡니다.
@@ -100,40 +104,53 @@ export function ConsumerResultCard({ emoji, recommendation, rank }: ConsumerResu
           <h2 className="mt-1 text-center text-2xl font-extrabold text-[#20251F] sm:text-[28px]">{variety.name}</h2>
           <p className="mt-2 text-center text-sm text-slate-500 sm:text-base">{description}</p>
 
-          <div className="mt-5 flex items-center gap-2">
-            <LikeButton varietyId={variety.id} iconOnly className="flex-1" />
-            <button
-              type="button"
-              aria-label={shareCard ? `${variety.name} 카드 이미지 저장` : `${variety.name} 카드 저장`}
-              onClick={shareCard ? () => downloadCardImage(shareCard.src, shareCard.fileName) : undefined}
-              className={`${ACTION_BUTTON} text-brand-green`}
-            >
-              <BookmarkIcon />
-            </button>
-            <button
-              type="button"
-              aria-label={`${variety.name} 공유`}
-              onClick={handleShare}
-              className={`${ACTION_BUTTON} text-slate-600`}
-            >
-              <ShareIcon />
-            </button>
-          </div>
-          <p role="status" className={shareNotice ? 'mt-2 rounded-2xl bg-[#FBF8EF] px-3 py-2 text-left text-xs text-slate-600' : 'sr-only'}>
-            {shareNotice}
-          </p>
+          {!isTop1 ? (
+            <div className="mt-5 flex flex-col items-center gap-2">
+              <p className="text-xs text-slate-500">이 품종의 카드도 수집하고 싶다면?</p>
+              <button
+                type="button"
+                onClick={onRetake}
+                className="min-h-[44px] w-full rounded-2xl border border-slate-200 bg-[#FBF8EF] text-sm font-bold text-brand-green-dark transition-colors hover:border-brand-green focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green"
+              >
+                다시 테스트하기
+              </button>
+            </div>
+          ) : (
+            <>
+            <div className="mt-5 flex items-center gap-2">
+              <LikeButton varietyId={variety.id} iconOnly className="flex-1" />
+              <button
+                type="button"
+                aria-label={shareCard ? `${variety.name} 카드 이미지 저장` : `${variety.name} 카드 저장`}
+                onClick={shareCard ? () => downloadCardImage(shareCard.src, shareCard.fileName) : undefined}
+                className={`${ACTION_BUTTON} text-brand-green`}
+              >
+                <BookmarkIcon />
+              </button>
+              <button
+                type="button"
+                aria-label={`${variety.name} 공유`}
+                onClick={handleShare}
+                className={`${ACTION_BUTTON} text-slate-600`}
+              >
+                <ShareIcon />
+              </button>
+            </div>
+            <p role="status" className={shareNotice ? 'mt-2 rounded-2xl bg-[#FBF8EF] px-3 py-2 text-left text-xs text-slate-600' : 'sr-only'}>
+              {shareNotice}
+            </p>
 
-          {hasMarketUrl && (
-            <a
-              href={variety.marketUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`${variety.name} 판매처로 이동`}
-              className="mt-4 flex min-h-[52px] w-full items-center justify-center gap-2 rounded-2xl bg-brand-green-dark text-base font-bold text-white transition-colors hover:bg-brand-green focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green"
-            >
-              <CartIcon />
-              판매처 보기
-            </a>
+            {hasMarketUrl && (
+              <a
+                href={variety.marketUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`${variety.name} 판매처로 이동`}
+                className="mt-4 flex min-h-[52px] w-full items-center justify-center gap-2 rounded-2xl bg-brand-green-dark text-base font-bold text-white transition-colors hover:bg-brand-green focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green"
+              >
+                <CartIcon />
+                판매처 보기
+              </a>
           )}
 
           <button
@@ -143,6 +160,8 @@ export function ConsumerResultCard({ emoji, recommendation, rank }: ConsumerResu
           >
             이 품종 자세히 보기
           </button>
+          </>
+          )}
         </div>
 
         {/* 뒷면: 맛·식감·향(특징)·활용 등 실제 데이터 기반 간단 정보 */}
