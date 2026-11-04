@@ -4,6 +4,7 @@ import { LikeButton } from '../common/LikeButton';
 import { BookmarkIcon, ShareIcon, CartIcon } from '../common/icons';
 import { downloadCardImage, loadCardImageFile, shareCardImage, shareVariety } from '../../lib/share';
 import { findShareCardImage } from '../../data/shareCards';
+import { addCardToCollection } from '../../lib/cardCollection';
 import { findMarketVariety } from '../../lib/varietyLookup';
 import type { ConsumerRecommendation } from '../../types/consumer';
 
@@ -20,8 +21,9 @@ const ACTION_BUTTON =
   'flex h-11 flex-1 items-center justify-center rounded-2xl border border-slate-200 bg-white transition-colors hover:border-brand-green';
 
 /**
- * 소비자 추천 결과의 "핵심 콘텐츠" 카드. 선택된 순위 1장만 크게 보여주는 용도라
- * 이미지·이름·추천 이유를 충분히 크게 잡고, 좋아요·카드 저장·공유(동일 크기) + 판매처 보기(큰 CTA)로 구성합니다.
+ * 소비자 추천 결과의 "핵심 콘텐츠" 카드. 선택된 순위 1장만 크게 보여줍니다.
+ * TOP 1은 품종 포토카드 PNG를 대표 이미지로 보여주고, 북마크(PNG 저장 + 카드 보관함 담기)·공유(같은 PNG 파일)도
+ * 같은 파일을 씁니다. TOP 2·3은 우표 이미지로 미리보기만 합니다.
  * "이 품종 자세히 보기"를 누르면 카드가 Y축으로 뒤집혀 맛·식감·향(특징)·활용·추천 레시피 등
  * 실제 데이터 기반 간단 정보와 판매처 보기·돌아가기를 보여줍니다.
  * 좋아요·저장·공유·판매처 보기·자세히 보기는 TOP 1에서만 제공합니다. TOP 2·3은 같은 카드 모양으로 보여주되
@@ -36,38 +38,51 @@ export function ConsumerResultCard({ emoji, recommendation, rank, onRetake }: Co
   const hasMarketUrl = Boolean(variety.marketUrl && variety.marketUrl !== '#');
   /** 판매처 화면에서 이미 쓰고 있는 같은 품종의 "우표" 이미지(있으면만 재사용). */
   const stampImage = findMarketVariety(variety.cropId, variety.name)?.image;
-  /** 저장·공유용 최종 승인 카드 PNG(5개 작물 25개 품종 전체). TOP 2·3에는 저장·공유를 제공하지 않습니다. */
-  const shareCard = isTop1 ? findShareCardImage(variety.id) : undefined;
-  const [shareCardFile, setShareCardFile] = useState<File | null>(null);
+  /**
+   * TOP 1 포토카드 PNG(5개 작물 25개 품종). 화면 대표 이미지·북마크 저장·공유에 같은 파일을 씁니다.
+   * TOP 2·3에는 포토카드를 쓰지 않습니다(우표 이미지 미리보기만, 저장·공유·수집 없음).
+   */
+  const topCard = isTop1 ? findShareCardImage(variety.id) : undefined;
+  const [topCardFile, setTopCardFile] = useState<File | null>(null);
 
   // iOS Safari는 버튼을 누른 직후에만 공유 시트를 열 수 있어, 카드 PNG를 미리 받아 둡니다.
   useEffect(() => {
-    if (!shareCard) return;
+    if (!topCard) return;
     let cancelled = false;
-    loadCardImageFile(shareCard.src, shareCard.fileName).then((file) => {
-      if (!cancelled) setShareCardFile(file);
+    loadCardImageFile(topCard.src, topCard.fileName).then((file) => {
+      if (!cancelled) setTopCardFile(file);
     });
     return () => {
       cancelled = true;
     };
-  }, [shareCard]);
+  }, [topCard]);
 
-  // 이미지 공유가 안 되는 환경에서 PNG를 대신 내려받았을 때 잠시 보여주는 안내
-  const [shareNotice, setShareNotice] = useState<string | null>(null);
+  // 버튼 아래 잠시 보여주는 안내(공유 대신 PNG를 내려받았을 때, 먹어보고 싶어요 처리에 실패했을 때)
+  const [notice, setNotice] = useState<string | null>(null);
   useEffect(() => {
-    if (!shareNotice) return;
-    const timer = window.setTimeout(() => setShareNotice(null), 7000);
+    if (!notice) return;
+    const timer = window.setTimeout(() => setNotice(null), 7000);
     return () => window.clearTimeout(timer);
-  }, [shareNotice]);
+  }, [notice]);
+
+  // 북마크: 포토카드 PNG 저장 + 이 기기의 카드 보관함에 담기(같은 품종은 한 번만)
+  const handleBookmark = () => {
+    if (!topCard) return;
+    downloadCardImage(topCard.src, topCard.fileName);
+    const result = addCardToCollection(variety.id);
+    if (result === 'added') setNotice('포토카드 이미지를 저장하고 카드 보관함에 담았어요.');
+    else if (result === 'exists') setNotice('이미 보관함에 있는 카드예요. 포토카드 이미지는 다시 저장했어요.');
+    else setNotice('포토카드 이미지는 저장했지만, 이 브라우저에서는 카드 보관함에 담을 수 없어요.');
+  };
 
   const handleShare = async () => {
-    if (!shareCard) {
+    if (!topCard) {
       shareVariety(variety.name);
       return;
     }
-    const result = await shareCardImage(variety.name, shareCardFile, shareCard.src, shareCard.fileName);
+    const result = await shareCardImage(variety.name, topCardFile, topCard.src, topCard.fileName);
     if (result === 'downloaded') {
-      setShareNotice('이 기기에서는 이미지 바로 공유가 지원되지 않아 카드 이미지를 내려받았어요. 저장된 이미지를 카카오톡 등에서 직접 보내 주세요.');
+      setNotice('이 기기에서는 이미지 바로 공유가 지원되지 않아 카드 이미지를 내려받았어요. 저장된 이미지를 카카오톡 등에서 직접 보내 주세요.');
     }
   };
 
@@ -76,6 +91,14 @@ export function ConsumerResultCard({ emoji, recommendation, rank, onRetake }: Co
       <div className={`flip-card-inner ${isFlipped ? 'flipped' : ''}`}>
         {/* 앞면: 기존 1순위 상세 카드 */}
         <div className="flip-card-front w-full rounded-3xl bg-white p-5 shadow-sm sm:p-6">
+          {topCard ? (
+            // TOP 1: 저장·공유되는 포토카드 PNG를 그대로 보여줌(화면에 보이는 카드 = 저장·공유되는 카드)
+            <img
+              src={topCard.src}
+              alt={`${variety.name} 신품종 포토카드`}
+              className="mx-auto block h-auto w-full max-w-[340px] object-contain"
+            />
+          ) : (
           <div className="relative flex h-48 w-full items-center justify-center sm:h-56">
             {stampImage ? (
               <img
@@ -97,6 +120,7 @@ export function ConsumerResultCard({ emoji, recommendation, rank, onRetake }: Co
               </span>
             )}
           </div>
+          )}
 
           <p className="mt-4 text-center text-xs font-bold text-brand-orange">
             {rank}위 · {variety.cropName}
@@ -118,11 +142,11 @@ export function ConsumerResultCard({ emoji, recommendation, rank, onRetake }: Co
           ) : (
             <>
             <div className="mt-5 flex items-center gap-2">
-              <LikeButton varietyId={variety.id} iconOnly className="flex-1" />
+              <LikeButton varietyId={variety.id} compact className="flex-1" onError={setNotice} />
               <button
                 type="button"
-                aria-label={shareCard ? `${variety.name} 카드 이미지 저장` : `${variety.name} 카드 저장`}
-                onClick={shareCard ? () => downloadCardImage(shareCard.src, shareCard.fileName) : undefined}
+                aria-label={`${variety.name} 카드 이미지 저장`}
+                onClick={handleBookmark}
                 className={`${ACTION_BUTTON} text-brand-green`}
               >
                 <BookmarkIcon />
@@ -136,8 +160,8 @@ export function ConsumerResultCard({ emoji, recommendation, rank, onRetake }: Co
                 <ShareIcon />
               </button>
             </div>
-            <p role="status" className={shareNotice ? 'mt-2 rounded-2xl bg-[#FBF8EF] px-3 py-2 text-left text-xs text-slate-600' : 'sr-only'}>
-              {shareNotice}
+            <p role="status" className={notice ? 'mt-2 rounded-2xl bg-[#FBF8EF] px-3 py-2 text-left text-xs text-slate-600' : 'sr-only'}>
+              {notice}
             </p>
 
             {hasMarketUrl && (
