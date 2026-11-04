@@ -76,6 +76,7 @@ export interface TasteTypeInfo {
   id: TasteTypeId;
   name: string;
   emoji: string;
+  /** 결과 화면에 보여줄 유형 한 줄 소개 */
   description: string;
   /**
    * 유형 적합도 = 핵심 속성의 평균. 방향 -1이면 (1 - 속성값)을 씁니다.
@@ -90,40 +91,35 @@ export const TASTE_TYPES: TasteTypeInfo[] = [
     id: 'explorer',
     name: '새로움 탐험가형',
     emoji: '🧭',
-    description:
-      '처음 보는 맛과 독특한 농산물에 먼저 손이 가는 타입이에요. 색다른 레시피와 새로운 품종을 경험하는 걸 즐겨요. 아직 잘 알려지지 않은 신품종과 특히 잘 어울려요.',
+    description: '처음 보는 맛과 독특한 농산물에 먼저 손이 가는 타입이에요.',
     keys: [['novelty', 1], ['explore', 1], ['looks', 1]],
   },
   {
     id: 'cook',
     name: '요리 만능 해결사형',
     emoji: '🍳',
-    description:
-      '어떤 요리에 쓰면 좋을지부터 떠올리는 실용파예요. 여러 요리에 두루 활용할 수 있는 농산물을 좋아해요. 직접 레시피를 찾아 만들어 보는 시간도 즐겨요.',
+    description: '어떤 요리에 쓰면 좋을지부터 떠올리는 실용파예요.',
     keys: [['versatile', 1], ['easy', -1]],
   },
   {
     id: 'refresh',
     name: '상큼한 기분전환형',
     emoji: '🍋',
-    description:
-      '상큼하고 산뜻한 맛으로 기분을 바꾸는 타입이에요. 아삭하고 씹는 재미가 있는 식감을 좋아해요. 한입에 개운해지는 농산물이 잘 어울려요.',
+    description: '상큼하고 산뜻한 맛으로 기분을 바꾸는 타입이에요.',
     keys: [['flavor', 1], ['texture', 1]],
   },
   {
     id: 'sweet',
     name: '달콤함 수집가형',
     emoji: '🍯',
-    description:
-      '달콤하고 부드러운 맛에 마음이 가는 타입이에요. 손질 없이 간식처럼 바로 즐길 수 있는 농산물을 좋아해요. 촉촉하고 단맛이 살아 있는 품종이 잘 어울려요.',
+    description: '달콤하고 부드러운 맛에 마음이 가는 타입이에요.',
     keys: [['flavor', -1], ['texture', -1], ['easy', 1]],
   },
   {
     id: 'homey',
     name: '포근한 집밥 애호가형',
     emoji: '🏡',
-    description:
-      '익숙하고 편안한 맛을 가장 좋아하는 타입이에요. 든든하고 부드러운 식감의 음식에서 행복을 느껴요. 매일 밥상에 자연스럽게 어울리는 농산물을 좋아해요.',
+    description: '익숙하고 편안한 맛을 가장 좋아하는 타입이에요.',
     keys: [['novelty', -1], ['texture', -1], ['flavor', -1], ['looks', -1]],
   },
 ];

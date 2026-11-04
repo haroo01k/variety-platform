@@ -77,6 +77,16 @@
   }
 }
 
+/* 소비자 취향 테스트 결과에서 취향 유형·TOP 1 카드가 부드럽게 나타나는 효과(모션 감소 설정 시 motion-safe로 생략) */
+@keyframes type-reveal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 /* TOP 3 순위 탭 전환 시 결과 카드가 살짝 페이드 인 되는 애니메이션 */
 @keyframes result-card-in {
   from {
