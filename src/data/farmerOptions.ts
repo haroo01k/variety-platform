@@ -8,7 +8,6 @@ import type { CropId } from '../types/crop';
 import type { HazardKey } from '../types/variety';
 import type {
   FieldHarvestTimingAnswer,
-  IrrigationAnswer,
   OrchardHarvestMonthAnswer,
   RegionAnswer,
   WinterMinAnswer,
@@ -33,13 +32,6 @@ export const CLIMATE_RISK_OPTIONS: { value: HazardKey | 'none'; label: string }[
   { value: 'drought', label: '가뭄' },
   { value: 'wet', label: '장마·집중호우' },
   { value: 'none', label: '특별히 없음' },
-];
-
-/** F3 관수 여건 */
-export const IRRIGATION_OPTIONS: { value: IrrigationAnswer; label: string }[] = [
-  { value: 'sufficient', label: '충분함' },
-  { value: 'limited', label: '제한적임' },
-  { value: 'difficult', label: '어려움' },
 ];
 
 /** F4 수확 시기 (밭작물: 감자·옥수수·배추) */

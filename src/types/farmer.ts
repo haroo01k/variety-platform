@@ -9,8 +9,6 @@ export type RegionAnswer =
   | 'south'
   | 'other';
 
-export type IrrigationAnswer = 'sufficient' | 'limited' | 'difficult';
-
 /** 밭작물(감자·옥수수·배추) 수확 시기 선택 */
 export type FieldHarvestTimingAnswer = 'early' | 'normal' | 'late';
 
@@ -31,8 +29,6 @@ export interface FarmerAnswers {
   region: RegionAnswer;
   /** F2 (복수 선택) */
   climateRisks: HazardKey[];
-  /** F3 */
-  irrigation: IrrigationAnswer;
   /** F4 (밭작물) */
   harvestTiming: FieldHarvestTimingAnswer;
   /** F4 (과수) */
@@ -54,7 +50,6 @@ export interface FarmerAnswers {
 export interface FarmerScoreBreakdown {
   region: number;
   climate: number;
-  irrigation: number;
   harvestTiming: number;
   usage: number;
   pest: number;

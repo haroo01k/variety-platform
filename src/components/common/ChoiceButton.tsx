@@ -6,7 +6,7 @@ interface ChoiceButtonProps {
 }
 
 /**
- * 단일 선택 질문(지역, 관수 여건, 수확 시기 등)에 쓰는 카드형 버튼.
+ * 단일 선택 질문(지역, 수확 시기 등)에 쓰는 카드형 버튼.
  * 한 화면에 여러 개를 세로로 나열해서 라디오 버튼 대신 사용합니다.
  */
 export function ChoiceButton({ label, description, selected, onSelect }: ChoiceButtonProps) {
