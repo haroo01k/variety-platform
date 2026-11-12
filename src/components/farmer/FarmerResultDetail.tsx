@@ -1,4 +1,4 @@
-import { PlaceholderImage } from '../common/PlaceholderImage';
+import { VarietyStampImage } from '../common/VarietyStampImage';
 import type { FarmerRecommendation } from '../../types/farmer';
 import type { HazardKey } from '../../types/variety';
 
@@ -27,11 +27,13 @@ export function FarmerResultDetail({ rank, emoji, recommendation }: FarmerResult
     <div>
       <p className="text-xs font-semibold text-slate-400">{rank}위 · 일치 점수 {totalScore}</p>
       <div className="mt-2 flex items-center gap-4">
-        <PlaceholderImage
-          emoji={emoji}
-          hexColor={variety.characterColorHex}
-          className="h-20 w-20 shrink-0 text-4xl"
-          label={`${variety.name} 캐릭터`}
+        <VarietyStampImage
+          cropId={variety.cropId}
+          varietyName={variety.name}
+          fallbackEmoji={emoji}
+          fallbackHex={variety.characterColorHex}
+          className="h-24 w-24 shrink-0"
+          label={`${variety.name} 우표 이미지`}
         />
         <div className="min-w-0">
           <h2 className="text-xl font-extrabold text-slate-800">{variety.name}</h2>

@@ -1,4 +1,4 @@
-import { PlaceholderImage } from '../common/PlaceholderImage';
+import { VarietyStampImage } from '../common/VarietyStampImage';
 import type { FarmerRecommendation } from '../../types/farmer';
 import type { HazardKey } from '../../types/variety';
 
@@ -52,15 +52,18 @@ export function FarmerResultCard({ rank, emoji, recommendation, onOpenDetail, co
         </span>
       </div>
 
-      <PlaceholderImage
-        emoji={emoji}
-        hexColor={variety.characterColorHex}
-        className="mx-auto h-20 w-20 text-4xl"
-        label={`${variety.name} 캐릭터`}
+      <VarietyStampImage
+        cropId={variety.cropId}
+        varietyName={variety.name}
+        fallbackEmoji={emoji}
+        fallbackHex={variety.characterColorHex}
+        className="mx-auto aspect-square w-full max-w-[280px] sm:max-w-[320px]"
+        label={`${variety.name} 우표 이미지`}
       />
 
       <div className="text-center">
-        <h3 className="text-xl font-extrabold text-[#20251F]">{variety.name}</h3>
+        {/* 품종명은 우표 그림 안에 이미 있어 화면에서는 숨기고, 화면 읽기 프로그램용으로만 남깁니다. */}
+        <h3 className="sr-only">{variety.name}</h3>
         <p className="mt-1 text-xs text-slate-500">{statusText}</p>
         {/* 재배 적합도와 별개인 참고 정보(보기 전용, 점수·순위에 반영하지 않음) */}
         <p className="mt-1 text-xs text-slate-400">
