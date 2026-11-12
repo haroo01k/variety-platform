@@ -4,6 +4,8 @@ import { Container } from '../../components/common/Container';
 import { Button } from '../../components/common/Button';
 import { NavigationButtons } from '../../components/common/NavigationButtons';
 import { ConsumerAnswerCard } from '../../components/consumer/ConsumerAnswerCard';
+import { ConsumerCropPicker } from '../../components/consumer/ConsumerCropPicker';
+import { CROP_PICK_QUESTION } from '../../data/consumerQuiz';
 import { estimateTotalQuestions, getConsumerRecommendation, getQuestionSequence, resolveCrop } from '../../lib/consumerScoring';
 import { ROUTES } from '../../lib/routes';
 import type { ConsumerAnswers } from '../../types/consumer';
@@ -138,21 +140,28 @@ export function ConsumerQuizPage() {
           <span className="mr-1.5 text-brand-orange">Q{index + 1}.</span>
           {question.text}
         </h2>
-        {/* 카드형: 선택지를 세로형 카드로 나란히(아주 좁은 화면에서는 1열, 선택지가 많으면 작은 카드) */}
-        <div className={`grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 ${question.options.length > 4 ? 'sm:grid-cols-3' : ''}`}>
-          {question.options.map((option, i) => (
-            <ConsumerAnswerCard
-              key={option.id}
-              label={OPTION_LABELS[i] ?? ''}
-              icon={option.icon}
-              text={option.text}
-              selected={selected === option.id}
-              disabled={advancing}
-              compact={question.options.length > 2}
-              onSelect={() => handleSelect(option.id)}
-            />
-          ))}
-        </div>
+        {question.id === CROP_PICK_QUESTION.id ? (
+          // 첫 질문(작물 선택)은 농업인 화면과 같은 작물 일러스트 카드로 보여줍니다.
+          <ConsumerCropPicker value={selected} disabled={advancing} onSelect={handleSelect} />
+        ) : (
+          <>
+            {/* 카드형: 선택지를 세로형 카드로 나란히(아주 좁은 화면에서는 1열, 선택지가 많으면 작은 카드) */}
+            <div className={`grid grid-cols-1 gap-3 min-[360px]:grid-cols-2 ${question.options.length > 4 ? 'sm:grid-cols-3' : ''}`}>
+              {question.options.map((option, i) => (
+                <ConsumerAnswerCard
+                  key={option.id}
+                  label={OPTION_LABELS[i] ?? ''}
+                  icon={option.icon}
+                  text={option.text}
+                  selected={selected === option.id}
+                  disabled={advancing}
+                  compact={question.options.length > 2}
+                  onSelect={() => handleSelect(option.id)}
+                />
+              ))}
+            </div>
+          </>
+        )}
       </section>
 
       <NavigationButtons
