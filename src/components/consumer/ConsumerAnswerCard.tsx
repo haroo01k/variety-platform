@@ -1,27 +1,29 @@
 import { CheckIcon } from '../common/icons';
 
 interface ConsumerAnswerCardProps {
-  /** 'A' 또는 'B' */
+  /** 'A', 'B', 'C' … */
   label: string;
   icon: string;
   text: string;
   selected: boolean;
   disabled?: boolean;
+  /** 선택지가 3개 이상일 때 카드 높이를 줄입니다. */
+  compact?: boolean;
   onSelect: () => void;
 }
 
 /**
- * 취향 테스트의 A/B 선택지 카드(세로형). 위에 선택지 아이콘, 아래에 선택지 문구를 두고,
+ * 취향 테스트의 선택지 카드(세로형). 위에 선택지 아이콘, 아래에 선택지 문구를 두고,
  * 선택하면 연한 연두색 배경·초록 테두리와 오른쪽 위 체크 표시로 바뀝니다.
  */
-export function ConsumerAnswerCard({ label, icon, text, selected, disabled = false, onSelect }: ConsumerAnswerCardProps) {
+export function ConsumerAnswerCard({ label, icon, text, selected, disabled = false, compact = false, onSelect }: ConsumerAnswerCardProps) {
   return (
     <button
       type="button"
       onClick={onSelect}
       disabled={disabled}
       aria-pressed={selected}
-      className={`relative flex h-full min-h-[168px] w-full flex-col items-center gap-3 rounded-3xl border px-4 pt-6 pb-5 text-center transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green motion-safe:active:scale-[0.98] ${
+      className={`relative flex h-full ${compact ? 'min-h-[128px] pt-5 pb-4' : 'min-h-[168px] pt-6 pb-5'} w-full flex-col items-center gap-3 rounded-3xl border px-4 text-center transition-colors duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green motion-safe:active:scale-[0.98] ${
         selected ? 'border-brand-green bg-brand-green-light' : 'border-slate-200 bg-white hover:border-brand-green/50'
       }`}
     >
