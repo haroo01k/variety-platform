@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Container } from '../../components/common/Container';
 import { Button } from '../../components/common/Button';
-import { PlaceholderImage } from '../../components/common/PlaceholderImage';
+import { AnalyzingStamp } from '../../components/farmer/AnalyzingStamp';
 import { CROPS } from '../../data/crops';
 import { CROP_PESTS } from '../../data/cropPests';
 import { ROUTES } from '../../lib/routes';
@@ -54,24 +54,11 @@ export function FarmerAnalyzingPage() {
     <Container className="flex flex-1 flex-col items-center gap-6 py-8 text-center md:py-12">
       <section className="flex flex-col items-center gap-3">
         <p className="text-sm font-semibold text-brand-green">2 / 3 단계</p>
-        <div className="relative h-24 w-24">
-          <span aria-hidden="true" className="absolute inset-0 animate-spin rounded-full border-4 border-brand-green-light border-t-brand-green" />
-          {crop.imageSrc ? (
-            <img src={crop.imageSrc} alt="" className="absolute inset-2 h-20 w-20 rounded-full object-cover" />
-          ) : (
-            <PlaceholderImage emoji={crop.emoji} colorClass={crop.colorClass} className="absolute inset-2 h-20 w-20 text-4xl" />
-          )}
-        </div>
+        <AnalyzingStamp crop={crop} durationMs={AUTO_ADVANCE_MS} />
         <h1 className="text-xl font-extrabold text-brand-green-dark sm:text-2xl">추천 품종을 분석하고 있어요</h1>
         <p className="max-w-sm text-sm text-slate-500">
           입력하신 지역·기후위험·용도 조건에 맞춰 {crop.name} 품종 데이터를 비교하고 있어요.
         </p>
-        <div className="h-1.5 w-full max-w-xs overflow-hidden rounded-full bg-brand-green-light" aria-hidden="true">
-          <div
-            className="h-full rounded-full bg-brand-green"
-            style={{ animation: `analyzing-progress ${AUTO_ADVANCE_MS}ms linear forwards` }}
-          />
-        </div>
       </section>
 
       {pests && (
