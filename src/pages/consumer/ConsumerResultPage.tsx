@@ -85,8 +85,10 @@ export function ConsumerResultPage() {
 
       <section aria-label="나에게 어울리는 신품종" className="flex w-full max-w-[520px] flex-col items-center gap-4">
         <div>
-          <h2 className="text-2xl font-extrabold text-brand-green-dark">나에게 어울리는 신품종 TOP 3</h2>
-          <p className="mt-1 text-sm text-slate-500">답변과 품종별 맛·식감·활용 특징을 비교해 서로 다른 작물에서 골랐어요.</p>
+          <h2 className="text-2xl font-extrabold text-brand-green-dark">
+            나에게 어울리는 {CROPS.find((c) => c.id === result.cropId)?.name ?? ''} 신품종 TOP 3
+          </h2>
+          <p className="mt-1 text-sm text-slate-500">답변과 품종별 맛·식감·모양·활용 특징을 비교해 골랐어요.</p>
         </div>
 
         {!selected ? (

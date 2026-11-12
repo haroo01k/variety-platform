@@ -1,39 +1,35 @@
 import type { VarietyRecord } from './variety';
 
-/** 각 문항의 A/B 선택 */
-export type QuizChoice = 'A' | 'B';
+/** 작물 ID(src/data/crops.ts의 id) */
+export type ConsumerCropId = 'potato' | 'corn' | 'peach' | 'apple' | 'cabbage';
 
-/** 8개 문항 응답(순서대로). 아직 답하지 않은 문항은 null */
-export type ConsumerAnswers = (QuizChoice | null)[];
+/** 첫 화면에서 고르는 작물. 'unsure'면 작물을 정하는 질문 2개를 먼저 묻습니다. */
+export type CropPick = ConsumerCropId | 'unsure';
 
 /**
- * 취향 속성 7가지. 모든 값은 0~1로 정규화합니다.
- * - texture: 1 = 아삭·씹는 재미, 0 = 부드러움
- * - flavor: 1 = 상큼·산뜻, 0 = 달콤·포근
- * - 나머지는 1에 가까울수록 해당 성향이 강함
+ * 취향 테스트 응답. 질문 ID → 고른 선택지 ID.
+ * 첫 작물 선택은 질문 ID 'CROP'에 저장합니다.
  */
-export type TasteAttribute = 'novelty' | 'texture' | 'flavor' | 'versatile' | 'easy' | 'looks' | 'explore';
-
-export type TasteProfile = Record<TasteAttribute, number>;
+export type ConsumerAnswers = Record<string, string>;
 
 export type TasteTypeId = 'explorer' | 'cook' | 'refresh' | 'sweet' | 'homey';
 
 export interface ConsumerRecommendation {
   variety: VarietyRecord;
-  /** 사용자 취향과 품종 속성의 일치도(0~1). 화면에는 숫자로 보여주지 않습니다. */
+  /** 답과 맞은 질문 수 / 작물 질문 수(0~1). 화면에는 숫자로 보여주지 않습니다. */
   totalScore: number;
-  /** 화면에 보여줄 추천 이유 한 줄(기존 품종 데이터 태그로만 만듭니다) */
+  /** 화면에 보여줄 추천 이유 한 줄(답한 선택지와 기존 품종 태그로 만듭니다) */
   reasons: string[];
 }
 
 export interface ConsumerResult {
+  /** 추천 대상 작물(직접 골랐거나 작물 찾기 질문으로 정해짐) */
+  cropId: ConsumerCropId;
   typeId: TasteTypeId;
-  profile: TasteProfile;
-  /** 유형별 적합도(0~1) */
-  typeFits: Record<TasteTypeId, number>;
-  /** 응답에서 두드러진 취향 키워드 3개 */
+  /** 고른 선택지에서 나온 취향 키워드(최대 3개) */
   keywords: string[];
+  /** 같은 작물 5개 품종의 순위 */
   ranked: ConsumerRecommendation[];
-  /** 서로 다른 작물에서 고른 상위 3개 */
+  /** 같은 작물 안의 상위 3개 */
   top3: ConsumerRecommendation[];
 }
