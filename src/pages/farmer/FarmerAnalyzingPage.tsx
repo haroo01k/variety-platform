@@ -57,7 +57,7 @@ export function FarmerAnalyzingPage() {
         <div className="relative h-24 w-24">
           <span aria-hidden="true" className="absolute inset-0 animate-spin rounded-full border-4 border-brand-green-light border-t-brand-green" />
           {crop.imageSrc ? (
-            <img src={crop.imageSrc} alt="" className="absolute inset-2 h-20 w-20 object-contain" />
+            <img src={crop.imageSrc} alt="" className="absolute inset-2 h-20 w-20 rounded-full object-cover" />
           ) : (
             <PlaceholderImage emoji={crop.emoji} colorClass={crop.colorClass} className="absolute inset-2 h-20 w-20 text-4xl" />
           )}
