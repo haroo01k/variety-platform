@@ -1,4 +1,4 @@
-import { PlaceholderImage } from '../common/PlaceholderImage';
+import { VarietyStampImage } from '../common/VarietyStampImage';
 import type { FarmerRecommendation } from '../../types/farmer';
 import type { HazardKey } from '../../types/variety';
 
@@ -52,11 +52,13 @@ export function FarmerResultCard({ rank, emoji, recommendation, onOpenDetail, co
         </span>
       </div>
 
-      <PlaceholderImage
-        emoji={emoji}
-        hexColor={variety.characterColorHex}
-        className="mx-auto h-20 w-20 text-4xl"
-        label={`${variety.name} 캐릭터`}
+      <VarietyStampImage
+        cropId={variety.cropId}
+        varietyName={variety.name}
+        fallbackEmoji={emoji}
+        fallbackHex={variety.characterColorHex}
+        className="mx-auto h-40 w-40 sm:h-44 sm:w-44"
+        label={`${variety.name} 우표 이미지`}
       />
 
       <div className="text-center">
