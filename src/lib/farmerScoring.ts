@@ -1,13 +1,17 @@
 /**
  * 농업인 추천 점수 계산 엔진.
- * 최종점수 = 지역 + 기후위험 + 관수 + 수확시기 + 용도 + 병해충 + 관리우선순위 (+ 과수 FA2·FA3)
- * 참고: Claude_업로드용_추천질문지_및_점수로직.pdf 2~4쪽.
+ * - 기본(합산): 최종점수 = 지역 + 기후위험 + 관수 + 수확시기 + 용도 + 병해충 + 관리우선순위 (+ 과수 FA2·FA3)
+ *   참고: Claude_업로드용_추천질문지_및_점수로직.pdf 2~4쪽.
+ * - 전문가 가중치(자문 결과가 있는 작물, 현재 감자): 항목별 점수를 0~1로 맞춘 뒤 전문가 가중치로 가중 평균(0~10점).
+ *   해당 질문에 답이 없거나 '상관없음'이면 그 항목은 계산에서 뺍니다. 가중치: src/data/farmerExpertWeights.ts
  */
 import type { FarmerAnswers, FarmerRecommendation, FarmerResult, FarmerScoreBreakdown } from '../types/farmer';
 import type { EvidenceType, HazardKey, VarietyRecord } from '../types/variety';
 import { VARIETIES } from '../data/varieties';
 import { PEST_OPTIONS, USAGE_OPTIONS, isOrchardCrop } from '../data/farmerOptions';
 import { clamp, hasAnyTag, matchesMaturityStage, round1 } from './tagUtils';
+import { EXPERT_RESULT_CAUTIONS, getCropWeights } from '../data/farmerExpertWeights';
+import type { CropWeights, ExpertItem } from '../data/farmerExpertWeights';
 
 const REGION_DIRECT_TAGS: Record<FarmerAnswers['region'], string[]> = {
   'gangwon-yeongdong': ['영동', '강원'],
@@ -290,7 +294,81 @@ function buildCautions(variety: VarietyRecord, answers: FarmerAnswers): string[]
   if (variety.pestNote && variety.pestNote !== '자료없음') {
     cautions.push(`병해충 참고: ${variety.pestNote}`);
   }
+  cautions.push(...(EXPERT_RESULT_CAUTIONS[variety.cropId] ?? []));
   return cautions;
+}
+
+/** 기후위험 한 가지의 점수(0~1). 기존 합산 방식의 가점(-2~+2 × 근거계수)을 0~1로 옮깁니다. */
+function hazardUnitScore(variety: VarietyRecord, hazard: HazardKey): number {
+  const info = variety.hazards[hazard];
+  return (climateBaseGain(info.score) * EVIDENCE_COEFFICIENT[info.evidenceType] + 2) / 4;
+}
+
+/**
+ * 전문가 가중치 방식의 항목별 점수(0~1). null이면 그 항목은 이번 응답에서 계산에서 뺍니다.
+ * breakdown은 기존 합산 방식의 원점수로, 추천 이유 문구와 같은 기준을 쓰기 위해 재사용합니다.
+ */
+function weightedItemScores(
+  variety: VarietyRecord,
+  answers: FarmerAnswers,
+  breakdown: FarmerScoreBreakdown,
+  weights: CropWeights,
+): Record<ExpertItem, number | null> {
+  // 기후위험: 고른 위험별 점수를 전문가 세부 가중치로 평균(습해는 '집중 호우'·'습해' 가중치의 평균)
+  const hazardWeight: Record<HazardKey, number> = {
+    heat: weights.climate.heat,
+    drought: weights.climate.drought,
+    wet: (weights.climate.heavyRain + weights.climate.wet) / 2,
+  };
+  const climateWeightSum = answers.climateRisks.reduce((acc, h) => acc + hazardWeight[h], 0);
+  const climate =
+    climateWeightSum > 0
+      ? answers.climateRisks.reduce((acc, h) => acc + hazardWeight[h] * hazardUnitScore(variety, h), 0) / climateWeightSum
+      : null;
+
+  // 관수: 충분하면 품종 간 차이가 없어 제외, 어려우면 가뭄 대응력, 제한적이면 그 중간
+  const droughtScore = hazardUnitScore(variety, 'drought');
+  const irrigation =
+    answers.irrigation === 'difficult' ? droughtScore : answers.irrigation === 'limited' ? (1 + droughtScore) / 2 : null;
+
+  const usage = answers.usages.length > 0 ? breakdown.usage / (2 * answers.usages.length) : null;
+
+  // 병해충: 우려 항목별로 강점 1 / 언급 없음 1/3 / 주의 0 을 평균
+  const pestOptions = PEST_OPTIONS[variety.cropId].filter(
+    (o) => o.keywords && answers.pestConcerns.includes(o.value),
+  );
+  const pest =
+    pestOptions.length > 0
+      ? pestOptions.reduce((acc, o) => acc + (scorePestConcern(variety.pestNote, o.keywords ?? []) + 1) / 3, 0) /
+        pestOptions.length
+      : null;
+
+  const management =
+    answers.managementPriority && answers.managementPriority !== 'any' ? breakdown.managementPriority / 2 : null;
+
+  return {
+    region: breakdown.region / 2,
+    climate,
+    irrigation,
+    harvestTiming: breakdown.harvestTiming / 2,
+    usage,
+    pest,
+    management,
+  };
+}
+
+/** 전문가 가중 평균 점수(0~10). 계산에 들어갈 항목이 하나도 없으면 0 */
+function weightedTotal(scores: Record<ExpertItem, number | null>, weights: CropWeights): number {
+  let sum = 0;
+  let weightSum = 0;
+  (Object.keys(scores) as ExpertItem[]).forEach((item) => {
+    const score = scores[item];
+    const weight = weights.items[item];
+    if (score === null || weight <= 0) return;
+    sum += weight * score;
+    weightSum += weight;
+  });
+  return weightSum > 0 ? (sum / weightSum) * 10 : 0;
 }
 
 export function scoreFarmerVariety(variety: VarietyRecord, answers: FarmerAnswers): FarmerRecommendation {
@@ -305,16 +383,19 @@ export function scoreFarmerVariety(variety: VarietyRecord, answers: FarmerAnswer
     managementPriority: scoreManagementPriority(variety, answers),
     orchard: scoreOrchardExtras(variety, answers),
   };
-  const totalScore = round1(
-    breakdown.region +
-      breakdown.climate +
-      breakdown.irrigation +
-      breakdown.harvestTiming +
-      breakdown.usage +
-      breakdown.pest +
-      breakdown.managementPriority +
-      breakdown.orchard,
-  );
+  const weights = getCropWeights(variety.cropId);
+  const totalScore = weights
+    ? round1(weightedTotal(weightedItemScores(variety, answers, breakdown, weights), weights))
+    : round1(
+        breakdown.region +
+          breakdown.climate +
+          breakdown.irrigation +
+          breakdown.harvestTiming +
+          breakdown.usage +
+          breakdown.pest +
+          breakdown.managementPriority +
+          breakdown.orchard,
+      );
   const directEvidenceCount = (['heat', 'drought', 'wet'] as HazardKey[]).filter(
     (h) => variety.hazards[h].evidenceType === 'direct',
   ).length;
