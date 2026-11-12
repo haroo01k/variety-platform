@@ -57,7 +57,7 @@ export function FarmerResultCard({ rank, emoji, recommendation, onOpenDetail, co
         varietyName={variety.name}
         fallbackEmoji={emoji}
         fallbackHex={variety.characterColorHex}
-        className="mx-auto h-40 w-40 sm:h-44 sm:w-44"
+        className="mx-auto h-48 w-48 sm:h-56 sm:w-56"
         label={`${variety.name} 우표 이미지`}
       />
 
