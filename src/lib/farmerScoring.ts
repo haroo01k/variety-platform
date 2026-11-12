@@ -1,6 +1,6 @@
 /**
  * 농업인 추천 점수 계산 엔진.
- * - 기본(합산): 최종점수 = 지역 + 기후위험 + 관수 + 수확시기 + 용도 + 병해충 + 관리우선순위 (+ 과수 FA2·FA3)
+ * - 기본(합산): 최종점수 = 지역 + 기후위험 + 수확시기 + 용도 + 병해충 + 관리우선순위 (+ 과수 FA2·FA3)
  *   참고: Claude_업로드용_추천질문지_및_점수로직.pdf 2~4쪽.
  * - 전문가 가중치(자문 결과가 있는 작물, 현재 감자): 항목별 점수를 0~1로 맞춘 뒤 전문가 가중치로 가중 평균(0~10점).
  *   해당 질문에 답이 없거나 '상관없음'이면 그 항목은 계산에서 뺍니다. 가중치: src/data/farmerExpertWeights.ts
@@ -53,13 +53,6 @@ function scoreClimate(variety: VarietyRecord, risks: HazardKey[]): number {
     return acc + climateBaseGain(info.score) * EVIDENCE_COEFFICIENT[info.evidenceType];
   }, 0);
   return clamp(sum, -3, 3);
-}
-
-function scoreIrrigation(variety: VarietyRecord, answers: FarmerAnswers): number {
-  if (answers.irrigation === 'difficult' && variety.hazards.drought.evidenceType === 'indirect') {
-    return -1;
-  }
-  return 0;
 }
 
 const FIELD_STAGE_LABEL: Record<FarmerAnswers['harvestTiming'], string> = {
@@ -288,9 +281,6 @@ function buildCautions(variety: VarietyRecord, answers: FarmerAnswers): string[]
       );
     }
   });
-  if (answers.irrigation === 'difficult' && variety.hazards.drought.evidenceType !== 'direct') {
-    cautions.push('관수가 어려운 조건이라면 생육기 수분 관리에 특히 신경 써주세요.');
-  }
   if (variety.pestNote && variety.pestNote !== '자료없음') {
     cautions.push(`병해충 참고: ${variety.pestNote}`);
   }
@@ -326,11 +316,6 @@ function weightedItemScores(
       ? answers.climateRisks.reduce((acc, h) => acc + hazardWeight[h] * hazardUnitScore(variety, h), 0) / climateWeightSum
       : null;
 
-  // 관수: 충분하면 품종 간 차이가 없어 제외, 어려우면 가뭄 대응력, 제한적이면 그 중간
-  const droughtScore = hazardUnitScore(variety, 'drought');
-  const irrigation =
-    answers.irrigation === 'difficult' ? droughtScore : answers.irrigation === 'limited' ? (1 + droughtScore) / 2 : null;
-
   const usage = answers.usages.length > 0 ? breakdown.usage / (2 * answers.usages.length) : null;
 
   // 병해충: 우려 항목별로 강점 1 / 언급 없음 1/3 / 주의 0 을 평균
@@ -349,7 +334,6 @@ function weightedItemScores(
   return {
     region: breakdown.region / 2,
     climate,
-    irrigation,
     harvestTiming: breakdown.harvestTiming / 2,
     usage,
     pest,
@@ -376,7 +360,6 @@ export function scoreFarmerVariety(variety: VarietyRecord, answers: FarmerAnswer
   const breakdown: FarmerScoreBreakdown = {
     region: region.score,
     climate: scoreClimate(variety, answers.climateRisks),
-    irrigation: scoreIrrigation(variety, answers),
     harvestTiming: scoreHarvestTiming(variety, answers),
     usage: scoreUsage(variety, answers),
     pest: scorePest(variety, answers),
@@ -389,7 +372,6 @@ export function scoreFarmerVariety(variety: VarietyRecord, answers: FarmerAnswer
     : round1(
         breakdown.region +
           breakdown.climate +
-          breakdown.irrigation +
           breakdown.harvestTiming +
           breakdown.usage +
           breakdown.pest +

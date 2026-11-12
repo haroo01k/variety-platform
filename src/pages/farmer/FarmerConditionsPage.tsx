@@ -11,7 +11,6 @@ import type { CropId } from '../../types/crop';
 import type {
   FarmerAnswers,
   FieldHarvestTimingAnswer,
-  IrrigationAnswer,
   OrchardHarvestMonthAnswer,
   RegionAnswer,
   WinterMinAnswer,
@@ -20,7 +19,6 @@ import type { HazardKey } from '../../types/variety';
 import {
   CLIMATE_RISK_OPTIONS,
   FIELD_HARVEST_TIMING_OPTIONS,
-  IRRIGATION_OPTIONS,
   MANAGEMENT_OPTIONS,
   ORCHARD_HARVEST_MONTH_OPTIONS,
   ORCHARD_LOGISTICS_OPTIONS,
@@ -42,7 +40,6 @@ type StepId =
   | 'crop'
   | 'region'
   | 'climate'
-  | 'irrigation'
   | 'harvest'
   | 'usage'
   | 'pest'
@@ -51,14 +48,13 @@ type StepId =
   | 'reduceWork'
   | 'logistics';
 
-const BASE_STEPS: StepId[] = ['crop', 'region', 'climate', 'irrigation', 'harvest', 'usage', 'pest', 'management'];
+const BASE_STEPS: StepId[] = ['crop', 'region', 'climate', 'harvest', 'usage', 'pest', 'management'];
 const ORCHARD_EXTRA_STEPS: StepId[] = ['winterMin', 'reduceWork', 'logistics'];
 
 const STEP_META: Record<StepId, { title: string; hint?: string }> = {
   crop: { title: '어떤 작물을 재배하시나요?' },
   region: { title: '어느 지역에서 재배하시나요?', hint: '지역명 첫 글자를 누르거나 직접 검색해 주세요.' },
   climate: { title: '가장 걱정되는 기상위험은 무엇인가요?', hint: '여러 개 선택할 수 있어요' },
-  irrigation: { title: '관수 여건은 어떤가요?' },
   harvest: { title: '원하는 수확 시기는 언제인가요?' },
   usage: { title: '주요 판로와 용도는 무엇인가요?', hint: '여러 개 선택할 수 있어요' },
   pest: { title: '특히 우려되는 병해충이나 관리 문제가 있나요?', hint: '여러 개 선택할 수 있어요' },
@@ -91,7 +87,6 @@ export function FarmerConditionsPage() {
   };
   const region: RegionAnswer | null = resolveRegionAnswer(regionSelection);
   const [climateRisks, setClimateRisks] = useState<string[]>([]);
-  const [irrigation, setIrrigation] = useState<IrrigationAnswer | null>(null);
   const [harvestChoice, setHarvestChoice] = useState<string | null>(null);
   const [usages, setUsages] = useState<string[]>([]);
   const [pestConcerns, setPestConcerns] = useState<string[]>([]);
@@ -134,8 +129,6 @@ export function FarmerConditionsPage() {
         return isRegionSelectionComplete(regionSelection);
       case 'climate':
         return climateRisks.length > 0;
-      case 'irrigation':
-        return irrigation !== null;
       case 'harvest':
         return harvestChoice !== null;
       case 'usage':
@@ -170,7 +163,6 @@ export function FarmerConditionsPage() {
       cropId,
       region: region ?? 'other',
       climateRisks: (climateRisks.includes('none') ? [] : climateRisks) as HazardKey[],
-      irrigation: irrigation ?? 'sufficient',
       harvestTiming: isOrchard ? 'normal' : ((harvestChoice ?? 'normal') as FieldHarvestTimingAnswer),
       harvestMonth: isOrchard ? ((harvestChoice ?? '6-7') as OrchardHarvestMonthAnswer) : '6-7',
       usages,
@@ -225,19 +217,6 @@ export function FarmerConditionsPage() {
                 label={option.label}
                 selected={climateRisks.includes(option.value)}
                 onToggle={() => setClimateRisks((prev) => toggleMultiSelect(prev, option.value, 'none'))}
-              />
-            ))}
-          </div>
-        );
-      case 'irrigation':
-        return (
-          <div className="flex flex-col gap-2">
-            {IRRIGATION_OPTIONS.map((option) => (
-              <ChoiceButton
-                key={option.value}
-                label={option.label}
-                selected={irrigation === option.value}
-                onSelect={() => setIrrigation(option.value)}
               />
             ))}
           </div>

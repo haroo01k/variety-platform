@@ -11,7 +11,7 @@
 import type { CropId } from '../types/crop';
 
 /** 자문 설문 1번 평가항목 */
-export type ExpertItem = 'region' | 'climate' | 'irrigation' | 'harvestTiming' | 'usage' | 'pest' | 'management';
+export type ExpertItem = 'region' | 'climate' | 'harvestTiming' | 'usage' | 'pest' | 'management';
 
 /** 자문 설문 2번 기후위험 세부 요인 */
 export type ExpertClimateFactor = 'drought' | 'heat' | 'heavyRain' | 'wet';
@@ -31,7 +31,8 @@ export const EXPERT_REVIEWS: Partial<Record<CropId, ExpertReview[]>> = {
     {
       id: 'potato-expert-1',
       reviewedAt: '2026-11-11',
-      items: { region: 3, climate: 3, irrigation: 4, harvestTiming: 4, usage: 1, pest: 4, management: 3 },
+      // 관수여건(자문 가중치 4)은 앱에서 관수 문항을 제외하기로 해 반영하지 않음
+      items: { region: 3, climate: 3, harvestTiming: 4, usage: 1, pest: 4, management: 3 },
       climate: { drought: 4, heat: 4, heavyRain: 4, wet: 4 },
       notes: [
         '비고: 작물의 시기별 가격 동향',
