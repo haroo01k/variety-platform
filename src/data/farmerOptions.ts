@@ -116,10 +116,11 @@ export const findSeason = (cropId: MonthTimingCrop, season: CropSeason | null) =
 
 export const PLANT_MONTH_LABEL: Record<MonthTimingCrop, string> = { potato: '씨감자를 심는 달', cabbage: '모종을 아주심는(정식) 달' };
 
-/** 수확하고 싶은 달 선택지: 고른 작형의 수확 달 중 심는 달 이후인 달 */
-export function harvestMonthChoices(cropId: MonthTimingCrop, season: CropSeason, plantMonth: number): number[] {
+/** 수확하고 싶은 달 선택지: 고른 작형의 수확 달 중 심는 달 이후인 달(심는 달을 안 골랐으면 전부) */
+export function harvestMonthChoices(cropId: MonthTimingCrop, season: CropSeason, plantMonth: number | null): number[] {
   const calendar = findSeason(cropId, season);
   if (!calendar) return [];
+  if (plantMonth === null) return calendar.harvestMonths;
   // 심는 달에서 몇 달 뒤인지로 비교(연도 넘김 처리)
   return calendar.harvestMonths.filter((m) => ((m - plantMonth + 12) % 12) >= 1);
 }

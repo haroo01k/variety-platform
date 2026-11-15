@@ -122,17 +122,21 @@ function scoreUsage(variety: VarietyRecord, answers: FarmerAnswers): number {
   }, 0);
 }
 
-/** 식미(밭작물 전용): 고른 식미와 품종 맛·식감 태그가 맞으면 +2 */
-function tasteMatches(variety: VarietyRecord, answers: FarmerAnswers): boolean | null {
-  if (isOrchardCrop(variety.cropId) || !answers.taste || answers.taste === 'any') return null;
-  const options = TASTE_OPTIONS[variety.cropId as keyof typeof TASTE_OPTIONS];
-  const option = options?.find((o) => o.value === answers.taste);
-  if (!option?.matches) return null;
-  return option.matches(variety);
+/**
+ * 식미(밭작물 전용, 복수 선택): 고른 식미 중 품종 맛·식감 태그와 맞는 비율(0~1).
+ * 예) 배추 '아삭' + '단맛'을 골랐는데 순정아삭(아삭·단맛)이면 1, 원교20054호(아삭)면 0.5.
+ * 고른 식미가 없으면(상관없음) null.
+ */
+function tasteMatches(variety: VarietyRecord, answers: FarmerAnswers): number | null {
+  if (isOrchardCrop(variety.cropId) || answers.tastes.length === 0) return null;
+  const options = TASTE_OPTIONS[variety.cropId as keyof typeof TASTE_OPTIONS] ?? [];
+  const chosen = options.filter((o) => o.matches && answers.tastes.includes(o.value));
+  if (chosen.length === 0) return null;
+  return chosen.filter((o) => o.matches?.(variety)).length / chosen.length;
 }
 
 function scoreTaste(variety: VarietyRecord, answers: FarmerAnswers): number {
-  return tasteMatches(variety, answers) ? 2 : 0;
+  return round1(2 * (tasteMatches(variety, answers) ?? 0));
 }
 
 /**
@@ -329,7 +333,7 @@ function weightedItemScores(
         : breakdown.harvestTiming / 2,
     usage,
     pest,
-    taste: taste === null ? null : taste ? 1 : 0,
+    taste,
   };
 }
 

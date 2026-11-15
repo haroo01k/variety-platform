@@ -41,8 +41,8 @@ export interface FarmerAnswers {
   harvestTargetMonth: number | null;
   /** F4 (과수) */
   harvestMonth: OrchardHarvestMonthAnswer;
-  /** 식미(밭작물 전용, 작물별 옵션 value). 상관없음·과수는 'any' */
-  taste: string;
+  /** 식미(밭작물 전용, 복수 선택, 작물별 옵션 value). 빈 배열 = 상관없음·과수 */
+  tastes: string[];
   /** 판로·용도 (복수 선택, 작물별 옵션 value). 과수는 기존 '유통 조건' 문항을 합쳤습니다. */
   usages: string[];
   /** F6 (복수 선택, 작물별 옵션 value). '없음'은 'none' */
