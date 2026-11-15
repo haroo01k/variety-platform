@@ -107,23 +107,19 @@ export const SEASON_CALENDAR: Record<MonthTimingCrop, SeasonCalendar[]> = {
     { value: 'spring', label: '봄배추 (3~4월 정식 → 5~6월 수확)', plantMonths: [3, 4], harvestMonths: [5, 6] },
     { value: 'summer', label: '여름·고랭지 배추 (5~7월 정식 → 7~9월 수확)', plantMonths: [5, 6, 7], harvestMonths: [7, 8, 9] },
     { value: 'autumn', label: '가을·김장배추 (8~9월 정식 → 10~12월 수확)', plantMonths: [8, 9], harvestMonths: [10, 11, 12] },
-    { value: 'winter', label: '겨울·월동배추 (9월 정식 → 12~3월 수확)', plantMonths: [9], harvestMonths: [12, 1, 2, 3] },
+    {
+      value: 'winter',
+      label: '겨울·월동배추 (9월 정식 → 12~3월 수확)',
+      plantMonths: [9],
+      harvestMonths: [12, 1, 2, 3],
+      caution: '월동배추는 밭에서 겨울을 나는 내한성이 핵심인데, 추천 품종은 월동 재배 자료가 없어요. 해당 지역 월동 재배 이력이 있는 품종인지 꼭 확인하세요.',
+    },
   ],
 };
 
 export const findSeason = (cropId: MonthTimingCrop, season: CropSeason | null) =>
   SEASON_CALENDAR[cropId].find((c) => c.value === season) ?? null;
 
-export const PLANT_MONTH_LABEL: Record<MonthTimingCrop, string> = { potato: '씨감자를 심는 달', cabbage: '모종을 아주심는(정식) 달' };
-
-/** 수확하고 싶은 달 선택지: 고른 작형의 수확 달 중 심는 달 이후인 달(심는 달을 안 골랐으면 전부) */
-export function harvestMonthChoices(cropId: MonthTimingCrop, season: CropSeason, plantMonth: number | null): number[] {
-  const calendar = findSeason(cropId, season);
-  if (!calendar) return [];
-  if (plantMonth === null) return calendar.harvestMonths;
-  // 심는 달에서 몇 달 뒤인지로 비교(연도 넘김 처리)
-  return calendar.harvestMonths.filter((m) => ((m - plantMonth + 12) % 12) >= 1);
-}
 
 /** F4 수확 시기 (과수: 사과·복숭아) */
 export const ORCHARD_HARVEST_MONTH_OPTIONS: { value: OrchardHarvestMonthAnswer; label: string }[] = [
@@ -156,20 +152,20 @@ export const USAGE_OPTIONS: Record<CropId, UsageOption[]> = {
   peach: [
     { value: 'fresh', label: '생과 직판', matches: (v) => hasTag(v.usageTags, ['생식']) },
     { value: 'school', label: '급식', matches: (v) => hasTag(v.usageTags, ['급식']) },
-    { value: 'online', label: '택배', matches: (v) => hasTag(v.usageTags, ['온라인택배', '택배']) || isFirm(v) },
-    { value: 'storage', label: '며칠 보관 후 판매', matches: (v) => isFirm(v) || v.usageText.includes('저장') },
+    // 택배와 보관 판매는 둘 다 '단단한 과육'을 보므로 한 선택지로 합쳐 같은 특성이 두 번 점수 받지 않게 합니다.
+    { value: 'online', label: '택배·보관 후 판매', matches: (v) => hasTag(v.usageTags, ['온라인택배', '택배']) || isFirm(v) || v.usageText.includes('저장') },
     { value: 'handling', label: '손질 편의', matches: (v) => hasTag(v.usageTags, ['손질편의', '손질']) },
   ],
   apple: [
     { value: 'fresh', label: '생과 직판', matches: (v) => hasTag(v.usageTags, ['생식']) },
     { value: 'school', label: '급식·조각과일', matches: (v) => hasTag(v.usageTags, ['급식']) },
-    { value: 'online', label: '택배', matches: (v) => hasTag(v.usageTags, ['온라인택배', '택배']) || isFirm(v) },
-    { value: 'storage', label: '며칠 보관 후 판매', matches: (v) => isFirm(v) || v.usageText.includes('저장성') },
+    { value: 'online', label: '택배·보관 후 판매', matches: (v) => hasTag(v.usageTags, ['온라인택배', '택배']) || isFirm(v) || v.usageText.includes('저장성') },
     { value: 'holiday', label: '명절 출하', matches: (v) => hasTag(v.usageTags, ['명절']) },
   ],
   cabbage: [
     { value: 'kimjang', label: '김장·범용', matches: (v) => hasTag(v.usageTags, ['김장']) },
-    { value: 'fresh', label: '신선채소(쌈·겉절이)', matches: (v) => hasTag(v.activityTags, ['쌈', '겉절이', '생채', '샐러드']) },
+    // 품종요약서에 용도가 '신선채소용'으로 적힌 품종(원교20049호)도 포함합니다.
+    { value: 'fresh', label: '신선채소(쌈·겉절이)', matches: (v) => hasTag(v.activityTags, ['쌈', '겉절이', '생채', '샐러드']) || v.usageText.includes('신선채소') },
     { value: 'small', label: '1~2인용 소형', matches: (v) => hasTag(v.usageTags, ['소형']) },
   ],
 };

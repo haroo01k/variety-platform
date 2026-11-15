@@ -224,8 +224,10 @@ function buildReasons(variety: VarietyRecord, answers: FarmerAnswers, breakdown:
     candidates.push({
       score: breakdown.harvestTiming,
       text:
-        isMonthTimingCrop(variety.cropId) && days !== null && gd
-          ? `${answers.plantMonth}월에 ${gd.from === '정식' ? '아주심으면' : '심으면'} ${answers.harvestTargetMonth}월 수확에 맞아요(${gd.from} 후 ${gd.min === gd.max ? gd.min : `${gd.min}~${gd.max}`}일${gd.estimated ? ', 추정' : ''}).`
+        isMonthTimingCrop(variety.cropId)
+          ? days !== null && gd
+            ? `보통 ${answers.plantMonth}월에 ${gd.from === '정식' ? '아주심으면' : '심으면'} ${answers.harvestTargetMonth}월 수확에 맞아요(${gd.from} 후 ${gd.min === gd.max ? gd.min : `${gd.min}~${gd.max}`}일${gd.estimated ? ', 추정' : ''}).`
+            : '고른 작형에 권장되는 품종이에요.'
           : `숙기(${variety.maturityStage})가 원하는 수확 시기와 맞아요.`,
     });
   }

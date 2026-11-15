@@ -20,10 +20,8 @@ import {
   CLIMATE_RISK_OPTIONS,
   CORN_HARVEST_HINT,
   CORN_HARVEST_TIMING_OPTIONS,
-  PLANT_MONTH_LABEL,
   SEASON_CALENDAR,
   findSeason,
-  harvestMonthChoices,
   isMonthTimingCrop,
   ORCHARD_HARVEST_MONTH_OPTIONS,
   ORCHARD_REDUCE_WORK_OPTIONS,
@@ -55,7 +53,7 @@ type StepId =
 
 /** 밭작물(감자·옥수수·배추): 식미 문항 포함. 하나의 개념은 한 문항에서만 묻습니다(2026-11 재구성). */
 const FIELD_STEPS: StepId[] = ['crop', 'region', 'climate', 'harvest', 'taste', 'usage', 'pest'];
-/** 감자·배추: 재배 시기를 한 화면에서 묻습니다(작형 필수, 심는 달·수확 달은 선택). */
+/** 감자·배추: 작형을 묻습니다. 감자만 수확 달을 선택으로 더 받습니다(배추는 작형으로 품종이 갈림). */
 const MONTH_TIMING_STEPS: StepId[] = ['crop', 'region', 'climate', 'season', 'taste', 'usage', 'pest'];
 /** 과수(사과·복숭아): 겨울 최저기온·줄이고 싶은 작업 포함, 유통 조건은 판로·용도에 합침 */
 const ORCHARD_STEPS: StepId[] = ['crop', 'region', 'climate', 'harvest', 'winterMin', 'usage', 'pest', 'reduceWork'];
@@ -64,7 +62,7 @@ const STEP_META: Record<StepId, { title: string; hint?: string }> = {
   crop: { title: '어떤 작물을 재배하시나요?' },
   region: { title: '어느 지역에서 재배하시나요?', hint: '지역명 첫 글자를 누르거나 직접 검색해 주세요.' },
   climate: { title: '가장 걱정되는 기상위험은 무엇인가요?', hint: '여러 개 선택할 수 있어요' },
-  season: { title: '언제 심고 언제 수확하시나요?', hint: '작형만 골라도 돼요. 달까지 고르면 더 정확해져요.' },
+  season: { title: '어떤 작형으로 재배하시나요?' },
   harvest: { title: '원하는 수확 시기는 언제인가요?' },
   taste: { title: '원하는 맛·식감은 무엇인가요?', hint: '여러 개 선택할 수 있어요' },
   usage: { title: '주요 판로·유통 방식은 무엇인가요?', hint: '여러 개 선택할 수 있어요' },
@@ -97,7 +95,6 @@ export function FarmerConditionsPage() {
   const region: RegionAnswer | null = resolveRegionAnswer(regionSelection);
   const [climateRisks, setClimateRisks] = useState<string[]>([]);
   const [cropSeason, setCropSeason] = useState<CropSeason | null>(null);
-  const [plantMonth, setPlantMonth] = useState<number | null>(null);
   const [harvestChoice, setHarvestChoice] = useState<string | null>(null);
   const [usages, setUsages] = useState<string[]>([]);
   const [pestConcerns, setPestConcerns] = useState<string[]>([]);
@@ -124,7 +121,6 @@ export function FarmerConditionsPage() {
       setPestConcerns([]);
       setTastes([]);
       setHarvestChoice(null);
-      setPlantMonth(null);
       setCropSeason(null);
       setWinterMin(null);
       setReduceWork(null);
@@ -170,7 +166,7 @@ export function FarmerConditionsPage() {
     }
     if (!cropId) return;
 
-    // 수확 달만 고르고 심는 달을 안 골랐으면 그 작형의 가운데 심는 달로 가정합니다.
+    // 심는 달은 묻지 않고, 수확 달을 골랐을 때 그 작형의 가운데 심는 달로 가정해 생육일수를 계산합니다.
     const seasonPlantMonths = isMonthTimingCrop(cropId) ? (findSeason(cropId, cropSeason)?.plantMonths ?? []) : [];
     const assumedPlantMonth =
       harvestChoice && seasonPlantMonths.length > 0
@@ -183,7 +179,7 @@ export function FarmerConditionsPage() {
       climateRisks: (climateRisks.includes('none') ? [] : climateRisks) as HazardKey[],
       harvestTiming: cropId === 'corn' ? ((harvestChoice ?? 'any') as FieldHarvestTimingAnswer) : 'any',
       cropSeason: isMonthTimingCrop(cropId) ? cropSeason : null,
-      plantMonth: isMonthTimingCrop(cropId) ? (plantMonth ?? assumedPlantMonth) : null,
+      plantMonth: isMonthTimingCrop(cropId) ? assumedPlantMonth : null,
       harvestTargetMonth:
         isMonthTimingCrop(cropId) && harvestChoice && harvestChoice !== 'any' ? Number(harvestChoice) : null,
       tastes: isOrchard ? [] : tastes.filter((t) => t !== 'any'),
@@ -254,50 +250,27 @@ export function FarmerConditionsPage() {
                   label={season.label}
                   selected={cropSeason === season.value}
                   onSelect={() => {
-                    // 작형이 바뀌면 심는 달·수확 달 선택도 초기화합니다.
-                    if (cropSeason !== season.value) {
-                      setPlantMonth(null);
-                      setHarvestChoice(null);
-                    }
+                    // 작형이 바뀌면 수확 달 선택도 초기화합니다.
+                    if (cropSeason !== season.value) setHarvestChoice(null);
                     setCropSeason(season.value);
                   }}
                 />
               ))}
             </div>
-            {calendar && cropSeason && (
-              <div className="flex flex-col gap-3 rounded-2xl bg-brand-ivory p-4">
-                <p className="text-xs font-semibold text-slate-500">더 정확하게 (선택)</p>
-                <div className="flex flex-col gap-2">
-                  <p className="text-sm text-slate-600">{PLANT_MONTH_LABEL[cropId]}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {calendar.plantMonths.map((month) => (
-                      <ChoiceChip
-                        key={month}
-                        label={`${month}월`}
-                        selected={plantMonth === month}
-                        onToggle={() => {
-                          const nextMonth = plantMonth === month ? null : month;
-                          setPlantMonth(nextMonth);
-                          // 심는 달이 바뀌면 그보다 이른 수확 달 선택은 지웁니다.
-                          if (harvestChoice && nextMonth !== null && !harvestMonthChoices(cropId, cropSeason, nextMonth).includes(Number(harvestChoice)))
-                            setHarvestChoice(null);
-                        }}
-                      />
-                    ))}
-                  </div>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <p className="text-sm text-slate-600">수확하고 싶은 달</p>
-                  <div className="flex flex-wrap gap-2">
-                    {harvestMonthChoices(cropId, cropSeason, plantMonth).map((month) => (
-                      <ChoiceChip
-                        key={month}
-                        label={`${month}월`}
-                        selected={harvestChoice === String(month)}
-                        onToggle={() => setHarvestChoice(harvestChoice === String(month) ? null : String(month))}
-                      />
-                    ))}
-                  </div>
+            {cropId === 'potato' && calendar && (
+              <div className="flex flex-col gap-2 rounded-2xl bg-brand-ivory p-4">
+                <p className="text-sm text-slate-600">
+                  수확하고 싶은 달 <span className="text-xs text-slate-400">(선택 · 고르면 숙기까지 맞춰 드려요)</span>
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {calendar.harvestMonths.map((month) => (
+                    <ChoiceChip
+                      key={month}
+                      label={`${month}월`}
+                      selected={harvestChoice === String(month)}
+                      onToggle={() => setHarvestChoice(harvestChoice === String(month) ? null : String(month))}
+                    />
+                  ))}
                 </div>
               </div>
             )}
