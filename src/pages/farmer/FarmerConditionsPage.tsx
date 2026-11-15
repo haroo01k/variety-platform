@@ -18,7 +18,12 @@ import type {
 import type { HazardKey } from '../../types/variety';
 import {
   CLIMATE_RISK_OPTIONS,
-  FIELD_HARVEST_TIMING_OPTIONS,
+  CORN_HARVEST_HINT,
+  CORN_HARVEST_TIMING_OPTIONS,
+  PLANT_MONTH_LABEL,
+  PLANT_MONTH_OPTIONS,
+  harvestMonthChoices,
+  isMonthTimingCrop,
   ORCHARD_HARVEST_MONTH_OPTIONS,
   ORCHARD_REDUCE_WORK_OPTIONS,
   PEST_OPTIONS,
@@ -39,6 +44,7 @@ type StepId =
   | 'crop'
   | 'region'
   | 'climate'
+  | 'plant'
   | 'harvest'
   | 'taste'
   | 'usage'
@@ -48,6 +54,8 @@ type StepId =
 
 /** 밭작물(감자·옥수수·배추): 식미 문항 포함. 하나의 개념은 한 문항에서만 묻습니다(2026-11 재구성). */
 const FIELD_STEPS: StepId[] = ['crop', 'region', 'climate', 'harvest', 'taste', 'usage', 'pest'];
+/** 감자·배추: 수확시기를 '심는 달 + 수확하고 싶은 달'로 묻습니다(교수 자문). */
+const MONTH_TIMING_STEPS: StepId[] = ['crop', 'region', 'climate', 'plant', 'harvest', 'taste', 'usage', 'pest'];
 /** 과수(사과·복숭아): 겨울 최저기온·줄이고 싶은 작업 포함, 유통 조건은 판로·용도에 합침 */
 const ORCHARD_STEPS: StepId[] = ['crop', 'region', 'climate', 'harvest', 'winterMin', 'usage', 'pest', 'reduceWork'];
 
@@ -55,6 +63,7 @@ const STEP_META: Record<StepId, { title: string; hint?: string }> = {
   crop: { title: '어떤 작물을 재배하시나요?' },
   region: { title: '어느 지역에서 재배하시나요?', hint: '지역명 첫 글자를 누르거나 직접 검색해 주세요.' },
   climate: { title: '가장 걱정되는 기상위험은 무엇인가요?', hint: '여러 개 선택할 수 있어요' },
+  plant: { title: '언제 심으시나요?' },
   harvest: { title: '원하는 수확 시기는 언제인가요?' },
   taste: { title: '원하는 맛·식감은 무엇인가요?' },
   usage: { title: '주요 판로·유통 방식은 무엇인가요?', hint: '여러 개 선택할 수 있어요' },
@@ -86,6 +95,7 @@ export function FarmerConditionsPage() {
   };
   const region: RegionAnswer | null = resolveRegionAnswer(regionSelection);
   const [climateRisks, setClimateRisks] = useState<string[]>([]);
+  const [plantMonth, setPlantMonth] = useState<number | null>(null);
   const [harvestChoice, setHarvestChoice] = useState<string | null>(null);
   const [usages, setUsages] = useState<string[]>([]);
   const [pestConcerns, setPestConcerns] = useState<string[]>([]);
@@ -95,8 +105,8 @@ export function FarmerConditionsPage() {
 
   const isOrchard = cropId ? isOrchardCrop(cropId) : false;
   const steps = useMemo<StepId[]>(
-    () => (isOrchard ? ORCHARD_STEPS : FIELD_STEPS),
-    [isOrchard],
+    () => (isOrchard ? ORCHARD_STEPS : cropId && isMonthTimingCrop(cropId) ? MONTH_TIMING_STEPS : FIELD_STEPS),
+    [isOrchard, cropId],
   );
   const currentStepId = steps[stepIndex];
 
@@ -112,6 +122,7 @@ export function FarmerConditionsPage() {
       setPestConcerns([]);
       setTaste(null);
       setHarvestChoice(null);
+      setPlantMonth(null);
       setWinterMin(null);
       setReduceWork(null);
     }
@@ -128,6 +139,8 @@ export function FarmerConditionsPage() {
         return climateRisks.length > 0;
       case 'harvest':
         return harvestChoice !== null;
+      case 'plant':
+        return plantMonth !== null;
       case 'usage':
         return usages.length > 0;
       case 'pest':
@@ -158,7 +171,10 @@ export function FarmerConditionsPage() {
       cropId,
       region: region ?? 'other',
       climateRisks: (climateRisks.includes('none') ? [] : climateRisks) as HazardKey[],
-      harvestTiming: isOrchard ? 'any' : ((harvestChoice ?? 'any') as FieldHarvestTimingAnswer),
+      harvestTiming: cropId === 'corn' ? ((harvestChoice ?? 'any') as FieldHarvestTimingAnswer) : 'any',
+      plantMonth: isMonthTimingCrop(cropId) ? plantMonth : null,
+      harvestTargetMonth:
+        isMonthTimingCrop(cropId) && harvestChoice && harvestChoice !== 'any' ? Number(harvestChoice) : null,
       taste: isOrchard ? 'any' : (taste ?? 'any'),
       harvestMonth: isOrchard ? ((harvestChoice ?? '6-7') as OrchardHarvestMonthAnswer) : '6-7',
       usages,
@@ -215,11 +231,37 @@ export function FarmerConditionsPage() {
             ))}
           </div>
         );
+      case 'plant':
+        if (!cropId || !isMonthTimingCrop(cropId)) return null;
+        return (
+          <div className="flex flex-col gap-2">
+            <p className="text-sm text-slate-500">{PLANT_MONTH_LABEL[cropId]}를 골라주세요.</p>
+            <div className="grid grid-cols-4 gap-2">
+              {PLANT_MONTH_OPTIONS[cropId].map((month) => (
+                <ChoiceButton
+                  key={month}
+                  label={`${month}월`}
+                  selected={plantMonth === month}
+                  onSelect={() => {
+                    // 심는 달이 바뀌면 수확 달 선택지도 바뀌므로 초기화합니다.
+                    if (plantMonth !== month) setHarvestChoice(null);
+                    setPlantMonth(month);
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        );
       case 'harvest': {
         if (!cropId) return null;
-        const options = isOrchard
-          ? ORCHARD_HARVEST_MONTH_OPTIONS
-          : FIELD_HARVEST_TIMING_OPTIONS[cropId as keyof typeof FIELD_HARVEST_TIMING_OPTIONS];
+        let options: { value: string; label: string }[];
+        if (isOrchard) options = ORCHARD_HARVEST_MONTH_OPTIONS;
+        else if (isMonthTimingCrop(cropId) && plantMonth !== null)
+          options = [
+            ...harvestMonthChoices(cropId, plantMonth).map((m) => ({ value: String(m), label: `${m}월` })),
+            { value: 'any', label: '상관없음' },
+          ];
+        else options = CORN_HARVEST_TIMING_OPTIONS;
         return (
           <div className="flex flex-col gap-2">
             {options.map((option) => (
@@ -307,6 +349,8 @@ export function FarmerConditionsPage() {
   };
 
   const meta = STEP_META[currentStepId];
+  // 옥수수 수확시기는 날짜 감각용 안내를 붙입니다.
+  const hint = currentStepId === 'harvest' && cropId === 'corn' ? CORN_HARVEST_HINT : meta.hint;
   const isLastStep = stepIndex === steps.length - 1;
 
   return (
@@ -327,7 +371,7 @@ export function FarmerConditionsPage() {
         {currentStepId !== 'region' && (
           <div>
             <h2 className="text-lg font-bold text-slate-800">{meta.title}</h2>
-            {meta.hint && <p className="mt-1 text-xs text-slate-400">{meta.hint}</p>}
+            {hint && <p className="mt-1 text-xs text-slate-400">{hint}</p>}
           </div>
         )}
 

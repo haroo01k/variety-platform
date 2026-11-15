@@ -37,25 +37,33 @@ export const CLIMATE_RISK_OPTIONS: { value: HazardKey | 'none'; label: string }[
 ];
 
 /**
- * 수확 시기 (밭작물: 감자·옥수수·배추). 조기출하·빠른 결구는 이 문항에서만 묻습니다.
- * 옥수수는 5개 품종이 출사 69~72일로 몰려 있고 만생종이 없어 '빨리 수확 / 상관없음' 두 개만 둡니다.
+ * 옥수수 수확 시기. 5개 품종이 출사 69~72일로 몰려 있고 만생종이 없어 두 개만 둡니다.
+ * 날짜 감각용 안내: 4월 파종 시 수확은 출사 후 23~25일(국립식량과학원, 한작지 2012) → 4월 중순 파종이면 7월 하순.
  */
-export const FIELD_HARVEST_TIMING_OPTIONS: Record<'potato' | 'corn' | 'cabbage', { value: FieldHarvestTimingAnswer; label: string }[]> = {
-  potato: [
-    { value: 'early', label: '빨리 수확(조기출하)' },
-    { value: 'normal', label: '보통' },
-    { value: 'any', label: '상관없음' },
-  ],
-  corn: [
-    { value: 'early', label: '빨리 수확(출사 70일 이내)' },
-    { value: 'any', label: '상관없음' },
-  ],
-  cabbage: [
-    { value: 'early', label: '빨리 수확(빠른 결구·조기출하)' },
-    { value: 'normal', label: '보통' },
-    { value: 'any', label: '상관없음' },
-  ],
+export const CORN_HARVEST_TIMING_OPTIONS: { value: FieldHarvestTimingAnswer; label: string }[] = [
+  { value: 'early', label: '빨리 수확(출사 70일 이내)' },
+  { value: 'any', label: '상관없음' },
+];
+export const CORN_HARVEST_HINT = '참고: 4월 중순에 심으면 보통 7월 하순에 수확해요.';
+
+/** 감자·배추 수확 시기: 심는 달(감자 파종, 배추 정식) + 수확하고 싶은 달. 교수 자문(월 단위로 묻기) 반영 */
+export const MONTH_TIMING_CROPS = ['potato', 'cabbage'] as const;
+export type MonthTimingCrop = (typeof MONTH_TIMING_CROPS)[number];
+export const isMonthTimingCrop = (cropId: CropId): cropId is MonthTimingCrop =>
+  (MONTH_TIMING_CROPS as readonly string[]).includes(cropId);
+
+/** 심는 달 선택지: 감자 봄(2~4월)·고랭지(4~5월)·가을(8~9월), 배추 봄·고랭지·가을 정식 */
+export const PLANT_MONTH_OPTIONS: Record<MonthTimingCrop, number[]> = {
+  potato: [2, 3, 4, 5, 6, 7, 8, 9],
+  cabbage: [3, 4, 5, 6, 7, 8, 9],
 };
+export const PLANT_MONTH_LABEL: Record<MonthTimingCrop, string> = { potato: '씨감자를 심는 달', cabbage: '모종을 아주심는(정식) 달' };
+
+/** 수확하고 싶은 달 선택지: 심는 달 다음 1~4달(감자는 2~5달) */
+export function harvestMonthChoices(cropId: MonthTimingCrop, plantMonth: number): number[] {
+  const offsets = cropId === 'potato' ? [2, 3, 4, 5] : [1, 2, 3, 4];
+  return offsets.map((o) => ((plantMonth - 1 + o) % 12) + 1);
+}
 
 /** F4 수확 시기 (과수: 사과·복숭아) */
 export const ORCHARD_HARVEST_MONTH_OPTIONS: { value: OrchardHarvestMonthAnswer; label: string }[] = [

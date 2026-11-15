@@ -67,6 +67,12 @@ export interface VarietyRecord {
   reviewMemo: string;
   /** 겨울철 최저기온 한계(℃). 과수 중 명시적 한계가 있는 품종만(예: 홍슬 -18, 설홍 -19) */
   winterHardinessLimitC?: number | null;
+  /**
+   * 밭작물(감자·배추) 재배 일수: 심은 날(감자 파종, 배추 정식)부터 수확까지.
+   * 농업인 수확시기 문항(심는 달 + 수확하고 싶은 달)에 씁니다.
+   * estimated=true는 품종별 실측치가 없어 숙기 구분 기준으로 잡은 범위입니다.
+   */
+  growthDays?: { min: number; max: number; from: '파종' | '정식'; estimated: boolean; source: string };
   /** 판매처(쿠팡 검색) 링크. 없으면 "판매처 보기" 버튼을 숨깁니다. */
   marketUrl?: string;
 }

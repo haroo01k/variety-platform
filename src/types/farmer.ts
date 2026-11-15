@@ -9,8 +9,8 @@ export type RegionAnswer =
   | 'south'
   | 'other';
 
-/** 밭작물(감자·옥수수·배추) 수확 시기 선택. 조기출하·빠른 결구도 여기서만 묻습니다. */
-export type FieldHarvestTimingAnswer = 'early' | 'normal' | 'any';
+/** 옥수수 수확 시기 선택(빨리 수확 / 상관없음). 감자·배추는 심는 달 + 수확하고 싶은 달로 묻습니다. */
+export type FieldHarvestTimingAnswer = 'early' | 'any';
 
 /** 과수(사과·복숭아) 수확 시기 선택 */
 export type OrchardHarvestMonthAnswer = '6-7' | '8' | '9' | '10';
@@ -31,8 +31,12 @@ export interface FarmerAnswers {
   region: RegionAnswer;
   /** F2 (복수 선택) */
   climateRisks: HazardKey[];
-  /** F4 (밭작물) */
+  /** 옥수수 수확 시기 */
   harvestTiming: FieldHarvestTimingAnswer;
+  /** 감자·배추: 심는 달(1~12, 감자 파종·배추 정식). 그 외 작물은 null */
+  plantMonth: number | null;
+  /** 감자·배추: 수확하고 싶은 달(1~12). 상관없음이면 null */
+  harvestTargetMonth: number | null;
   /** F4 (과수) */
   harvestMonth: OrchardHarvestMonthAnswer;
   /** 식미(밭작물 전용, 작물별 옵션 value). 상관없음·과수는 'any' */

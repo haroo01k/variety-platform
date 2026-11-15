@@ -8,8 +8,8 @@
 import type { FarmerAnswers, FarmerRecommendation, FarmerResult, FarmerScoreBreakdown } from '../types/farmer';
 import type { EvidenceType, HazardKey, VarietyRecord } from '../types/variety';
 import { VARIETIES } from '../data/varieties';
-import { PEST_OPTIONS, TASTE_OPTIONS, USAGE_OPTIONS, isOrchardCrop } from '../data/farmerOptions';
-import { clamp, hasAnyTag, matchesMaturityStage, round1 } from './tagUtils';
+import { PEST_OPTIONS, TASTE_OPTIONS, USAGE_OPTIONS, isMonthTimingCrop, isOrchardCrop } from '../data/farmerOptions';
+import { clamp, hasAnyTag, round1 } from './tagUtils';
 import { EXPERT_RESULT_CAUTIONS, getCropWeights } from '../data/farmerExpertWeights';
 import type { CropWeights, ExpertItem } from '../data/farmerExpertWeights';
 
@@ -67,10 +67,30 @@ function scoreHarvestTiming(variety: VarietyRecord, answers: FarmerAnswers): num
     const months = ORCHARD_MONTHS[answers.harvestMonth];
     return variety.harvestMonths.some((m) => months.includes(m)) ? 2 : 0;
   }
-  // 밭작물: 빨리 수확 = 숙기에 '조'가 들어간 품종(조생·조중생), 보통 = 중생(조중생 포함), 상관없음 = 0
-  if (answers.harvestTiming === 'early') return variety.maturityStage.includes('조') ? 2 : 0;
-  if (answers.harvestTiming === 'normal') return matchesMaturityStage(variety.maturityStage, '중생') ? 2 : 0;
-  return 0;
+  if (isMonthTimingCrop(variety.cropId)) return monthTimingScore(variety, answers) ?? 0;
+  // 옥수수: 빨리 수확 = 숙기에 '조'가 들어간 품종(조중생, 출사 70일 이내), 상관없음 = 0
+  return answers.harvestTiming === 'early' && variety.maturityStage.includes('조') ? 2 : 0;
+}
+
+/** 심는 달 중순부터 수확하고 싶은 달 중순까지의 대략적인 일수(감자·배추). 상관없음이면 null */
+function targetDays(answers: FarmerAnswers): number | null {
+  if (answers.plantMonth == null || answers.harvestTargetMonth == null) return null;
+  return (((answers.harvestTargetMonth - answers.plantMonth + 12) % 12) || 12) * 30;
+}
+
+/**
+ * 감자·배추 수확시기 점수: 원하는 기간(월 단위라 ±15일 폭)과 품종 재배 일수(growthDays)가
+ * 겹치면 +2, 15일 이내로 비껴가면 +1, 그 밖이면 0. 상관없음·재배 일수 자료 없음이면 null.
+ */
+function monthTimingScore(variety: VarietyRecord, answers: FarmerAnswers): number | null {
+  const days = targetDays(answers);
+  const gd = variety.growthDays;
+  if (days === null || !gd) return null;
+  const lo = days - 15;
+  const hi = days + 15;
+  if (gd.max >= lo && gd.min <= hi) return 2;
+  const gap = gd.max < lo ? lo - gd.max : gd.min - hi;
+  return gap <= 15 ? 1 : 0;
 }
 
 function scoreUsage(variety: VarietyRecord, answers: FarmerAnswers): number {
@@ -174,7 +194,15 @@ function buildReasons(variety: VarietyRecord, answers: FarmerAnswers, breakdown:
     }
   });
   if (breakdown.harvestTiming > 0) {
-    candidates.push({ score: breakdown.harvestTiming, text: `숙기(${variety.maturityStage})가 원하는 수확 시기와 맞아요.` });
+    const days = targetDays(answers);
+    const gd = variety.growthDays;
+    candidates.push({
+      score: breakdown.harvestTiming,
+      text:
+        isMonthTimingCrop(variety.cropId) && days !== null && gd
+          ? `${answers.plantMonth}월에 ${gd.from === '정식' ? '아주심으면' : '심으면'} ${answers.harvestTargetMonth}월 수확에 맞아요(${gd.from} 후 ${gd.min === gd.max ? gd.min : `${gd.min}~${gd.max}`}일${gd.estimated ? ', 추정' : ''}).`
+          : `숙기(${variety.maturityStage})가 원하는 수확 시기와 맞아요.`,
+    });
   }
   if (breakdown.usage > 0) {
     candidates.push({ score: breakdown.usage, text: `${variety.usageText} 용도로 활용하기 좋아요.` });
@@ -206,6 +234,9 @@ function buildCautions(variety: VarietyRecord, answers: FarmerAnswers): string[]
   });
   if (variety.pestNote && variety.pestNote !== '자료없음') {
     cautions.push(`병해충 참고: ${variety.pestNote}`);
+  }
+  if (isMonthTimingCrop(variety.cropId) && targetDays(answers) !== null && variety.growthDays?.estimated) {
+    cautions.push(`재배 일수(${variety.growthDays.min}~${variety.growthDays.max}일)는 품종 실측치가 아니라 숙기 구분으로 추정한 값이에요. 지역·작형에 따라 달라질 수 있어요.`);
   }
   // 품종별 근거가 없는 병해충(예: 배추 뿌리혹병·바이러스병)은 점수 대신 안내로 알려줍니다.
   PEST_OPTIONS[variety.cropId]
@@ -260,7 +291,13 @@ function weightedItemScores(
   return {
     region: breakdown.region / 2,
     climate,
-    harvestTiming: answers.harvestTiming === 'any' ? null : breakdown.harvestTiming / 2,
+    harvestTiming: isMonthTimingCrop(variety.cropId)
+      ? monthTimingScore(variety, answers) === null
+        ? null
+        : breakdown.harvestTiming / 2
+      : answers.harvestTiming === 'any'
+        ? null
+        : breakdown.harvestTiming / 2,
     usage,
     pest,
     taste: taste === null ? null : taste ? 1 : 0,
