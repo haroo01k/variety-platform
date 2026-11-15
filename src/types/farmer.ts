@@ -9,8 +9,8 @@ export type RegionAnswer =
   | 'south'
   | 'other';
 
-/** 밭작물(감자·옥수수·배추) 수확 시기 선택 */
-export type FieldHarvestTimingAnswer = 'early' | 'normal' | 'late';
+/** 밭작물(감자·옥수수·배추) 수확 시기 선택. 조기출하·빠른 결구도 여기서만 묻습니다. */
+export type FieldHarvestTimingAnswer = 'early' | 'normal' | 'any';
 
 /** 과수(사과·복숭아) 수확 시기 선택 */
 export type OrchardHarvestMonthAnswer = '6-7' | '8' | '9' | '10';
@@ -20,8 +20,10 @@ export type WinterMinAnswer = 'below-18' | 'between-10-18' | 'above-10' | 'unkno
 
 /**
  * 농업인 질문 응답 전체.
- * F1~F7은 모든 작물 공통, harvestMonth·winterMin·reduceWork·logistics는
- * 과수(사과·복숭아)에서만 사용합니다(FA1~FA3).
+ * 원칙: 하나의 개념은 한 문항에서만 묻습니다(2026-11 문항 재구성).
+ * - 공통: 지역 · 기상위험 · 수확시기 · 판로·용도 · 병해충
+ * - 밭작물(감자·옥수수·배추)만: 식미
+ * - 과수(사과·복숭아)만: 겨울 최저기온 · 줄이고 싶은 작업
  */
 export interface FarmerAnswers {
   cropId: CropId;
@@ -33,18 +35,16 @@ export interface FarmerAnswers {
   harvestTiming: FieldHarvestTimingAnswer;
   /** F4 (과수) */
   harvestMonth: OrchardHarvestMonthAnswer;
-  /** F5 (복수 선택, 작물별 옵션 value) */
+  /** 식미(밭작물 전용, 작물별 옵션 value). 상관없음·과수는 'any' */
+  taste: string;
+  /** 판로·용도 (복수 선택, 작물별 옵션 value). 과수는 기존 '유통 조건' 문항을 합쳤습니다. */
   usages: string[];
   /** F6 (복수 선택, 작물별 옵션 value). '없음'은 'none' */
   pestConcerns: string[];
-  /** F7 (단일 선택, 작물별 옵션 value). 상관없음은 'any' */
-  managementPriority: string;
   /** FA1 (과수 전용) */
   winterMin: WinterMinAnswer;
-  /** FA2 (과수 전용). 없음은 'none' */
+  /** 줄이고 싶은 작업(과수 전용, 기존 '관리 부담' 문항을 합침). 없음은 'none' */
   reduceWork: string;
-  /** FA3 (과수 전용) */
-  logistics: string;
 }
 
 export interface FarmerScoreBreakdown {
@@ -53,8 +53,9 @@ export interface FarmerScoreBreakdown {
   harvestTiming: number;
   usage: number;
   pest: number;
-  managementPriority: number;
-  /** FA2 + FA3 합계 (과수만) */
+  /** 식미 (밭작물만) */
+  taste: number;
+  /** 줄이고 싶은 작업 (과수만) */
   orchard: number;
 }
 

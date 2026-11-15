@@ -16,7 +16,7 @@ export const SHARE_CARD_IMAGES: Record<string, ShareCardImage> = {
   'CAB-01': { src: '/images/share-cards/cabbage/cabbage-wongyo20054-card.png', fileName: '배추_신품종카드_원교20054호.png' },
   // 원교20049호 (중생종)
   'CAB-02': { src: '/images/share-cards/cabbage/cabbage-wongyo20049-card.png', fileName: '배추_신품종카드_원교20049호.png' },
-  // FH112 (중생종)
+  // 원교20055호(FH112) (조생종)
   'CAB-03': { src: '/images/share-cards/cabbage/cabbage-fh112-card.png', fileName: '배추_신품종카드_FH112.png' },
   // 순정아삭 (조중생종)
   'CAB-04': { src: '/images/share-cards/cabbage/cabbage-sunjeongasak-card.png', fileName: '배추_신품종카드_순정아삭.png' },

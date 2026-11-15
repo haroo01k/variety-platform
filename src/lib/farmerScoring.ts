@@ -1,6 +1,6 @@
 /**
  * 농업인 추천 점수 계산 엔진.
- * - 기본(합산): 최종점수 = 지역 + 기후위험 + 수확시기 + 용도 + 병해충 + 관리우선순위 (+ 과수 FA2·FA3)
+ * - 기본(합산): 최종점수 = 지역 + 기후위험 + 수확시기 + 용도 + 병해충 (+ 밭작물 식미, 과수 줄이고 싶은 작업)
  *   참고: Claude_업로드용_추천질문지_및_점수로직.pdf 2~4쪽.
  * - 전문가 가중치(자문 결과가 있는 작물, 현재 감자): 항목별 점수를 0~1로 맞춘 뒤 전문가 가중치로 가중 평균(0~10점).
  *   해당 질문에 답이 없거나 '상관없음'이면 그 항목은 계산에서 뺍니다. 가중치: src/data/farmerExpertWeights.ts
@@ -8,7 +8,7 @@
 import type { FarmerAnswers, FarmerRecommendation, FarmerResult, FarmerScoreBreakdown } from '../types/farmer';
 import type { EvidenceType, HazardKey, VarietyRecord } from '../types/variety';
 import { VARIETIES } from '../data/varieties';
-import { PEST_OPTIONS, USAGE_OPTIONS, isOrchardCrop } from '../data/farmerOptions';
+import { PEST_OPTIONS, TASTE_OPTIONS, USAGE_OPTIONS, isOrchardCrop } from '../data/farmerOptions';
 import { clamp, hasAnyTag, matchesMaturityStage, round1 } from './tagUtils';
 import { EXPERT_RESULT_CAUTIONS, getCropWeights } from '../data/farmerExpertWeights';
 import type { CropWeights, ExpertItem } from '../data/farmerExpertWeights';
@@ -55,12 +55,6 @@ function scoreClimate(variety: VarietyRecord, risks: HazardKey[]): number {
   return clamp(sum, -3, 3);
 }
 
-const FIELD_STAGE_LABEL: Record<FarmerAnswers['harvestTiming'], string> = {
-  early: '조생',
-  normal: '중생',
-  late: '만생',
-};
-
 const ORCHARD_MONTHS: Record<FarmerAnswers['harvestMonth'], string[]> = {
   '6-7': ['6', '7'],
   '8': ['8'],
@@ -73,27 +67,43 @@ function scoreHarvestTiming(variety: VarietyRecord, answers: FarmerAnswers): num
     const months = ORCHARD_MONTHS[answers.harvestMonth];
     return variety.harvestMonths.some((m) => months.includes(m)) ? 2 : 0;
   }
-  return matchesMaturityStage(variety.maturityStage, FIELD_STAGE_LABEL[answers.harvestTiming]) ? 2 : 0;
+  // 밭작물: 빨리 수확 = 숙기에 '조'가 들어간 품종(조생·조중생), 보통 = 중생(조중생 포함), 상관없음 = 0
+  if (answers.harvestTiming === 'early') return variety.maturityStage.includes('조') ? 2 : 0;
+  if (answers.harvestTiming === 'normal') return matchesMaturityStage(variety.maturityStage, '중생') ? 2 : 0;
+  return 0;
 }
 
 function scoreUsage(variety: VarietyRecord, answers: FarmerAnswers): number {
   const options = USAGE_OPTIONS[variety.cropId];
   return answers.usages.reduce((acc, value) => {
     const option = options.find((o) => o.value === value);
-    if (!option) return acc;
-    if (option.matchesEarlyStage) {
-      return acc + (matchesMaturityStage(variety.maturityStage, '조생') ? 2 : 0);
-    }
-    if (option.tags && hasAnyTag(variety.usageTags, option.tags)) return acc + 2;
-    return acc;
+    return option && option.matches(variety) ? acc + 2 : acc;
   }, 0);
 }
 
+/** 식미(밭작물 전용): 고른 식미와 품종 맛·식감 태그가 맞으면 +2 */
+function tasteMatches(variety: VarietyRecord, answers: FarmerAnswers): boolean | null {
+  if (isOrchardCrop(variety.cropId) || !answers.taste || answers.taste === 'any') return null;
+  const options = TASTE_OPTIONS[variety.cropId as keyof typeof TASTE_OPTIONS];
+  const option = options?.find((o) => o.value === answers.taste);
+  if (!option?.matches) return null;
+  return option.matches(variety);
+}
+
+function scoreTaste(variety: VarietyRecord, answers: FarmerAnswers): number {
+  return tasteMatches(variety, answers) ? 2 : 0;
+}
+
+/**
+ * 병해충 기재(pestNote)를 문장(';' 구분) 단위로 나눠, 키워드가 나온 문장만 보고 판단합니다.
+ * 예) "역병 및 더뎅이병 중도저항성; 바이러스 주의" → 더뎅이병은 저항(+2), 바이러스는 주의(-1).
+ * (예전에는 문장 전체에 '주의'가 하나라도 있으면 모든 병을 감점해, 장원의 더뎅이병이 부당하게 감점됐습니다.)
+ */
 function scorePestConcern(pestNote: string, keywords: string[]): number {
-  const mentioned = keywords.some((k) => pestNote.includes(k));
-  if (!mentioned) return 0;
-  const positive = /저항성|저항력|강함|우수|강한|강\)/.test(pestNote);
-  const negative = /주의|약함|약한|취약|다소 약/.test(pestNote);
+  const segments = pestNote.split(/[;；]/).filter((seg) => keywords.some((k) => seg.includes(k)));
+  if (segments.length === 0) return 0;
+  const positive = segments.some((seg) => /저항성|저항력|강함|우수|강한|강\)|낮음|낮다|적음/.test(seg));
+  const negative = segments.some((seg) => /주의|약함|약한|취약|다소 약/.test(seg));
   if (positive && !negative) return 2;
   if (negative) return -1;
   return 0;
@@ -109,84 +119,11 @@ function scorePest(variety: VarietyRecord, answers: FarmerAnswers): number {
   }, 0);
 }
 
-function hazardDirectIndirectScore(variety: VarietyRecord, hazard: HazardKey): number {
-  const info = variety.hazards[hazard];
-  if (info.evidenceType === 'direct') return 2;
-  if (info.evidenceType === 'indirect') return 1;
-  return 0;
-}
-
-function scoreManagementPriority(variety: VarietyRecord, answers: FarmerAnswers): number {
-  const value = answers.managementPriority;
-  if (!value || value === 'any') return 0;
-
-  switch (variety.cropId) {
-    case 'potato':
-      if (value === 'early-harvest') {
-        if (variety.maturityStage === '조생') return 2;
-        if (variety.maturityStage.includes('조')) return 1;
-        return 0;
-      }
-      if (value === 'processing') return variety.usageTags.includes('가공') ? 2 : 0;
-      if (value === 'pest-mgmt') {
-        if (variety.pestNote.includes('저항성')) return 2;
-        if (variety.pestNote.includes('중도저항성') || variety.pestNote.includes('저항')) return 1;
-        return 0;
-      }
-      return 0;
-    case 'corn':
-      if (value === 'wet-lodging') {
-        if (variety.pestNote.includes('쓰러짐') && variety.pestNote.includes('강')) return 2;
-        if (variety.hazards.wet.score >= 1 && variety.hazards.wet.evidenceType !== 'common') return 1;
-        return 0;
-      }
-      if (value === 'pest-mgmt') return variety.pestNote.includes('저항성') ? 2 : 0;
-      if (value === 'processing') return variety.usageTags.includes('가공') ? 2 : 0;
-      return 0;
-    case 'peach':
-      if (value === 'bagging') return variety.pestNote.includes('무봉지') ? 2 : 0;
-      if (value === 'logistics-firm') {
-        if (variety.textureTags.some((t) => t.includes('단단'))) return 2;
-        if (hasAnyTag(variety.usageTags, ['온라인택배', '택배'])) return 1;
-        return 0;
-      }
-      if (value === 'harvest-spread') return variety.harvestMonths.length >= 2 ? 2 : 0;
-      return 0;
-    case 'apple':
-      if (value === 'coloring') {
-        if (variety.hazards.heat.reasonText.includes('착색') && variety.hazards.heat.evidenceType === 'direct') {
-          return 2;
-        }
-        if (variety.hazards.heat.reasonText.includes('착색')) return 1;
-        return 0;
-      }
-      if (value === 'storage') {
-        if (variety.usageTags.includes('온라인택배')) return 2;
-        if (variety.usageText.includes('저장')) return 1;
-        return 0;
-      }
-      if (value === 'harvest-spread') return variety.harvestMonths.length >= 2 ? 2 : 0;
-      return 0;
-    case 'cabbage':
-      if (value === 'heat') return hazardDirectIndirectScore(variety, 'heat');
-      if (value === 'drought') return hazardDirectIndirectScore(variety, 'drought');
-      if (value === 'wet') return hazardDirectIndirectScore(variety, 'wet');
-      if (value === 'fast-heading') {
-        if (variety.maturityStage === '조생') return 2;
-        if (variety.maturityStage.includes('조')) return 1;
-        return 0;
-      }
-      return 0;
-    default:
-      return 0;
-  }
-}
-
 function scoreOrchardExtras(variety: VarietyRecord, answers: FarmerAnswers): number {
   if (!isOrchardCrop(variety.cropId)) return 0;
   let score = 0;
 
-  // FA2: 줄이고 싶은 작업 - 품종의 직접 특성과 일치하면 +2
+  // 줄이고 싶은 작업 - 품종의 직접 특성과 일치하면 +2 (판로·유통 조건은 용도 문항으로 합쳐짐)
   switch (answers.reduceWork) {
     case 'coloring':
       if (variety.hazards.heat.reasonText.includes('착색') || variety.usageText.includes('착색')) score += 2;
@@ -196,21 +133,6 @@ function scoreOrchardExtras(variety: VarietyRecord, answers: FarmerAnswers): num
       break;
     case 'harvest-spread':
       if (variety.harvestMonths.length >= 2) score += 2;
-      break;
-    default:
-      break;
-  }
-
-  // FA3: 유통에서 중요한 조건
-  switch (answers.logistics) {
-    case 'few-days':
-    case 'delivery':
-      if (hasAnyTag(variety.usageTags, ['온라인택배', '택배']) || variety.textureTags.some((t) => t.includes('단단'))) {
-        score += 2;
-      }
-      break;
-    case 'holiday':
-      if (variety.usageTags.includes('명절')) score += 2;
       break;
     default:
       break;
@@ -260,11 +182,12 @@ function buildReasons(variety: VarietyRecord, answers: FarmerAnswers, breakdown:
   if (breakdown.pest > 0) {
     candidates.push({ score: breakdown.pest, text: `병해충 관련 강점이 있어요: ${variety.pestNote}` });
   }
-  if (breakdown.managementPriority > 0) {
-    candidates.push({ score: breakdown.managementPriority, text: '선택하신 관리 우선순위와 잘 맞는 특성이 있어요.' });
+  if (breakdown.taste > 0) {
+    const texture = [...variety.textureTags, ...variety.tasteTags].join('·');
+    candidates.push({ score: breakdown.taste, text: `원하시는 식미와 맞아요(${texture}).` });
   }
   if (breakdown.orchard > 0) {
-    candidates.push({ score: breakdown.orchard, text: '원하시는 작업 부담 절감·유통 조건과 맞는 특성이 있어요.' });
+    candidates.push({ score: breakdown.orchard, text: '줄이고 싶은 작업 부담과 맞는 특성이 있어요.' });
   }
 
   candidates.sort((a, b) => b.score - a.score);
@@ -284,6 +207,10 @@ function buildCautions(variety: VarietyRecord, answers: FarmerAnswers): string[]
   if (variety.pestNote && variety.pestNote !== '자료없음') {
     cautions.push(`병해충 참고: ${variety.pestNote}`);
   }
+  // 품종별 근거가 없는 병해충(예: 배추 뿌리혹병·바이러스병)은 점수 대신 안내로 알려줍니다.
+  PEST_OPTIONS[variety.cropId]
+    .filter((o) => o.caution && answers.pestConcerns.includes(o.value))
+    .forEach((o) => cautions.push(o.caution as string));
   cautions.push(...(EXPERT_RESULT_CAUTIONS[variety.cropId] ?? []));
   return cautions;
 }
@@ -328,16 +255,15 @@ function weightedItemScores(
         pestOptions.length
       : null;
 
-  const management =
-    answers.managementPriority && answers.managementPriority !== 'any' ? breakdown.managementPriority / 2 : null;
+  const taste = tasteMatches(variety, answers);
 
   return {
     region: breakdown.region / 2,
     climate,
-    harvestTiming: breakdown.harvestTiming / 2,
+    harvestTiming: answers.harvestTiming === 'any' ? null : breakdown.harvestTiming / 2,
     usage,
     pest,
-    management,
+    taste: taste === null ? null : taste ? 1 : 0,
   };
 }
 
@@ -363,7 +289,7 @@ export function scoreFarmerVariety(variety: VarietyRecord, answers: FarmerAnswer
     harvestTiming: scoreHarvestTiming(variety, answers),
     usage: scoreUsage(variety, answers),
     pest: scorePest(variety, answers),
-    managementPriority: scoreManagementPriority(variety, answers),
+    taste: scoreTaste(variety, answers),
     orchard: scoreOrchardExtras(variety, answers),
   };
   const weights = getCropWeights(variety.cropId);
@@ -375,7 +301,7 @@ export function scoreFarmerVariety(variety: VarietyRecord, answers: FarmerAnswer
           breakdown.harvestTiming +
           breakdown.usage +
           breakdown.pest +
-          breakdown.managementPriority +
+          breakdown.taste +
           breakdown.orchard,
       );
   const directEvidenceCount = (['heat', 'drought', 'wet'] as HazardKey[]).filter(
