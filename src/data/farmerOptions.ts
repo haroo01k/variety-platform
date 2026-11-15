@@ -84,14 +84,14 @@ export const SEASON_CALENDAR: Record<MonthTimingCrop, SeasonCalendar[]> = {
   potato: [
     {
       value: 'spring',
-      label: '봄·여름 재배 (1기작)',
+      label: '봄~여름 (1년에 한 번)',
       plantMonths: [2, 3, 4, 5],
       harvestMonths: [5, 6, 7, 8, 9],
       timingHint: '참고: 봄감자는 보통 5~7월, 고랭지 여름감자는 7~9월에 캐요.',
     },
     {
       value: 'autumn',
-      label: '가을·겨울 재배 (2기작)',
+      label: '가을~겨울 (1년에 두 번 짓는 2기작)',
       plantMonths: [8, 9, 10, 11, 12, 1],
       harvestMonths: [11, 12, 3, 4, 5],
       timingHint: '참고: 가을감자는 보통 11~12월, 겨울 시설감자는 3~5월에 캐요.',
