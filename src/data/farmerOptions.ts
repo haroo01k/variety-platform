@@ -7,7 +7,7 @@
  * 원래 질문지: Claude_업로드용_추천질문지_및_점수로직.pdf 2~3쪽.
  */
 import type { CropId } from '../types/crop';
-import type { HazardKey, VarietyRecord } from '../types/variety';
+import type { CropSeason, HazardKey, VarietyRecord } from '../types/variety';
 import type {
   FieldHarvestTimingAnswer,
   OrchardHarvestMonthAnswer,
@@ -46,23 +46,82 @@ export const CORN_HARVEST_TIMING_OPTIONS: { value: FieldHarvestTimingAnswer; lab
 ];
 export const CORN_HARVEST_HINT = '참고: 4월 중순에 심으면 보통 7월 하순에 수확해요.';
 
-/** 감자·배추 수확 시기: 심는 달(감자 파종, 배추 정식) + 수확하고 싶은 달. 교수 자문(월 단위로 묻기) 반영 */
+/** 감자·배추 수확 시기: 작형(봄·여름·가을·겨울) → 심는 달 → 수확하고 싶은 달. 교수 자문(월 단위, 실제 재배 달력) 반영 */
 export const MONTH_TIMING_CROPS = ['potato', 'cabbage'] as const;
 export type MonthTimingCrop = (typeof MONTH_TIMING_CROPS)[number];
 export const isMonthTimingCrop = (cropId: CropId): cropId is MonthTimingCrop =>
   (MONTH_TIMING_CROPS as readonly string[]).includes(cropId);
 
-/** 심는 달 선택지: 감자 봄(2~4월)·고랭지(4~5월)·가을(8~9월), 배추 봄·고랭지·가을 정식 */
-export const PLANT_MONTH_OPTIONS: Record<MonthTimingCrop, number[]> = {
-  potato: [2, 3, 4, 5, 6, 7, 8, 9],
-  cabbage: [3, 4, 5, 6, 7, 8, 9],
+export interface SeasonCalendar {
+  value: CropSeason;
+  label: string;
+  /** 일반적인 심는 달(감자 파종, 배추 정식) */
+  plantMonths: number[];
+  /** 일반적인 수확 달 */
+  harvestMonths: number[];
+  /** 고랭지처럼 생육기간이 길어지는 작형의 재배 일수 보정(일) */
+  growthDayOffset?: number;
+  /** 이 작형을 고르면 결과 화면에 붙일 안내 */
+  caution?: string;
+}
+
+/**
+ * 작형별 일반 재배 달력(공공 자료 기반, 지역에 따라 앞뒤로 달라질 수 있음).
+ * 감자
+ * - 봄: 파종 2월 하순~3월 상순, 수확 5월 하순~6월 상순(국립식량과학원 남부작물부, 한작지 2019)·중부는 6~7월(하지감자)
+ * - 여름(고랭지): 대관령 파종 4월 19일~5월 19일, 덩이줄기 최대는 파종 후 111~144일(한작지 2012), 강원 6~9월 수확(농촌진흥청 웹진 2023.7)
+ * - 가을: 8월 파종, 11월 첫 서리 전 수확(고령지농업연구소, 2021), 휴면 50~70일의 짧은 품종 필요
+ * - 겨울(시설): 10~12월 심어 3~5월 출하(농촌진흥청, 2024.12)
+ * 배추
+ * - 봄: 남부 하우스 4월~5월, 터널 5월~6월 상순, 노지 6월 출하(전남농업기술원), 노지 정식 4월 중순
+ * - 여름(고랭지·준고랭지): 준고랭지 7월 말 정식·9월 수확(농촌진흥청 2025~2026), 고랭지 8월 중순~9월 출하
+ * - 가을(김장): 아주심기 중부 9월 상순·남부 9월 중순(농촌진흥청), 해남 9월 초 정식 → 10월 말~12월 수확
+ * - 겨울(월동): 9월 중순~하순 정식, 12월부터 2월 하순까지 출하(해남·남도 서해안)
+ */
+export const SEASON_CALENDAR: Record<MonthTimingCrop, SeasonCalendar[]> = {
+  potato: [
+    { value: 'spring', label: '봄감자 (2~4월 심기 → 5~7월 수확)', plantMonths: [2, 3, 4], harvestMonths: [5, 6, 7] },
+    {
+      value: 'summer',
+      label: '여름·고랭지 감자 (4~5월 심기 → 7~9월 수확)',
+      plantMonths: [4, 5],
+      harvestMonths: [7, 8, 9],
+      growthDayOffset: 25,
+    },
+    {
+      value: 'autumn',
+      label: '가을감자 (8~9월 심기 → 11~12월 수확)',
+      plantMonths: [8, 9],
+      harvestMonths: [11, 12],
+      caution: '가을·겨울 감자는 휴면기간이 짧은 2기작용 품종이 필요해요. 추천 품종은 2기작 적합성 자료가 없으니 씨감자 휴면 상태를 꼭 확인하세요.',
+    },
+    {
+      value: 'winter',
+      label: '겨울 시설감자 (10~1월 심기 → 3~5월 수확)',
+      plantMonths: [10, 11, 12, 1],
+      harvestMonths: [3, 4, 5],
+      caution: '가을·겨울 감자는 휴면기간이 짧은 2기작용 품종이 필요해요. 추천 품종은 2기작 적합성 자료가 없으니 씨감자 휴면 상태를 꼭 확인하세요.',
+    },
+  ],
+  cabbage: [
+    { value: 'spring', label: '봄배추 (3~4월 정식 → 5~6월 수확)', plantMonths: [3, 4], harvestMonths: [5, 6] },
+    { value: 'summer', label: '여름·고랭지 배추 (5~7월 정식 → 7~9월 수확)', plantMonths: [5, 6, 7], harvestMonths: [7, 8, 9] },
+    { value: 'autumn', label: '가을·김장배추 (8~9월 정식 → 10~12월 수확)', plantMonths: [8, 9], harvestMonths: [10, 11, 12] },
+    { value: 'winter', label: '겨울·월동배추 (9월 정식 → 12~3월 수확)', plantMonths: [9], harvestMonths: [12, 1, 2, 3] },
+  ],
 };
+
+export const findSeason = (cropId: MonthTimingCrop, season: CropSeason | null) =>
+  SEASON_CALENDAR[cropId].find((c) => c.value === season) ?? null;
+
 export const PLANT_MONTH_LABEL: Record<MonthTimingCrop, string> = { potato: '씨감자를 심는 달', cabbage: '모종을 아주심는(정식) 달' };
 
-/** 수확하고 싶은 달 선택지: 심는 달 다음 1~4달(감자는 2~5달) */
-export function harvestMonthChoices(cropId: MonthTimingCrop, plantMonth: number): number[] {
-  const offsets = cropId === 'potato' ? [2, 3, 4, 5] : [1, 2, 3, 4];
-  return offsets.map((o) => ((plantMonth - 1 + o) % 12) + 1);
+/** 수확하고 싶은 달 선택지: 고른 작형의 수확 달 중 심는 달 이후인 달 */
+export function harvestMonthChoices(cropId: MonthTimingCrop, season: CropSeason, plantMonth: number): number[] {
+  const calendar = findSeason(cropId, season);
+  if (!calendar) return [];
+  // 심는 달에서 몇 달 뒤인지로 비교(연도 넘김 처리)
+  return calendar.harvestMonths.filter((m) => ((m - plantMonth + 12) % 12) >= 1);
 }
 
 /** F4 수확 시기 (과수: 사과·복숭아) */

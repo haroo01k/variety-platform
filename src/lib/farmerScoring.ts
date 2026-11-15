@@ -8,7 +8,7 @@
 import type { FarmerAnswers, FarmerRecommendation, FarmerResult, FarmerScoreBreakdown } from '../types/farmer';
 import type { EvidenceType, HazardKey, VarietyRecord } from '../types/variety';
 import { VARIETIES } from '../data/varieties';
-import { PEST_OPTIONS, TASTE_OPTIONS, USAGE_OPTIONS, isMonthTimingCrop, isOrchardCrop } from '../data/farmerOptions';
+import { PEST_OPTIONS, TASTE_OPTIONS, USAGE_OPTIONS, findSeason, isMonthTimingCrop, isOrchardCrop } from '../data/farmerOptions';
 import { clamp, hasAnyTag, round1 } from './tagUtils';
 import { EXPERT_RESULT_CAUTIONS, getCropWeights } from '../data/farmerExpertWeights';
 import type { CropWeights, ExpertItem } from '../data/farmerExpertWeights';
@@ -78,19 +78,40 @@ function targetDays(answers: FarmerAnswers): number | null {
   return (((answers.harvestTargetMonth - answers.plantMonth + 12) % 12) || 12) * 30;
 }
 
+/** 고른 작형에 맞춰 보정한 품종 재배 일수(고랭지 감자는 생육기간이 길어 +25일) */
+function adjustedGrowthDays(variety: VarietyRecord, answers: FarmerAnswers) {
+  const gd = variety.growthDays;
+  if (!gd || !isMonthTimingCrop(variety.cropId)) return gd ?? null;
+  const offset = findSeason(variety.cropId, answers.cropSeason)?.growthDayOffset ?? 0;
+  return { ...gd, min: gd.min + offset, max: gd.max + offset };
+}
+
+/** 품종 자료에 적힌 작형과 고른 작형이 맞는지. 품종 작형 자료가 없으면 null */
+function seasonFits(variety: VarietyRecord, answers: FarmerAnswers): boolean | null {
+  if (!answers.cropSeason || !variety.cropSeasons) return null;
+  return variety.cropSeasons.seasons.includes(answers.cropSeason);
+}
+
 /**
- * 감자·배추 수확시기 점수: 원하는 기간(월 단위라 ±15일 폭)과 품종 재배 일수(growthDays)가
- * 겹치면 +2, 15일 이내로 비껴가면 +1, 그 밖이면 0. 상관없음·재배 일수 자료 없음이면 null.
+ * 감자·배추 수확시기 점수(0~2).
+ * - 재배 일수: 심는 달~수확 달(월 단위라 ±15일 폭)과 품종 재배 일수가 겹치면 2, 15일 이내면 1, 아니면 0
+ * - 작형: 품종 자료의 권장 작형과 맞으면 +1, 다른 작형용이면 -1(0~2 범위), 수확 달이 상관없음이면 작형만으로 0 또는 2
+ * 작형·일수 모두 판단할 수 없으면 null(계산에서 제외)
  */
 function monthTimingScore(variety: VarietyRecord, answers: FarmerAnswers): number | null {
+  const fit = seasonFits(variety, answers);
   const days = targetDays(answers);
-  const gd = variety.growthDays;
-  if (days === null || !gd) return null;
-  const lo = days - 15;
-  const hi = days + 15;
-  if (gd.max >= lo && gd.min <= hi) return 2;
-  const gap = gd.max < lo ? lo - gd.max : gd.min - hi;
-  return gap <= 15 ? 1 : 0;
+  const gd = adjustedGrowthDays(variety, answers);
+  let timing: number | null = null;
+  if (days !== null && gd) {
+    const lo = days - 15;
+    const hi = days + 15;
+    if (gd.max >= lo && gd.min <= hi) timing = 2;
+    else timing = (gd.max < lo ? lo - gd.max : gd.min - hi) <= 15 ? 1 : 0;
+  }
+  if (timing === null) return fit === null ? null : fit ? 2 : 0;
+  // 권장 작형과 맞으면 +1, 품종 자료상 다른 작형용이면 -1 (0~2 범위)
+  return clamp(timing + (fit === true ? 1 : fit === false ? -1 : 0), 0, 2);
 }
 
 function scoreUsage(variety: VarietyRecord, answers: FarmerAnswers): number {
@@ -195,7 +216,7 @@ function buildReasons(variety: VarietyRecord, answers: FarmerAnswers, breakdown:
   });
   if (breakdown.harvestTiming > 0) {
     const days = targetDays(answers);
-    const gd = variety.growthDays;
+    const gd = adjustedGrowthDays(variety, answers);
     candidates.push({
       score: breakdown.harvestTiming,
       text:
@@ -234,6 +255,14 @@ function buildCautions(variety: VarietyRecord, answers: FarmerAnswers): string[]
   });
   if (variety.pestNote && variety.pestNote !== '자료없음') {
     cautions.push(`병해충 참고: ${variety.pestNote}`);
+  }
+  if (isMonthTimingCrop(variety.cropId)) {
+    const season = findSeason(variety.cropId, answers.cropSeason);
+    if (season?.caution) cautions.push(season.caution);
+    if (seasonFits(variety, answers) === false && variety.cropSeasons) {
+      const names = variety.cropSeasons.seasons.map((v) => findSeason(variety.cropId as 'potato' | 'cabbage', v)?.label.split(' (')[0]);
+      cautions.push(`이 품종의 권장 작형은 ${names.join('·')}이에요.`);
+    }
   }
   if (isMonthTimingCrop(variety.cropId) && targetDays(answers) !== null && variety.growthDays?.estimated) {
     cautions.push(`재배 일수(${variety.growthDays.min}~${variety.growthDays.max}일)는 품종 실측치가 아니라 숙기 구분으로 추정한 값이에요. 지역·작형에 따라 달라질 수 있어요.`);

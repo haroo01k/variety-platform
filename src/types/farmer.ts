@@ -1,5 +1,5 @@
 import type { CropId } from './crop';
-import type { HazardKey, VarietyRecord } from './variety';
+import type { CropSeason, HazardKey, VarietyRecord } from './variety';
 
 export type RegionAnswer =
   | 'gangwon-yeongdong'
@@ -33,6 +33,8 @@ export interface FarmerAnswers {
   climateRisks: HazardKey[];
   /** 옥수수 수확 시기 */
   harvestTiming: FieldHarvestTimingAnswer;
+  /** 감자·배추: 작형(봄·여름·가을·겨울). 그 외 작물은 null */
+  cropSeason: CropSeason | null;
   /** 감자·배추: 심는 달(1~12, 감자 파종·배추 정식). 그 외 작물은 null */
   plantMonth: number | null;
   /** 감자·배추: 수확하고 싶은 달(1~12). 상관없음이면 null */
