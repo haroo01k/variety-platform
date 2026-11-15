@@ -22,7 +22,8 @@ import {
   CORN_HARVEST_HINT,
   CORN_HARVEST_TIMING_OPTIONS,
   SEASON_CALENDAR,
-  potatoHarvestOptions,
+  POTATO_HARVEST_OPTIONS,
+  findSeason,
   isMonthTimingCrop,
   ORCHARD_HARVEST_MONTH_OPTIONS,
   ORCHARD_REDUCE_WORK_OPTIONS,
@@ -232,7 +233,7 @@ export function FarmerConditionsPage() {
         );
       case 'season': {
         if (!cropId || !isMonthTimingCrop(cropId)) return null;
-        const potatoTimings = cropId === 'potato' ? potatoHarvestOptions(cropSeason) : [];
+        const timingHint = cropId === 'potato' ? findSeason('potato', cropSeason)?.timingHint : undefined;
         return (
           <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-2">
@@ -245,13 +246,13 @@ export function FarmerConditionsPage() {
                 />
               ))}
             </div>
-            {potatoTimings.length > 0 && (
+            {timingHint && (
               <div className="flex flex-col gap-2 rounded-2xl bg-brand-ivory p-4">
                 <p className="text-sm text-slate-600">
                   언제 캐고 싶으세요? <span className="text-xs text-slate-400">(선택)</span>
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {potatoTimings.map((option) => (
+                  {POTATO_HARVEST_OPTIONS.map((option) => (
                     <ChoiceChip
                       key={option.value}
                       label={option.label}
@@ -260,6 +261,7 @@ export function FarmerConditionsPage() {
                     />
                   ))}
                 </div>
+                <p className="text-xs text-slate-500">{timingHint}</p>
               </div>
             )}
           </div>

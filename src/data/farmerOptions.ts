@@ -60,6 +60,8 @@ export interface SeasonCalendar {
   plantMonths: number[];
   /** 일반적인 수확 달 */
   harvestMonths: number[];
+  /** 감자 수확 시기 선택지 아래에 보여줄 참고 문구 */
+  timingHint?: string;
   /** 이 작형을 고르면 결과 화면에 붙일 안내 */
   caution?: string;
 }
@@ -78,32 +80,27 @@ export interface SeasonCalendar {
  * - 겨울(월동): 9월 중순~하순 정식, 12월부터 2월 하순까지 출하(해남·남도 서해안)
  */
 export const SEASON_CALENDAR: Record<MonthTimingCrop, SeasonCalendar[]> = {
+  // 감자는 작형 자료가 있는 품종이 적어(선풍만 봄) 결과가 실제로 달라지는 1기작·2기작 두 가지로만 묻습니다.
   potato: [
-    { value: 'spring', label: '봄감자 (2~4월 심기 → 5~7월 수확)', plantMonths: [2, 3, 4], harvestMonths: [5, 6, 7] },
     {
-      value: 'summer',
-      label: '여름·고랭지 감자 (4~5월 심기 → 7~9월 수확)',
-      plantMonths: [4, 5],
-      harvestMonths: [7, 8, 9],
+      value: 'spring',
+      label: '봄·여름 재배 (1기작)',
+      plantMonths: [2, 3, 4, 5],
+      harvestMonths: [5, 6, 7, 8, 9],
+      timingHint: '참고: 봄감자는 보통 5~7월, 고랭지 여름감자는 7~9월에 캐요.',
     },
     {
       value: 'autumn',
-      label: '가을감자 (8~9월 심기 → 11~12월 수확)',
-      plantMonths: [8, 9],
-      harvestMonths: [11, 12],
-      caution: '가을·겨울 감자는 휴면기간이 짧은 2기작용 품종이 필요해요. 추천 품종은 2기작 적합성 자료가 없으니 씨감자 휴면 상태를 꼭 확인하세요.',
-    },
-    {
-      value: 'winter',
-      label: '겨울 시설감자 (10~1월 심기 → 3~5월 수확)',
-      plantMonths: [10, 11, 12, 1],
-      harvestMonths: [3, 4, 5],
+      label: '가을·겨울 재배 (2기작)',
+      plantMonths: [8, 9, 10, 11, 12, 1],
+      harvestMonths: [11, 12, 3, 4, 5],
+      timingHint: '참고: 가을감자는 보통 11~12월, 겨울 시설감자는 3~5월에 캐요.',
       caution: '가을·겨울 감자는 휴면기간이 짧은 2기작용 품종이 필요해요. 추천 품종은 2기작 적합성 자료가 없으니 씨감자 휴면 상태를 꼭 확인하세요.',
     },
   ],
   cabbage: [
     { value: 'spring', label: '봄배추 (3~4월 정식 → 5~6월 수확)', plantMonths: [3, 4], harvestMonths: [5, 6] },
-    { value: 'summer', label: '여름·고랭지 배추 (5~7월 정식 → 7~9월 수확)', plantMonths: [5, 6, 7], harvestMonths: [7, 8, 9] },
+    { value: 'summer', label: '여름배추 (5~7월 정식 → 7~9월 수확)', plantMonths: [5, 6, 7], harvestMonths: [7, 8, 9] },
     { value: 'autumn', label: '가을·김장배추 (8~9월 정식 → 10~12월 수확)', plantMonths: [8, 9], harvestMonths: [10, 11, 12] },
     {
       value: 'winter',
@@ -119,22 +116,14 @@ export const findSeason = (cropId: MonthTimingCrop, season: CropSeason | null) =
   SEASON_CALENDAR[cropId].find((c) => c.value === season) ?? null;
 
 /**
- * 감자 수확 시기 선택지: 작형 안에서 일찍·보통·늦게 캐기.
- * 품종별 실측 생육일수가 없어 달 대신 숙기(조생·조중생·중생)로 비교하고, 달은 감을 잡도록 참고로만 보여줍니다.
+ * 감자 수확 시기 선택지: 일찍·보통·늦게 캐기.
+ * 품종별 실측 생육일수가 없어 달 대신 숙기(조생·조중생·중생)로 비교합니다. 달은 작형의 timingHint로만 안내합니다.
  */
-export function potatoHarvestOptions(season: CropSeason | null): { value: PotatoHarvestTiming; label: string }[] {
-  const months = (season && findSeason('potato', season)?.harvestMonths) || [];
-  if (months.length === 0) return [];
-  const first = months[0];
-  const last = months[months.length - 1];
-  const mid = months.length >= 3 ? `${months[Math.floor(months.length / 2)]}월쯤` : `${first}~${last}월`;
-  return [
-    { value: 'early', label: `일찍 캐기 · 조생 (${first}월쯤)` },
-    { value: 'mid', label: `보통 · 조중생 (${mid})` },
-    { value: 'late', label: `늦게 캐기 · 중생 (${last}월쯤)` },
-  ];
-}
-
+export const POTATO_HARVEST_OPTIONS: { value: PotatoHarvestTiming; label: string }[] = [
+  { value: 'early', label: '일찍 캐기 · 조생' },
+  { value: 'mid', label: '보통 · 조중생' },
+  { value: 'late', label: '늦게 캐기 · 중생' },
+];
 
 /** F4 수확 시기 (과수: 사과·복숭아) */
 export const ORCHARD_HARVEST_MONTH_OPTIONS: { value: OrchardHarvestMonthAnswer; label: string }[] = [
