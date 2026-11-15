@@ -11,6 +11,7 @@ import type { CropSeason, HazardKey, VarietyRecord } from '../types/variety';
 import type {
   FieldHarvestTimingAnswer,
   OrchardHarvestMonthAnswer,
+  PotatoHarvestTiming,
   RegionAnswer,
   WinterMinAnswer,
 } from '../types/farmer';
@@ -59,8 +60,6 @@ export interface SeasonCalendar {
   plantMonths: number[];
   /** 일반적인 수확 달 */
   harvestMonths: number[];
-  /** 고랭지처럼 생육기간이 길어지는 작형의 재배 일수 보정(일) */
-  growthDayOffset?: number;
   /** 이 작형을 고르면 결과 화면에 붙일 안내 */
   caution?: string;
 }
@@ -86,7 +85,6 @@ export const SEASON_CALENDAR: Record<MonthTimingCrop, SeasonCalendar[]> = {
       label: '여름·고랭지 감자 (4~5월 심기 → 7~9월 수확)',
       plantMonths: [4, 5],
       harvestMonths: [7, 8, 9],
-      growthDayOffset: 25,
     },
     {
       value: 'autumn',
@@ -119,6 +117,23 @@ export const SEASON_CALENDAR: Record<MonthTimingCrop, SeasonCalendar[]> = {
 
 export const findSeason = (cropId: MonthTimingCrop, season: CropSeason | null) =>
   SEASON_CALENDAR[cropId].find((c) => c.value === season) ?? null;
+
+/**
+ * 감자 수확 시기 선택지: 작형 안에서 일찍·보통·늦게 캐기.
+ * 품종별 실측 생육일수가 없어 달 대신 숙기(조생·조중생·중생)로 비교하고, 달은 감을 잡도록 참고로만 보여줍니다.
+ */
+export function potatoHarvestOptions(season: CropSeason | null): { value: PotatoHarvestTiming; label: string }[] {
+  const months = (season && findSeason('potato', season)?.harvestMonths) || [];
+  if (months.length === 0) return [];
+  const first = months[0];
+  const last = months[months.length - 1];
+  const mid = months.length >= 3 ? `${months[Math.floor(months.length / 2)]}월쯤` : `${first}~${last}월`;
+  return [
+    { value: 'early', label: `일찍 캐기 · 조생 (${first}월쯤)` },
+    { value: 'mid', label: `보통 · 조중생 (${mid})` },
+    { value: 'late', label: `늦게 캐기 · 중생 (${last}월쯤)` },
+  ];
+}
 
 
 /** F4 수확 시기 (과수: 사과·복숭아) */
