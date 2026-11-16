@@ -42,8 +42,8 @@ export const CLIMATE_RISK_OPTIONS: { value: HazardKey | 'none'; label: string }[
  * 날짜 감각용 안내: 4월 파종 시 수확은 출사 후 23~25일(국립식량과학원, 한작지 2012) → 4월 중순 파종이면 7월 하순.
  */
 export const CORN_HARVEST_TIMING_OPTIONS: { value: FieldHarvestTimingAnswer; label: string }[] = [
-  { value: 'early', label: '빨리 수확(출사 70일 이내)' },
-  { value: 'any', label: '상관없음' },
+  { value: 'early', label: '네, 빨리 수확하고 싶어요 (조중생)' },
+  { value: 'any', label: '상관없어요' },
 ];
 export const CORN_HARVEST_HINT = '참고: 4월 중순에 심으면 보통 7월 하순에 수확해요.';
 
@@ -229,7 +229,7 @@ export const PEST_OPTIONS: Record<CropId, PestOption[]> = {
   ],
   corn: [
     { value: 'leaf-spot', label: '깨씨무늬병', keywords: ['깨씨무늬병', '호마엽고병'] },
-    { value: 'lodging', label: '쓰러짐(도복)', keywords: ['쓰러짐'] },
+    { value: 'lodging', label: '강풍·호우로 쓰러짐(도복)', keywords: ['쓰러짐'] },
     { value: 'none', label: '없음' },
   ],
   peach: [
@@ -281,8 +281,15 @@ export const WINTER_MIN_OPTIONS: { value: WinterMinAnswer; label: string }[] = [
 
 /** 줄이고 싶은 작업 (과수 전용, 단일 선택). 기존 '가장 줄이고 싶은 관리 부담' 문항을 합쳤습니다. */
 export const ORCHARD_REDUCE_WORK_OPTIONS: { value: string; label: string }[] = [
-  { value: 'coloring', label: '착색 관리' },
-  { value: 'bagging', label: '봉지 씌우기' },
-  { value: 'harvest-spread', label: '수확 작업 분산' },
-  { value: 'none', label: '없음' },
+  // 전문가 자문(관리에 따라 달라지는 항목 최소화)에 맞춰 '줄이고 싶은 작업' 대신 품종 특성으로 묻습니다. 점수 기준은 같습니다.
+  { value: 'coloring', label: '착색이 잘 되는 품종' },
+  { value: 'bagging', label: '봉지 없이 키울 수 있는 품종' },
+  { value: 'harvest-spread', label: '수확 기간이 길어 작업을 나눌 수 있는 품종' },
+  { value: 'none', label: '특별히 없음' },
 ];
+
+/**
+ * 병해충 문항 대신 기상위험 문항에서 함께 묻는 항목(작물별).
+ * 옥수수 쓰러짐(도복)은 강풍·호우 피해라 기상위험 화면에 보여주고, 점수는 병해충 근거(pestNote)로 그대로 계산합니다.
+ */
+export const CLIMATE_STEP_PEST_OPTIONS: Partial<Record<CropId, string[]>> = { corn: ['lodging'] };

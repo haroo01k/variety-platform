@@ -19,6 +19,7 @@ import type {
 import type { CropSeason, HazardKey } from '../../types/variety';
 import {
   CLIMATE_RISK_OPTIONS,
+  CLIMATE_STEP_PEST_OPTIONS,
   CORN_HARVEST_HINT,
   CORN_HARVEST_TIMING_OPTIONS,
   SEASON_CALENDAR,
@@ -66,11 +67,11 @@ const STEP_META: Record<StepId, { title: string; hint?: string }> = {
   climate: { title: '가장 걱정되는 기상위험은 무엇인가요?', hint: '여러 개 선택할 수 있어요' },
   season: { title: '언제 심어서 키우는 걸 선호하시나요?' },
   harvest: { title: '원하는 수확 시기는 언제인가요?' },
-  taste: { title: '원하는 맛·식감은 무엇인가요?', hint: '여러 개 선택할 수 있어요' },
+  taste: { title: '어떤 맛·식감의 품종을 키우고 싶으신가요?', hint: '여러 개 선택할 수 있어요' },
   usage: { title: '주요 생산 목적과 판로는 무엇인가요?', hint: '여러 개 선택할 수 있어요' },
   pest: { title: '특히 걱정되는 병해충이나 생리장해가 있나요?', hint: '여러 개 선택할 수 있어요' },
   winterMin: { title: '최근 5년 겨울 최저기온은 어느 정도였나요?' },
-  reduceWork: { title: '가장 줄이고 싶은 작업은 무엇인가요?' },
+  reduceWork: { title: '특히 원하는 품종 특성이 있나요?' },
 };
 
 /**
@@ -101,6 +102,7 @@ export function FarmerConditionsPage() {
   const [usages, setUsages] = useState<string[]>([]);
   const [pestConcerns, setPestConcerns] = useState<string[]>([]);
   const [tastes, setTastes] = useState<string[]>([]);
+  const climatePestValues = (cropId && CLIMATE_STEP_PEST_OPTIONS[cropId]) || [];
   const [winterMin, setWinterMin] = useState<WinterMinAnswer | null>(null);
   const [reduceWork, setReduceWork] = useState<string | null>(null);
 
@@ -137,7 +139,7 @@ export function FarmerConditionsPage() {
       case 'region':
         return isRegionSelectionComplete(regionSelection);
       case 'climate':
-        return climateRisks.length > 0;
+        return climateRisks.length > 0 || climatePestValues.some((v) => pestConcerns.includes(v));
       case 'harvest':
         return harvestChoice !== null;
       case 'season':
@@ -145,7 +147,7 @@ export function FarmerConditionsPage() {
       case 'usage':
         return usages.length > 0;
       case 'pest':
-        return pestConcerns.length > 0;
+        return pestConcerns.some((v) => !climatePestValues.includes(v));
       case 'taste':
         return tastes.length > 0;
       case 'winterMin':
@@ -221,12 +223,40 @@ export function FarmerConditionsPage() {
       case 'climate':
         return (
           <div className="flex flex-wrap gap-2">
-            {CLIMATE_RISK_OPTIONS.map((option) => (
+            {CLIMATE_RISK_OPTIONS.filter((o) => o.value !== 'none').map((option) => (
               <ChoiceChip
                 key={option.value}
                 label={option.label}
                 selected={climateRisks.includes(option.value)}
                 onToggle={() => setClimateRisks((prev) => toggleMultiSelect(prev, option.value, 'none'))}
+              />
+            ))}
+            {cropId &&
+              PEST_OPTIONS[cropId]
+                .filter((o) => climatePestValues.includes(o.value))
+                .map((option) => (
+                  <ChoiceChip
+                    key={option.value}
+                    label={option.label}
+                    selected={pestConcerns.includes(option.value)}
+                    onToggle={() => {
+                      setClimateRisks((prev) => prev.filter((v) => v !== 'none'));
+                      setPestConcerns((prev) =>
+                        prev.includes(option.value) ? prev.filter((v) => v !== option.value) : [...prev, option.value],
+                      );
+                    }}
+                  />
+                ))}
+            {CLIMATE_RISK_OPTIONS.filter((o) => o.value === 'none').map((option) => (
+              <ChoiceChip
+                key={option.value}
+                label={option.label}
+                selected={climateRisks.includes(option.value)}
+                onToggle={() => {
+                  // '특별히 없음'은 기상위험 화면의 다른 선택(쓰러짐 포함)을 모두 해제합니다.
+                  setPestConcerns((prev) => prev.filter((v) => !climatePestValues.includes(v)));
+                  setClimateRisks((prev) => toggleMultiSelect(prev, option.value, 'none'));
+                }}
               />
             ))}
           </div>
@@ -303,14 +333,23 @@ export function FarmerConditionsPage() {
         if (!cropId) return null;
         return (
           <div className="flex flex-wrap gap-2">
-            {PEST_OPTIONS[cropId].map((option) => (
-              <ChoiceChip
-                key={option.value}
-                label={option.label}
-                selected={pestConcerns.includes(option.value)}
-                onToggle={() => setPestConcerns((prev) => toggleMultiSelect(prev, option.value, 'none'))}
-              />
-            ))}
+            {PEST_OPTIONS[cropId]
+              .filter((o) => !climatePestValues.includes(o.value))
+              .map((option) => (
+                <ChoiceChip
+                  key={option.value}
+                  label={option.label}
+                  selected={pestConcerns.includes(option.value)}
+                  onToggle={() =>
+                    setPestConcerns((prev) => {
+                      // 기상위험 화면에서 고른 항목(쓰러짐)은 유지하고 병해충 화면 선택만 바꿉니다.
+                      const kept = prev.filter((v) => climatePestValues.includes(v));
+                      const own = prev.filter((v) => !climatePestValues.includes(v));
+                      return [...kept, ...toggleMultiSelect(own, option.value, 'none')];
+                    })
+                  }
+                />
+              ))}
           </div>
         );
       case 'taste':
@@ -358,7 +397,10 @@ export function FarmerConditionsPage() {
     }
   };
 
-  const meta = STEP_META[currentStepId];
+  const baseMeta = STEP_META[currentStepId];
+  // 옥수수 수확시기는 품종 간 차이가 '조중생이냐'뿐이라 질문을 답에 맞춥니다.
+  const meta =
+    currentStepId === 'harvest' && cropId === 'corn' ? { ...baseMeta, title: '조금이라도 빨리 수확하고 싶으신가요?' } : baseMeta;
   // 옥수수 수확시기는 날짜 감각용 안내를 붙입니다.
   const hint = currentStepId === 'harvest' && cropId === 'corn' ? CORN_HARVEST_HINT : meta.hint;
   const isLastStep = stepIndex === steps.length - 1;
