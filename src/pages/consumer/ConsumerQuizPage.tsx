@@ -86,7 +86,7 @@ export function ConsumerQuizPage() {
 
   if (!started) {
     return (
-      <Container className="font-nanum-round flex flex-col gap-6 py-8 md:py-12">
+      <Container className="font-nanum-round flex flex-col gap-6 pt-16 pb-8 md:pt-24 md:pb-12">
         {/* 시작 화면: 작물 친구들이 통통 떠 있고 꿀벌이 날아다니는 귀여운 첫 화면 */}
         <section className="relative flex flex-col items-center gap-3 overflow-hidden rounded-3xl border border-[#F0E9D8] bg-gradient-to-b from-[#FFF9E8] to-white px-5 pt-8 pb-28 text-center sm:pb-32">
           {/* 반짝이 장식 */}
