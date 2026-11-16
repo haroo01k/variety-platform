@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Container } from '../../components/common/Container';
 import { Button } from '../../components/common/Button';
-import { findMarketVariety } from '../../lib/varietyLookup';
 import { toKoreanOnlyName } from '../../lib/varietyDisplayName';
 import { ConsumerResultCard } from '../../components/consumer/ConsumerResultCard';
 import { InterestRanking } from '../../components/common/InterestRanking';
@@ -84,7 +83,7 @@ export function ConsumerResultPage() {
         <span className="h-1.5 w-1.5 rounded-full bg-brand-green/35" />
         <span className="h-1.5 w-1.5 rounded-full bg-brand-green/50" />
         <span className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-full bg-white text-xl shadow-sm motion-safe:animate-[soft-bob_1.6s_ease-in-out_infinite]">
-          🌱
+          🐝
         </span>
       </div>
 
@@ -103,36 +102,25 @@ export function ConsumerResultPage() {
         ) : (
           <div className="flex w-full flex-col gap-3">
             {result.top3.length > 1 && (
-              <div role="tablist" aria-label="추천 순위 선택" className="grid w-full grid-cols-3 gap-2">
+              <div role="tablist" aria-label="추천 순위 선택" className="flex flex-wrap justify-center gap-2">
                 {result.top3.map((r, index) => {
                   const isSelected = index === selectedIndex;
-                  const stamp = findMarketVariety(r.variety.cropId, r.variety.name)?.image;
                   return (
                     <button
                       key={r.variety.id}
                       type="button"
                       role="tab"
                       aria-selected={isSelected}
+                      aria-label={`${index + 1}위 ${toKoreanOnlyName(r.variety.name)}`}
                       onClick={() => setSelectedIndex(index)}
-                      className={`flex min-w-0 flex-col items-center gap-1 rounded-2xl border-2 px-1.5 py-2 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green ${
-                        isSelected ? 'border-brand-green bg-white shadow-sm' : 'border-transparent bg-white/60 hover:border-brand-green/40'
+                      className={`inline-flex min-h-[40px] items-center gap-1.5 rounded-full border px-3.5 text-sm font-bold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green ${
+                        isSelected
+                          ? 'border-brand-green bg-brand-green text-white shadow-sm'
+                          : 'border-slate-200 bg-white text-slate-600 hover:border-brand-green'
                       }`}
                     >
-                      {stamp ? (
-                        <img src={stamp} alt="" className="h-12 w-12 object-contain" />
-                      ) : (
-                        <span aria-hidden="true" className="flex h-12 w-12 items-center justify-center text-3xl">
-                          {emojiOf(r.variety.cropId)}
-                        </span>
-                      )}
-                      <span className={`text-[11px] font-bold ${isSelected ? 'text-brand-orange' : 'text-slate-400'}`}>
-                        {RANK_MEDALS[index]} {index + 1}위
-                      </span>
-                      <span
-                        className={`w-full truncate text-sm font-extrabold ${isSelected ? 'text-brand-green-dark' : 'text-slate-600'}`}
-                      >
-                        {toKoreanOnlyName(r.variety.name)}
-                      </span>
+                      <span aria-hidden="true">{RANK_MEDALS[index]}</span>
+                      {toKoreanOnlyName(r.variety.name)}
                     </button>
                   );
                 })}
