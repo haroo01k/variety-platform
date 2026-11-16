@@ -36,7 +36,7 @@ export interface QuizQuestion {
 /** 첫 질문: 작물 선택 */
 export const CROP_PICK_QUESTION: QuizQuestion = {
   id: 'CROP',
-  text: '어떤 농산물의 신품종이 궁금하세요?',
+  text: '어떤 농산물의 신품종이 궁금하신가요?',
   options: [
     { id: 'apple', icon: '🍎', text: '사과' },
     { id: 'peach', icon: '🍑', text: '복숭아' },
@@ -54,7 +54,7 @@ export const CROP_PICK_QUESTION: QuizQuestion = {
 export const CROP_FINDER_QUESTIONS: QuizQuestion[] = [
   {
     id: 'F1',
-    text: '이번에 어떤 농산물을 사고 싶으세요?',
+    text: '이번에 어떤 농산물을 사고 싶으신가요?',
     options: [
       { id: 'snack', icon: '🍽️', text: '간식으로 바로 먹을 것', crops: ['apple', 'peach', 'corn'] },
       { id: 'cook', icon: '🍳', text: '요리 재료로 쓸 것', crops: ['cabbage', 'potato', 'corn'] },
@@ -62,7 +62,7 @@ export const CROP_FINDER_QUESTIONS: QuizQuestion[] = [
   },
   {
     id: 'F2',
-    text: '어떤 식감을 더 좋아하세요?',
+    text: '어떤 식감을 더 좋아하시나요?',
     options: [
       { id: 'crisp', icon: '🍏', text: '아삭하고 단단한 식감', crops: ['apple', 'cabbage'] },
       { id: 'soft', icon: '🍑', text: '부드럽거나 포슬포슬한 식감', crops: ['peach', 'potato'] },
@@ -76,7 +76,7 @@ export const CROP_QUESTIONS: Record<ConsumerCropId, QuizQuestion[]> = {
   apple: [
     {
       id: 'APP-Q1',
-      text: '사과는 어떤 식감을 좋아하세요?',
+      text: '사과는 어떤 식감을 좋아하시나요?',
       options: [
         { id: 'juicy', icon: '💦', text: '과즙이 팡 터지는 아삭함', varieties: ['APP-01', 'APP-04', 'APP-05'], type: 'refresh', keyword: '#아삭과즙', reason: '아삭한 식감이 취향과 잘 맞아요.' },
         { id: 'firm', icon: '🪨', text: '단단하게 씹히는 식감', varieties: ['APP-02', 'APP-03'], type: 'refresh', keyword: '#단단식감', reason: '단단하게 씹히는 식감이 취향과 잘 맞아요.' },
@@ -84,7 +84,7 @@ export const CROP_QUESTIONS: Record<ConsumerCropId, QuizQuestion[]> = {
     },
     {
       id: 'APP-Q2',
-      text: '어떤 사과에 더 눈이 가세요?',
+      text: '어떤 사과에 더 눈이 가시나요?',
       options: [
         { id: 'special', icon: '🌈', text: '색이 특별하거나 큼직한 사과', varieties: ['APP-01', 'APP-02', 'APP-04'], type: 'explorer', keyword: '#독특한모양', reason: '색이나 크기가 특별해 보는 재미가 있어요.' },
         { id: 'classic', icon: '🍎', text: '반듯하고 빨간 전형적인 사과', varieties: ['APP-03', 'APP-05'], type: 'homey', keyword: '#익숙한맛최고', reason: '익숙하고 반듯한 모양의 사과예요.' },
@@ -92,7 +92,7 @@ export const CROP_QUESTIONS: Record<ConsumerCropId, QuizQuestion[]> = {
     },
     {
       id: 'APP-Q3',
-      text: '사과를 어떻게 즐기고 싶으세요?',
+      text: '사과를 어떻게 즐기고 싶으신가요?',
       options: [
         { id: 'fresh', icon: '🥤', text: '그대로·조각내서, 주스나 샐러드로', varieties: ['APP-01', 'APP-03'], type: 'sweet', keyword: '#간편하게', reason: '생으로 간편하게 즐기기 좋아요.' },
         { id: 'cook', icon: '🥧', text: '베이킹·조림 같은 요리로', varieties: ['APP-02', 'APP-04', 'APP-05'], type: 'cook', keyword: '#요리활용왕', reason: '베이킹·조림 같은 요리에 잘 어울려요.' },
@@ -102,7 +102,7 @@ export const CROP_QUESTIONS: Record<ConsumerCropId, QuizQuestion[]> = {
   peach: [
     {
       id: 'PEA-Q1',
-      text: '복숭아는 어떤 식감을 좋아하세요?',
+      text: '복숭아는 어떤 식감을 좋아하시나요?',
       options: [
         { id: 'firm', icon: '🍏', text: '단단하고 쫀득한 복숭아', varieties: ['PEA-03'], type: 'refresh', keyword: '#단단식감', reason: '단단하고 쫀득한 식감이 취향과 잘 맞아요.' },
         { id: 'soft', icon: '🍑', text: '부드럽고 촉촉한 복숭아', varieties: ['PEA-01', 'PEA-02', 'PEA-04', 'PEA-05'], type: 'sweet', keyword: '#부드러운식감', reason: '부드럽고 촉촉한 식감이 취향과 잘 맞아요.' },
@@ -110,7 +110,7 @@ export const CROP_QUESTIONS: Record<ConsumerCropId, QuizQuestion[]> = {
     },
     {
       id: 'PEA-Q2',
-      text: '어떤 맛이 더 끌리세요?',
+      text: '어떤 맛에 더 끌리시나요?',
       options: [
         { id: 'sweet', icon: '🍯', text: '신맛 없이 진하게 달콤한 맛', varieties: ['PEA-01', 'PEA-04', 'PEA-05'], type: 'sweet', keyword: '#달콤포근', reason: '신맛이 적고 달콤한 맛이에요.' },
         { id: 'fresh', icon: '🌸', text: '향긋하고 산뜻한 맛', varieties: ['PEA-02', 'PEA-03'], type: 'refresh', keyword: '#향긋산뜻', reason: '향긋하고 산뜻한 맛이 취향과 잘 맞아요.' },
@@ -118,7 +118,7 @@ export const CROP_QUESTIONS: Record<ConsumerCropId, QuizQuestion[]> = {
     },
     {
       id: 'PEA-Q3',
-      text: '복숭아를 어떻게 드시고 싶으세요?',
+      text: '복숭아를 어떻게 드시고 싶으신가요?',
       options: [
         { id: 'skin', icon: '🫧', text: '껍질째 간편하게', varieties: ['PEA-01'], type: 'explorer', keyword: '#껍질째간편', reason: '껍질째 간편하게 먹을 수 있어요.' },
         { id: 'big', icon: '🫙', text: '큼직하게 잘라 나누거나 잼·조림으로', varieties: ['PEA-05'], type: 'cook', keyword: '#큼직한한알', reason: '열매가 큼직하고 손질이 편해요.' },
@@ -130,7 +130,7 @@ export const CROP_QUESTIONS: Record<ConsumerCropId, QuizQuestion[]> = {
   potato: [
     {
       id: 'POT-Q1',
-      text: '감자는 어떤 식감을 좋아하세요?',
+      text: '감자는 어떤 식감을 좋아하시나요?',
       options: [
         { id: 'firm', icon: '🍟', text: '바삭하거나 단단한 감자', varieties: ['POT-01', 'POT-02'], type: 'refresh', keyword: '#바삭단단', reason: '바삭하거나 단단한 식감이 취향과 잘 맞아요.' },
         { id: 'fluffy', icon: '☁️', text: '포슬포슬한 감자', varieties: ['POT-03', 'POT-04', 'POT-05'], type: 'homey', keyword: '#포슬포슬', reason: '포슬포슬한 식감이 취향과 잘 맞아요.' },
@@ -138,7 +138,7 @@ export const CROP_QUESTIONS: Record<ConsumerCropId, QuizQuestion[]> = {
     },
     {
       id: 'POT-Q2',
-      text: '감자로 어떤 요리를 하고 싶으세요?',
+      text: '감자로 어떤 요리를 하고 싶으신가요?',
       options: [
         { id: 'snack', icon: '🥔', text: '튀김·칩 같은 간식', varieties: ['POT-01', 'POT-05'], type: 'explorer', keyword: '#간식으로', reason: '튀김·칩 같은 간식으로 좋아요.' },
         { id: 'side', icon: '🍲', text: '볶음·구이·찜·국 같은 반찬', varieties: ['POT-02', 'POT-03', 'POT-04'], type: 'cook', keyword: '#요리활용왕', reason: '반찬 요리에 잘 어울려요.' },
@@ -146,7 +146,7 @@ export const CROP_QUESTIONS: Record<ConsumerCropId, QuizQuestion[]> = {
     },
     {
       id: 'POT-Q3',
-      text: '어떤 감자가 더 끌리세요?',
+      text: '어떤 감자에 더 끌리시나요?',
       options: [
         { id: 'special', icon: '🌈', text: '색다르거나 손질이 간편한 감자', varieties: ['POT-04', 'POT-05'], type: 'explorer', keyword: '#신품종탐색', reason: '색다르거나 간편해서 새롭게 즐기기 좋아요.' },
         { id: 'basic', icon: '🏡', text: '익숙한 기본 감자', varieties: ['POT-01', 'POT-02', 'POT-03'], type: 'homey', keyword: '#익숙한맛최고', reason: '익숙하고 편안하게 쓰기 좋은 감자예요.' },
@@ -156,7 +156,7 @@ export const CROP_QUESTIONS: Record<ConsumerCropId, QuizQuestion[]> = {
   corn: [
     {
       id: 'COR-Q1',
-      text: '옥수수는 어떤 식감을 좋아하세요?',
+      text: '옥수수는 어떤 식감을 좋아하시나요?',
       options: [
         { id: 'chewy', icon: '🌽', text: '쫀득한 찰옥수수', varieties: ['COR-01', 'COR-02', 'COR-03', 'COR-04'], type: 'homey', keyword: '#쫀득식감', reason: '쫀득한 식감이 취향과 잘 맞아요.' },
         { id: 'soft', icon: '☁️', text: '부드러운 옥수수', varieties: ['COR-05'], type: 'sweet', keyword: '#부드러운식감', reason: '부드러운 식감이 취향과 잘 맞아요.' },
@@ -164,7 +164,7 @@ export const CROP_QUESTIONS: Record<ConsumerCropId, QuizQuestion[]> = {
     },
     {
       id: 'COR-Q2',
-      text: '어떤 색 옥수수가 좋으세요?',
+      text: '어떤 색 옥수수를 좋아하시나요?',
       options: [
         { id: 'white', icon: '🤍', text: '익숙한 하얀 옥수수', varieties: ['COR-01'], type: 'homey', keyword: '#익숙한맛최고', reason: '익숙한 하얀 찰옥수수예요.' },
         { id: 'black', icon: '🖤', text: '까만 옥수수', varieties: ['COR-02'], type: 'explorer', keyword: '#독특한색', reason: '검은색이라 보는 재미가 있어요.' },
@@ -174,7 +174,7 @@ export const CROP_QUESTIONS: Record<ConsumerCropId, QuizQuestion[]> = {
     },
     {
       id: 'COR-Q3',
-      text: '옥수수를 어떻게 드시고 싶으세요?',
+      text: '옥수수를 어떻게 드시고 싶으신가요?',
       options: [
         { id: 'steam', icon: '♨️', text: '쪄 먹거나 밥에 넣어서', varieties: ['COR-01', 'COR-03'], type: 'homey', keyword: '#간편하게', reason: '쪄 먹기 좋은 옥수수예요.' },
         { id: 'grill', icon: '🔥', text: '구워서', varieties: ['COR-04'], type: 'cook', keyword: '#요리활용왕', reason: '구워 먹기 좋은 옥수수예요.' },
@@ -186,7 +186,7 @@ export const CROP_QUESTIONS: Record<ConsumerCropId, QuizQuestion[]> = {
   cabbage: [
     {
       id: 'CAB-Q1',
-      text: '배추는 어떤 식감을 좋아하세요?',
+      text: '배추는 어떤 식감을 좋아하시나요?',
       options: [
         { id: 'crisp', icon: '🥬', text: '아삭아삭한 배추', varieties: ['CAB-01', 'CAB-03', 'CAB-04', 'CAB-05'], type: 'refresh', keyword: '#아삭식감', reason: '아삭한 식감이 취향과 잘 맞아요.' },
         { id: 'soft', icon: '☁️', text: '부드럽고 감칠맛 나는 배추', varieties: ['CAB-02'], type: 'homey', keyword: '#부드러운식감', reason: '부드럽고 감칠맛이 나요.' },
@@ -194,7 +194,7 @@ export const CROP_QUESTIONS: Record<ConsumerCropId, QuizQuestion[]> = {
     },
     {
       id: 'CAB-Q2',
-      text: '어떤 크기의 배추가 좋으세요?',
+      text: '어떤 크기의 배추를 좋아하시나요?',
       options: [
         { id: 'mini', icon: '🤏', text: '작고 일찍 나오는 미니 배추', varieties: ['CAB-05'], type: 'explorer', keyword: '#미니사이즈', reason: '작은 크기라 한 번에 쓰기 좋아요.' },
         { id: 'regular', icon: '🛒', text: '익숙한 크기의 배추', varieties: ['CAB-01', 'CAB-02', 'CAB-03', 'CAB-04'], type: 'homey', keyword: '#익숙한맛최고', reason: '익숙한 크기의 배추예요.' },
@@ -202,7 +202,7 @@ export const CROP_QUESTIONS: Record<ConsumerCropId, QuizQuestion[]> = {
     },
     {
       id: 'CAB-Q3',
-      text: '배추를 주로 어떻게 드세요?',
+      text: '배추를 주로 어떻게 드시나요?',
       options: [
         { id: 'kimchi', icon: '🌶️', text: '김치 담그기', varieties: ['CAB-01'], type: 'cook', keyword: '#김치용', reason: '김치 담그기에 잘 어울려요.' },
         { id: 'fresh', icon: '🥗', text: '바로 무쳐 먹는 겉절이·생채', varieties: ['CAB-03'], type: 'refresh', keyword: '#겉절이', reason: '겉절이·생채로 바로 먹기 좋아요.' },
