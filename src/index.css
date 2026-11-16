@@ -239,6 +239,12 @@
     -0.008em 0.008em currentColor;
 }
 
+.font-malgun {
+  /* 맑은 고딕은 MS 글꼴이라 웹폰트로 배포할 수 없어 Windows에서만 보이고,
+     맥·아이폰은 Apple SD Gothic Neo, 그 외는 기본 고딕으로 대체됩니다. */
+  font-family: 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+}
+
 .font-gowun-dodum {
   font-family: 'Gowun Dodum', 'Malgun Gothic', 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
 }

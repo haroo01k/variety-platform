@@ -136,7 +136,7 @@ export function ConsumerQuizPage() {
         key={question.id}
         className="flex flex-col gap-5 rounded-3xl border border-[#F0E9D8] bg-white p-5 motion-safe:animate-[result-card-in_0.25s_ease-out] sm:p-6"
       >
-        <h2 className="text-weight-boost text-lg font-extrabold leading-snug break-keep text-slate-800 sm:text-xl">
+        <h2 className="text-lg font-extrabold leading-snug break-keep text-slate-800 sm:text-xl">
           <span className="mr-1.5 text-brand-orange">Q{index + 1}.</span>
           {question.text}
         </h2>
