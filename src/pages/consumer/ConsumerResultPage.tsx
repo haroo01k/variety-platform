@@ -79,9 +79,13 @@ export function ConsumerResultPage() {
       </section>
 
       {/* ② 유형 → 추천으로 이어지는 연결선 */}
-      <div aria-hidden="true" className="flex flex-col items-center gap-1 text-brand-green/40">
-        <span className="h-6 w-px bg-current" />
-        <span className="text-xs">▼</span>
+      <div aria-hidden="true" className="flex flex-col items-center gap-1.5">
+        <span className="h-1.5 w-1.5 rounded-full bg-brand-green/20" />
+        <span className="h-1.5 w-1.5 rounded-full bg-brand-green/35" />
+        <span className="h-1.5 w-1.5 rounded-full bg-brand-green/50" />
+        <span className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-full bg-white text-xl shadow-sm motion-safe:animate-[soft-bob_1.6s_ease-in-out_infinite]">
+          🌱
+        </span>
       </div>
 
       {/* ③ 추천 TOP 3: 제목 → 순위 탭 → 카드 순서로 위에서 아래로 읽히게 합니다. */}
