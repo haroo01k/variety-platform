@@ -84,7 +84,7 @@ export function ConsumerQuizPage() {
             🌱
           </span>
           <p className="text-sm font-bold text-brand-orange">나의 농산물 취향 발견하기</p>
-          <h1 className="text-xl font-bold leading-snug text-brand-green-dark sm:text-2xl">
+          <h1 className="text-xl font-extrabold leading-snug text-brand-green-dark sm:text-2xl">
             나는 어떤 농산물과
             <br />잘 맞을까요?
           </h1>
@@ -136,7 +136,7 @@ export function ConsumerQuizPage() {
         key={question.id}
         className="flex flex-col gap-5 rounded-3xl border border-[#F0E9D8] bg-white p-5 motion-safe:animate-[result-card-in_0.25s_ease-out] sm:p-6"
       >
-        <h2 className="text-lg font-semibold leading-snug break-keep text-slate-800 sm:text-xl">
+        <h2 className="text-lg font-extrabold leading-snug break-keep text-slate-800 sm:text-xl">
           <span className="mr-1.5 text-brand-orange">Q{index + 1}.</span>
           {question.text}
         </h2>

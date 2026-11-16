@@ -118,7 +118,7 @@ export function RegionSelectStep({ value, onChange }: RegionSelectStepProps) {
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <h2 className="font-bold break-keep text-slate-800 text-xl sm:text-2xl">어느 지역에서 재배하시나요?</h2>
+        <h2 className="font-extrabold break-keep text-slate-800 text-xl sm:text-2xl">어느 지역에서 재배하시나요?</h2>
         <p className="mt-1 break-keep text-slate-600 text-base">지역명 첫 글자를 누르거나 직접 검색해 주세요.</p>
       </div>
 

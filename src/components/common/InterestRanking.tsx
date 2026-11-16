@@ -97,10 +97,10 @@ export function InterestRanking({ subtitle, emptyMessage, footnote }: InterestRa
   return (
     <section aria-labelledby="interest-ranking-title" className="flex w-full max-w-[520px] flex-col gap-3 text-left">
       <div>
-        <h2 id="interest-ranking-title" className="text-lg font-bold text-brand-green-dark">
+        <h2 id="interest-ranking-title" className="text-lg font-extrabold text-brand-green-dark">
           소비자가 주목하는 신품종 <span className="text-[#F28B9B]">♡</span>
         </h2>
-        <p className="mt-0.5 text-sm text-slate-500">{subtitle}</p>
+        <p className="mt-0.5 text-sm font-bold text-slate-500">{subtitle}</p>
       </div>
 
       <div role="group" aria-label="작물별 보기" className="flex flex-wrap gap-1.5">
