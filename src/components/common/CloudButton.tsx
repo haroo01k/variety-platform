@@ -15,7 +15,7 @@ const CLOUD_PATH =
 
 /**
  * 귀여운 구름 모양 버튼(결과 화면의 '다시 하기' 버튼용).
- * SVG 구름(아래 평평, 위 둥근 봉우리) 위에 글자를 아래쪽 넓은 부분에 올립니다.
+ * SVG 구름(아래 평평, 위 둥근 봉우리) 몸통 가운데에 둥글둥글한 글꼴로 글자를 올립니다.
  */
 export function CloudButton({ children, to, onClick, className = '' }: CloudButtonProps) {
   const inner = (
@@ -31,7 +31,8 @@ export function CloudButton({ children, to, onClick, className = '' }: CloudButt
           strokeWidth="2"
         />
       </svg>
-      <span className="absolute inset-x-0 bottom-[16%] flex items-center justify-center gap-1.5 text-base font-extrabold text-brand-green-dark">
+      {/* 글자는 구름 몸통(봉우리 아래 넓은 부분)의 세로 가운데에 둡니다. 글꼴은 홈 메인 제목과 같은 강원교육튼튼체 */}
+      <span className="font-gangwon-power absolute inset-x-0 top-[66%] flex -translate-y-1/2 items-center justify-center gap-1.5 text-xl tracking-tight text-brand-green-dark">
         {children}
       </span>
     </>
