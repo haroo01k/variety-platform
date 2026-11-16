@@ -21,6 +21,15 @@ const ADVANCE_DELAY = 280;
  * 선택지를 누르면 자동으로 다음 문항으로 넘어갑니다. 이전 문항으로 돌아가 답을 바꿀 수 있습니다.
  * 취향 유형은 모든 문항에 답한 뒤 결과 화면에서 처음 공개합니다.
  */
+/** 시작 화면 작물 친구들(가운데가 크고 높은 아치 배치) */
+const INTRO_FRIENDS = [
+  { id: 'potato', size: 'h-12 w-12 sm:h-14 sm:w-14', lift: '0px' },
+  { id: 'corn', size: 'h-14 w-14 sm:h-16 sm:w-16', lift: '10px' },
+  { id: 'apple', size: 'h-16 w-16 sm:h-20 sm:w-20', lift: '18px' },
+  { id: 'peach', size: 'h-14 w-14 sm:h-16 sm:w-16', lift: '10px' },
+  { id: 'cabbage', size: 'h-12 w-12 sm:h-14 sm:w-14', lift: '0px' },
+];
+
 export function ConsumerQuizPage() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -78,25 +87,55 @@ export function ConsumerQuizPage() {
   if (!started) {
     return (
       <Container className="font-nanum-round flex flex-col gap-6 py-8 md:py-12">
-        {/* 시작 화면(강조형): 작은 새싹 장식 + 초록 제목과 연한 노란 밑줄 + 하단 연두색 언덕 */}
-        <section className="relative flex flex-col items-center gap-3 overflow-hidden rounded-3xl border border-[#F0E9D8] bg-white px-5 pt-10 pb-24 text-center sm:pb-28">
-          <span aria-hidden="true" className="text-2xl">
-            🌱
-          </span>
-          <p className="text-sm font-bold text-brand-orange">나의 농산물 취향 발견하기</p>
-          <h1 className="text-xl font-extrabold leading-snug text-brand-green-dark sm:text-2xl">
-            나는 어떤 농산물과
-            <br />잘 맞을까요?
-          </h1>
-          <span aria-hidden="true" className="-mt-1 block h-1.5 w-24 rounded-full bg-brand-yellow/40" />
-          <p className="mt-1 text-sm leading-relaxed text-slate-500">
-            궁금한 농산물을 고르고, 질문 3~5개에 답해 주세요.
-            <br />
-            나의 취향과 어울리는 신품종을 알려드려요.
+        {/* 시작 화면: 작물 친구들이 통통 떠 있고 꿀벌이 날아다니는 귀여운 첫 화면 */}
+        <section className="relative flex flex-col items-center gap-3 overflow-hidden rounded-3xl border border-[#F0E9D8] bg-gradient-to-b from-[#FFF9E8] to-white px-5 pt-8 pb-28 text-center sm:pb-32">
+          {/* 반짝이 장식 */}
+          <span aria-hidden="true" className="absolute left-6 top-6 text-lg text-brand-yellow motion-safe:animate-[twinkle_2.4s_ease-in-out_infinite]">✦</span>
+          <span aria-hidden="true" className="absolute right-10 top-24 text-sm text-brand-yellow motion-safe:animate-[twinkle_2.4s_ease-in-out_0.8s_infinite]">✦</span>
+          <span aria-hidden="true" className="absolute left-10 top-40 text-xs text-[#F28B9B] motion-safe:animate-[twinkle_2.4s_ease-in-out_1.6s_infinite]">♥</span>
+
+          {/* 날아다니는 꿀벌 */}
+          <span aria-hidden="true" className="absolute right-5 top-5 text-2xl motion-safe:animate-[bee-fly_4s_ease-in-out_infinite]">🐝</span>
+
+          {/* 작물 친구들: 가운데가 높은 아치 모양으로, 하나씩 다른 박자로 통통 */}
+          <div aria-hidden="true" className="flex items-end justify-center gap-1.5 sm:gap-2.5">
+            {INTRO_FRIENDS.map((friend, i) => (
+              <img
+                key={friend.id}
+                src={`/images/intro/${friend.id}.webp`}
+                alt=""
+                className={`rounded-full shadow-sm ring-2 ring-white motion-safe:animate-[soft-bob_2s_ease-in-out_infinite] ${friend.size}`}
+                style={{ animationDelay: `${i * 0.25}s`, marginBottom: friend.lift }}
+              />
+            ))}
+          </div>
+
+          {/* 말풍선 */}
+          <p className="relative mt-2 rounded-2xl bg-white px-4 py-2 text-sm font-bold text-brand-green-dark shadow-sm">
+            우리 중에 누가 나랑 잘 맞을까? 🤔
+            <span aria-hidden="true" className="absolute -top-1.5 left-1/2 h-3 w-3 -translate-x-1/2 rotate-45 bg-white" />
           </p>
+
+          <p className="mt-2 rounded-full bg-brand-orange/10 px-3 py-1 text-xs font-bold text-brand-orange">나의 농산물 취향 발견하기</p>
+          <h1 className="text-2xl font-extrabold leading-snug text-brand-green-dark sm:text-3xl">
+            나는 어떤 농산물과
+            <br />
+            <span className="relative inline-block">
+              <span className="relative z-10">잘 맞을까요?</span>
+              <span aria-hidden="true" className="absolute inset-x-0 bottom-0.5 -z-0 h-3 rounded-full bg-brand-yellow/45" />
+            </span>
+          </h1>
+
+          <ul className="mt-1 flex flex-wrap justify-center gap-1.5 text-xs font-bold text-slate-600">
+            <li className="rounded-full bg-white px-2.5 py-1 shadow-sm">⏱ 1분이면 끝</li>
+            <li className="rounded-full bg-white px-2.5 py-1 shadow-sm">💬 질문 3~5개</li>
+            <li className="rounded-full bg-white px-2.5 py-1 shadow-sm">🎁 나만의 품종 카드</li>
+          </ul>
+
           <Button variant="accent" onClick={() => setStarted(true)} className="relative z-10 mt-3 w-full max-w-xs rounded-full">
             테스트 시작하기 →
           </Button>
+
           <svg
             aria-hidden="true"
             viewBox="0 0 400 80"
@@ -106,6 +145,11 @@ export function ConsumerQuizPage() {
             <path d="M0 48 C 70 18, 140 22, 210 44 S 340 66, 400 34 L400 80 L0 80 Z" fill="#E5F0DE" />
             <path d="M0 62 C 90 40, 170 48, 250 62 S 360 70, 400 56 L400 80 L0 80 Z" fill="#D4E8C8" />
           </svg>
+          {/* 언덕 위 꽃 */}
+          <span aria-hidden="true" className="absolute bottom-7 left-[12%] text-base">🌼</span>
+          <span aria-hidden="true" className="absolute bottom-10 left-[30%] text-sm">🌱</span>
+          <span aria-hidden="true" className="absolute bottom-6 right-[26%] text-base">🌷</span>
+          <span aria-hidden="true" className="absolute bottom-9 right-[10%] text-sm">🌼</span>
         </section>
       </Container>
     );
