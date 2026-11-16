@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 
 interface TeamMember {
   name: string;
@@ -58,52 +58,6 @@ function MemberField({ label, value, breakAll = false }: MemberFieldProps) {
   );
 }
 
-interface TeamToggleButtonProps {
-  isOpen: boolean;
-  onClick: () => void;
-  /** 위치·표시(모바일/PC) 클래스 */
-  className: string;
-}
-
-/**
- * TEAM 소개 펼침/접힘 버튼: 한 줄 "» TEAM 소개 보기".
- * 접힘: 오른쪽 이중 꺾쇠(좌우로 천천히 움직임) / 펼침: 아래로 90° 회전.
- * 왼쪽 안쪽 여백이 없고, SVG viewBox를 선 끝(둥근 끝 포함)에 딱 맞춰 꺾쇠 선이 버튼 왼쪽 끝에서
- * 바로 시작하므로 위 소개 문구의 첫 글자와 같은 세로선에 놓입니다.
- */
-function TeamToggleButton({ isOpen, onClick, className }: TeamToggleButtonProps) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-expanded={isOpen}
-      aria-controls="about-team-panel"
-      className={`${className} min-h-[44px] items-center gap-2 py-2 whitespace-nowrap text-brand-green-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green`}
-    >
-      <span className={isOpen ? 'block' : 'about-scroll-arrow'}>
-        <svg
-          width="15"
-          height="19"
-          viewBox="5.7 4 12.6 16"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.6"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-          className={`about-toggle-icon block ${isOpen ? 'rotate-90' : ''}`}
-        >
-          <path d="M6.5 6l5 6-5 6" />
-          <path d="M12.5 6l5 6-5 6" />
-        </svg>
-      </span>
-      <span className="font-nanum-round fs-12 font-bold text-[#5f7f6c]">
-        {isOpen ? 'TEAM 소개 접기' : 'TEAM 소개 보기'}
-      </span>
-    </button>
-  );
-}
-
 /** 소개 영역과 팀 영역이 같은 폭·여백을 쓰도록 맞추는 내부 컨테이너 클래스 */
 const CONTENT_CLASS = 'relative z-10 mx-auto w-full max-w-[1100px] px-4 sm:px-6 lg:px-8';
 
@@ -115,52 +69,8 @@ const CONTENT_CLASS = 'relative z-10 mx-auto w-full max-w-[1100px] px-4 sm:px-6 
  */
 export function AboutPage() {
   const [erroredPhotos, setErroredPhotos] = useState<Record<string, boolean>>({});
-  // TEAM 소개는 새로고침할 때마다 접힌 상태로 시작합니다(상태를 저장하지 않음).
-  const [isTeamOpen, setIsTeamOpen] = useState(false);
-  const dividerRef = useRef<HTMLDivElement>(null);
-  const teamTitleRef = useRef<HTMLHeadingElement>(null);
-
-  /**
-   * 소개 문구 아래 이중 V 버튼으로 구분선 아래 TEAM 소개를 펼치거나 접습니다.
-   * - 펼칠 때: 펼침(0.5초)이 끝난 뒤 TEAM 제목이 화면 아래쪽에 가려져 있을 때만 구분선이 위쪽에 오도록 스크롤
-   * - 접을 때: 접힌 뒤 페이지에서 가능한 최대 스크롤 위치보다 아래에 있다면, 접히는 동안 그 위치까지
-   *   함께 부드럽게 스크롤해 화면이 튀지 않게 합니다(PC는 첫 화면 맨 위로 돌아감).
-   * 동작 줄이기 설정이면 애니메이션·부드러운 스크롤 없이 즉시 처리합니다.
-   */
-  const toggleTeam = () => {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const behavior: ScrollBehavior = prefersReducedMotion ? 'auto' : 'smooth';
-    const nextOpen = !isTeamOpen;
-
-    if (!nextOpen) {
-      const panelHeight = document.getElementById('about-team-panel')?.offsetHeight ?? 0;
-      const maxScrollAfterCollapse = Math.max(
-        0,
-        document.documentElement.scrollHeight - panelHeight - window.innerHeight,
-      );
-      if (window.scrollY > maxScrollAfterCollapse) {
-        window.scrollTo({ top: maxScrollAfterCollapse, behavior });
-      }
-    }
-
-    setIsTeamOpen(nextOpen);
-
-    if (nextOpen) {
-      window.setTimeout(
-        () => {
-          const title = teamTitleRef.current;
-          if (title && title.getBoundingClientRect().bottom > window.innerHeight - 24) {
-            dividerRef.current?.scrollIntoView({ behavior, block: 'start' });
-          }
-        },
-        prefersReducedMotion ? 0 : 500,
-      );
-    }
-  };
-
   return (
-    // PC: 소개 영역이 (화면 높이 - 상단 메뉴) 남은 높이를 채워, TEAM이 접혀 있으면 구분선이 첫 화면 맨 아래에 오고
-    // 세로 스크롤이 생기지 않습니다. 펼치면 늘어난 만큼만 스크롤됩니다.
+    // PC: 소개 영역이 (화면 높이 - 상단 메뉴) 남은 높이를 채우고, 그 아래에 TEAM 소개가 항상 펼쳐져 이어집니다.
     // overflow-hidden은 화면 폭보다 넓은 배경 그림의 가로 넘침을 자르기 위한 것입니다.
     <div className="relative isolate flex flex-1 flex-col overflow-hidden">
       <section className="about-intro min-[769px]:flex-1">
@@ -191,37 +101,25 @@ export function AboutPage() {
             </p>
           </div>
 
-          {/*
-            TEAM 펼침 버튼: 소개 문구 바로 다음(문서 흐름 안), 소개 문구와 같은 왼쪽 기준선.
-            마지막 문장 글자 아래에서 꺾쇠까지 PC·모바일 모두 약 30px
-            (mt 10px + 행간 여백 7~8px + 버튼 높이 44px 안에서 아이콘 위 여백 약 12px).
-          */}
-          <div className="mt-2.5">
-            <TeamToggleButton isOpen={isTeamOpen} onClick={toggleTeam} className="inline-flex" />
-          </div>
         </div>
       </section>
 
       {/* 하단 여백: 모바일은 기존처럼 항상 64px, PC는 펼침 영역 안에 두어 접혀 있을 때 높이를 차지하지 않게 함 */}
       <section className={`font-nanum-round ${CONTENT_CLASS} pb-16 min-[769px]:pb-0`}>
         {/* 구분선. scroll-mt: 스크롤로 맞출 때 구분선이 화면 위쪽에 살짝 보이도록 24px 여유 */}
-        <div ref={dividerRef} className="scroll-mt-6 border-t border-brand-green/40" />
+        <div className="border-t border-brand-green/40" />
 
         {/*
           펼침 영역: grid-template-rows 0fr↔1fr 전환으로 내용 높이(화면 폭에 따라 달라짐)에 맞춰
           0.5초 ease-in-out으로 펼치고 접습니다(index.css의 .about-team-panel).
           접혀 있을 때는 inert로 키보드 포커스·화면낭독기 접근을 막습니다.
         */}
-        <div
-          id="about-team-panel"
-          className={`about-team-panel ${isTeamOpen ? 'is-open' : ''}`}
-          inert={!isTeamOpen}
-        >
+        {/* TEAM 소개는 접지 않고 항상 펼쳐 둡니다. */}
+        <div id="about-team-panel">
           <div className="min-h-0 overflow-hidden">
             <div className="min-[769px]:pb-16">
               <div className="about-team-item pt-6 sm:pt-8">
                 <h2
-                  ref={teamTitleRef}
                   className="fs-24 leading-[1.4] font-bold tracking-[-0.02em] text-brand-green-dark md:fs-28"
                 >
                   TEAM 깻잎삼김

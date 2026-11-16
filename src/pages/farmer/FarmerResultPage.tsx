@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Container } from '../../components/common/Container';
 import { Button } from '../../components/common/Button';
+import { CuteButton } from '../../components/common/CuteButton';
 import { BottomSheet } from '../../components/common/BottomSheet';
 import { ResultRankTabs } from '../../components/common/ResultRankTabs';
 import { FarmerResultCard } from '../../components/farmer/FarmerResultCard';
@@ -127,9 +128,9 @@ export function FarmerResultPage() {
         실제 품종을 고르기 전에 지역 농업기술센터나 종자 판매처와 함께 확인해 주세요.
       </p>
 
-      <Button variant="secondary" to={ROUTES.farmerConditions} className="w-full">
+      <CuteButton icon="🧑‍🌾" to={ROUTES.farmerConditions}>
         조건 다시 입력하기
-      </Button>
+      </CuteButton>
 
       <InterestRanking
         subtitle="소비자들은 어떤 신품종을 먹어보고 싶어 할까요?"
