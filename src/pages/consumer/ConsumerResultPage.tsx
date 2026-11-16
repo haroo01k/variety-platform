@@ -82,7 +82,7 @@ export function ConsumerResultPage() {
         <span className="h-1.5 w-1.5 rounded-full bg-brand-green/20" />
         <span className="h-1.5 w-1.5 rounded-full bg-brand-green/35" />
         <span className="h-1.5 w-1.5 rounded-full bg-brand-green/50" />
-        <span className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-full bg-white text-xl shadow-sm motion-safe:animate-[soft-bob_1.6s_ease-in-out_infinite]">
+        <span className="mt-0.5 flex h-12 w-12 items-center justify-center rounded-full bg-white text-3xl shadow-sm motion-safe:animate-[soft-bob_1.6s_ease-in-out_infinite]">
           🐝
         </span>
       </div>
