@@ -37,7 +37,7 @@ export function FarmerAnalyzingPage() {
 
   if (!state) {
     return (
-      <Container className="flex flex-1 flex-col items-center justify-center gap-4 py-10 text-center">
+      <Container className="font-nanum-round flex flex-1 flex-col items-center justify-center gap-4 py-10 text-center">
         <p className="text-sm text-slate-500">입력한 조건을 찾을 수 없어요. 조건을 다시 입력해주세요.</p>
         <Button to={ROUTES.farmerConditions} variant="primary">
           조건 입력하기
@@ -51,7 +51,7 @@ export function FarmerAnalyzingPage() {
   const goResult = () => navigate(ROUTES.farmerResult, { replace: true, state });
 
   return (
-    <Container className="flex flex-1 flex-col items-center gap-6 py-8 text-center md:py-12">
+    <Container className="font-nanum-round flex flex-1 flex-col items-center gap-6 py-8 text-center md:py-12">
       <section className="flex flex-col items-center gap-3">
         <p className="text-sm font-semibold text-brand-green">2 / 3 단계</p>
         <AnalyzingStamp crop={crop} durationMs={AUTO_ADVANCE_MS} />

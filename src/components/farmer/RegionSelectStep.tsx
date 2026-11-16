@@ -118,7 +118,7 @@ export function RegionSelectStep({ value, onChange }: RegionSelectStepProps) {
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <h2 className="font-bold break-keep text-slate-800 text-xl sm:text-2xl">어느 지역에서 재배하시나요?</h2>
+        <h2 className="font-extrabold break-keep text-slate-800 text-xl sm:text-2xl">어느 지역에서 재배하시나요?</h2>
         <p className="mt-1 break-keep text-slate-600 text-base">지역명 첫 글자를 누르거나 직접 검색해 주세요.</p>
       </div>
 
@@ -154,7 +154,7 @@ export function RegionSelectStep({ value, onChange }: RegionSelectStepProps) {
                 onClick={() => handleSelectInitial(initial)}
                 aria-pressed={active}
                 aria-label={`${initial}으로 시작하는 지역 보기`}
-                className={`flex aspect-square items-center justify-center rounded-2xl border-2 font-bold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green text-2xl sm:text-3xl ${
+                className={`font-malgun flex aspect-square items-center justify-center rounded-2xl border-2 font-bold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green text-2xl sm:text-3xl ${
                   active
                     ? 'border-brand-green bg-brand-green text-white shadow-sm'
                     : 'border-slate-300 bg-white text-slate-800 hover:border-brand-green hover:bg-brand-green-light'
@@ -182,7 +182,7 @@ export function RegionSelectStep({ value, onChange }: RegionSelectStepProps) {
                     type="button"
                     onClick={() => handleSelectRegion(region)}
                     aria-pressed={selected}
-                    className={`flex items-center justify-center gap-2 rounded-2xl border-2 px-3 py-2 font-bold break-keep transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green min-h-[64px] text-xl ${
+                    className={`font-malgun flex items-center justify-center gap-2 rounded-2xl border-2 px-3 py-2 font-bold break-keep transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green min-h-[64px] text-xl ${
                       selected
                         ? 'border-brand-green bg-brand-green-light text-brand-green-dark shadow-sm'
                         : 'border-slate-300 bg-white text-slate-800 hover:border-brand-green/60'

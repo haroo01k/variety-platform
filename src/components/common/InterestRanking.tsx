@@ -19,6 +19,23 @@ const TOP_N = 5;
 
 type Status = 'loading' | 'ready' | 'error';
 
+/** 꽉 찬 하트 아이콘(글꼴마다 ♥ 모양이 달라 SVG로 통일) */
+function FilledHeart({ className = '' }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className={className} fill="currentColor">
+      <path d="M12 21s-6.7-4.35-9.33-8.04C.8 10.33 1.5 6.6 4.6 5.3c2.2-.92 4.47-.1 5.9 1.6L12 8.6l1.5-1.7c1.43-1.7 3.7-2.52 5.9-1.6 3.1 1.3 3.8 5.03 1.93 7.66C18.7 16.65 12 21 12 21z" />
+    </svg>
+  );
+}
+
+/** 순위 배지 색: 1위 노랑, 2·3위 연두, 그 외 회색 */
+const rankBadgeClass = (rank: number) =>
+  rank === 1
+    ? 'bg-brand-yellow text-white'
+    : rank <= 3
+      ? 'bg-brand-green-light text-brand-green-dark'
+      : 'bg-slate-100 text-slate-500';
+
 interface InterestRankingProps {
   /** 제목 아래 한 줄 설명 */
   subtitle: string;
@@ -97,10 +114,11 @@ export function InterestRanking({ subtitle, emptyMessage, footnote }: InterestRa
   return (
     <section aria-labelledby="interest-ranking-title" className="flex w-full max-w-[520px] flex-col gap-3 text-left">
       <div>
-        <h2 id="interest-ranking-title" className="text-lg font-bold text-brand-green-dark">
-          소비자가 주목하는 신품종 <span className="text-[#F28B9B]">♡</span>
+        <h2 id="interest-ranking-title" className="flex items-center gap-1.5 text-lg font-extrabold text-brand-green-dark">
+          소비자가 주목하는 신품종
+          <FilledHeart className="h-5 w-5 text-rose-500" />
         </h2>
-        <p className="mt-0.5 text-sm text-slate-500">{subtitle}</p>
+        <p className="mt-0.5 text-sm font-bold text-slate-500">{subtitle}</p>
       </div>
 
       <div role="group" aria-label="작물별 보기" className="flex flex-wrap gap-1.5">
@@ -111,7 +129,9 @@ export function InterestRanking({ subtitle, emptyMessage, footnote }: InterestRa
             aria-pressed={filter === f.id}
             onClick={() => setFilter(f.id)}
             className={`min-h-[36px] rounded-full px-3.5 text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green ${
-              filter === f.id ? 'bg-brand-green font-semibold text-white' : 'bg-white text-slate-600 hover:bg-brand-green-light'
+              filter === f.id
+                ? 'border border-brand-green bg-brand-green font-bold text-white'
+                : 'border border-slate-200 bg-white text-slate-600 hover:border-brand-green'
             }`}
           >
             {f.label}
@@ -141,8 +161,18 @@ export function InterestRanking({ subtitle, emptyMessage, footnote }: InterestRa
           {rows.map((row) => {
             const image = findMarketVariety(row.variety.cropId, row.variety.name)?.image;
             return (
-              <li key={row.variety.id} className="flex items-center gap-3 rounded-2xl bg-white px-3 py-2.5">
-                <span className="w-8 shrink-0 text-center text-sm font-bold text-brand-green">{row.rank}위</span>
+              <li
+                key={row.variety.id}
+                className={`flex items-center gap-3 rounded-2xl border bg-white px-3 py-2.5 ${
+                  row.rank === 1 ? 'border-brand-yellow/60 shadow-sm' : 'border-transparent'
+                }`}
+              >
+                <span
+                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-extrabold ${rankBadgeClass(row.rank)}`}
+                  aria-label={`${row.rank}위`}
+                >
+                  {row.rank}
+                </span>
                 {image ? (
                   <img src={image} alt="" aria-hidden="true" className="h-10 w-10 shrink-0 object-contain" />
                 ) : (
@@ -152,8 +182,12 @@ export function InterestRanking({ subtitle, emptyMessage, footnote }: InterestRa
                   <span className="block truncate text-sm font-semibold text-[#20251F]">{row.name}</span>
                   <span className="block text-xs text-slate-500">{row.variety.cropName}</span>
                 </span>
-                <span className="shrink-0 text-sm tabular-nums text-rose-500" aria-label={`먹어보고 싶어요 ${row.count}명`}>
-                  ♥ {row.count}
+                <span
+                  className="inline-flex shrink-0 items-center gap-1 rounded-full bg-rose-50 px-2.5 py-1 text-sm font-bold tabular-nums text-rose-500"
+                  aria-label={`먹어보고 싶어요 ${row.count}명`}
+                >
+                  <FilledHeart className="h-3.5 w-3.5" />
+                  {row.count}
                 </span>
               </li>
             );
