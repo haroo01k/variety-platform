@@ -4,17 +4,20 @@ interface ResultRankTabsProps {
   /** 0-based로 선택된 순위 인덱스. */
   selectedIndex: number;
   onSelect: (index: number) => void;
+  /** 탭별 표시 순위(1부터). 점수가 같으면 같은 순위(예: [1, 1, 3])로 '공동 1순위'라고 보여줍니다. 없으면 1·2·3. */
+  ranks?: number[];
   className?: string;
 }
 
-const RANK_LABELS = ['1순위', '2순위', '3순위'];
 const RANK_MEDALS = ['🥇', '🥈', '🥉'];
 
 /**
  * 농업인/소비자 결과 화면 공용 "TOP 3 순위 선택" pill 탭.
  * 선택된 순위만 큰 카드 한 장으로 보여주는 구조에서, 어떤 순위를 보여줄지 고르는 용도입니다.
  */
-export function ResultRankTabs({ count, selectedIndex, onSelect, className = '' }: ResultRankTabsProps) {
+export function ResultRankTabs({ count, selectedIndex, onSelect, ranks, className = '' }: ResultRankTabsProps) {
+  const rankOf = (index: number) => ranks?.[index] ?? index + 1;
+  const isTied = (index: number) => (ranks ?? []).filter((r) => r === rankOf(index)).length > 1;
   return (
     <div className={`flex items-center justify-center gap-2 ${className}`} role="tablist" aria-label="추천 순위 선택">
       {Array.from({ length: count }, (_, index) => index).map((index) => {
@@ -32,8 +35,9 @@ export function ResultRankTabs({ count, selectedIndex, onSelect, className = '' 
                 : 'border-slate-200 bg-[#FBF8EF] text-slate-600 hover:border-brand-green'
             }`}
           >
-            <span aria-hidden="true">{RANK_MEDALS[index]}</span>
-            {RANK_LABELS[index]}
+            <span aria-hidden="true">{RANK_MEDALS[rankOf(index) - 1]}</span>
+            {isTied(index) ? '공동 ' : ''}
+            {rankOf(index)}순위
           </button>
         );
       })}

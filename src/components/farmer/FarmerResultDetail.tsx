@@ -4,6 +4,8 @@ import type { HazardKey } from '../../types/variety';
 
 interface FarmerResultDetailProps {
   rank: number;
+  /** 같은 점수의 품종이 있어 공동 순위인지 */
+  tied?: boolean;
   emoji: string;
   recommendation: FarmerRecommendation;
 }
@@ -20,12 +22,13 @@ const HAZARD_SCORE_LABEL: Record<number, string> = { 0: '낮음', 1: '보통', 2
  * 농업인 결과 카드의 "품종 상세보기"를 눌렀을 때 바텀시트에 표시되는 상세 정보.
  * 권장지역·기후 대응력·용도·병해충저항·생육기간·출처 등 재배 판단에 필요한 항목 중심으로 구성합니다.
  */
-export function FarmerResultDetail({ rank, emoji, recommendation }: FarmerResultDetailProps) {
+export function FarmerResultDetail({ rank, tied = false, emoji, recommendation }: FarmerResultDetailProps) {
   const { variety, totalScore, cautions } = recommendation;
 
   return (
     <div>
-      <p className="text-xs font-semibold text-slate-400">{rank}위 · 일치 점수 {totalScore}</p>
+      <p className="text-xs font-semibold text-slate-400">{tied ? '공동 ' : ''}
+        {rank}위 · 일치 점수 {totalScore}</p>
       <div className="mt-2 flex items-center gap-4">
         <VarietyStampImage
           cropId={variety.cropId}

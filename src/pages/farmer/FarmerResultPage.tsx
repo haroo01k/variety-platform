@@ -62,6 +62,11 @@ export function FarmerResultPage() {
   const crop = CROPS.find((c) => c.id === cropId) ?? CROPS[0];
   const first = result.top3[0];
   const selected = result.top3[selectedRank] ?? first;
+  // 점수가 같으면 같은 순위(공동 순위)로 보여줍니다. 예) 8.1, 8.1, 6.3 → 1, 1, 3
+  const ranks = result.top3.map((r) => 1 + result.top3.filter((o) => o.totalScore > r.totalScore).length);
+  const hasTie = new Set(ranks).size < ranks.length;
+  const selectedDisplayRank = ranks[selectedRank] ?? 1;
+  const selectedTied = ranks.filter((r) => r === selectedDisplayRank).length > 1;
 
   return (
     <Container className="flex flex-col gap-6 py-8 md:py-12">
@@ -73,9 +78,11 @@ export function FarmerResultPage() {
         <p className="mt-2 text-sm text-slate-500">추천 품종 TOP 3</p>
       </header>
 
-      {result.isCloseCall && (
+      {(hasTie || result.isCloseCall) && (
         <p className="mx-auto w-full max-w-[520px] rounded-2xl bg-brand-yellow/20 px-4 py-3 text-sm text-brand-orange">
-          상위 품종끼리 점수 차이가 크지 않아요. 비슷한 조건의 후보로 참고해주세요.
+          {hasTie
+            ? '일치 점수가 같은 품종은 공동 순위로 보여드려요. 기후 적응성 근거가 더 확실한 품종을 앞에 두었어요.'
+            : '상위 품종끼리 점수 차이가 크지 않아요. 비슷한 조건의 후보로 참고해주세요.'}
         </p>
       )}
 
@@ -85,10 +92,10 @@ export function FarmerResultPage() {
         </p>
       ) : (
         <>
-          <ResultRankTabs count={result.top3.length} selectedIndex={selectedRank} onSelect={setSelectedRank} />
+          <ResultRankTabs count={result.top3.length} selectedIndex={selectedRank} onSelect={setSelectedRank} ranks={ranks} />
           <div key={selectedRank} className="motion-safe:animate-[result-card-in_0.2s_ease-out]">
             <FarmerResultCard
-              rank={(selectedRank + 1) as 1 | 2 | 3}
+              rank={selectedDisplayRank as 1 | 2 | 3}
               emoji={crop.emoji}
               recommendation={selected}
               onOpenDetail={() => setShowDetail(true)}
@@ -130,7 +137,7 @@ export function FarmerResultPage() {
         onClose={() => setShowDetail(false)}
         title={selected ? `${selected.variety.name} 상세 정보` : '품종 상세 정보'}
       >
-        {selected && <FarmerResultDetail rank={selectedRank + 1} emoji={crop.emoji} recommendation={selected} />}
+        {selected && <FarmerResultDetail rank={selectedDisplayRank} tied={selectedTied} emoji={crop.emoji} recommendation={selected} />}
       </BottomSheet>
     </Container>
   );
