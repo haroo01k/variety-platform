@@ -34,6 +34,9 @@ export interface HazardInfo {
  * "Claude_업로드용_신품종추천_통합데이터" 25개 품종을 그대로 옮긴 것으로,
  * 실제 재배 적합성 확정 판정이 아니라 근거 수준을 함께 공개하는 추천 MVP용 데이터입니다.
  */
+/** 감자·배추 작형: 봄 / 여름(고랭지) / 가을 / 겨울(시설·월동) */
+export type CropSeason = 'spring' | 'summer' | 'autumn' | 'winter';
+
 export interface VarietyRecord {
   id: string;
   cropId: CropId;
@@ -67,6 +70,14 @@ export interface VarietyRecord {
   reviewMemo: string;
   /** 겨울철 최저기온 한계(℃). 과수 중 명시적 한계가 있는 품종만(예: 홍슬 -18, 설홍 -19) */
   winterHardinessLimitC?: number | null;
+  /**
+   * 밭작물(감자·배추) 재배 일수: 심은 날(감자 파종, 배추 정식)부터 수확까지.
+   * 농업인 수확시기 문항(심는 달 + 수확하고 싶은 달)에 씁니다.
+   * estimated=true는 품종별 실측치가 없어 숙기 구분 기준으로 잡은 범위입니다.
+   */
+  growthDays?: { min: number; max: number; from: '파종' | '정식'; estimated: boolean; source: string };
+  /** 밭작물(감자·배추)이 맞는 작형. 품종 자료에 근거가 있을 때만 적습니다. */
+  cropSeasons?: { seasons: CropSeason[]; source: string };
   /** 판매처(쿠팡 검색) 링크. 없으면 "판매처 보기" 버튼을 숨깁니다. */
   marketUrl?: string;
 }

@@ -164,7 +164,7 @@ export const MARKET_VARIETIES: MarketVariety[] = [
   },
   {
     crop: 'cabbage',
-    varietyName: 'FH112',
+    varietyName: '원교20055호(FH112)',
     image: '/images/market/cabbage-fh112.png',
     marketUrl: 'https://www.coupang.com/np/search?component=&q=%EB%B0%B0%EC%B6%94+FH112&traceId=mucm1kk7&channel=user',
     isFullCard: true,

@@ -12,18 +12,23 @@ import type {
   FarmerAnswers,
   FieldHarvestTimingAnswer,
   OrchardHarvestMonthAnswer,
+  PotatoHarvestTiming,
   RegionAnswer,
   WinterMinAnswer,
 } from '../../types/farmer';
-import type { HazardKey } from '../../types/variety';
+import type { CropSeason, HazardKey } from '../../types/variety';
 import {
   CLIMATE_RISK_OPTIONS,
-  FIELD_HARVEST_TIMING_OPTIONS,
-  MANAGEMENT_OPTIONS,
+  CORN_HARVEST_HINT,
+  CORN_HARVEST_TIMING_OPTIONS,
+  SEASON_CALENDAR,
+  POTATO_HARVEST_OPTIONS,
+  findSeason,
+  isMonthTimingCrop,
   ORCHARD_HARVEST_MONTH_OPTIONS,
-  ORCHARD_LOGISTICS_OPTIONS,
   ORCHARD_REDUCE_WORK_OPTIONS,
   PEST_OPTIONS,
+  TASTE_OPTIONS,
   USAGE_OPTIONS,
   WINTER_MIN_OPTIONS,
   isOrchardCrop,
@@ -40,28 +45,32 @@ type StepId =
   | 'crop'
   | 'region'
   | 'climate'
+  | 'season'
   | 'harvest'
+  | 'taste'
   | 'usage'
   | 'pest'
-  | 'management'
   | 'winterMin'
-  | 'reduceWork'
-  | 'logistics';
+  | 'reduceWork';
 
-const BASE_STEPS: StepId[] = ['crop', 'region', 'climate', 'harvest', 'usage', 'pest', 'management'];
-const ORCHARD_EXTRA_STEPS: StepId[] = ['winterMin', 'reduceWork', 'logistics'];
+/** 밭작물(감자·옥수수·배추): 식미 문항 포함. 하나의 개념은 한 문항에서만 묻습니다(2026-11 재구성). */
+const FIELD_STEPS: StepId[] = ['crop', 'region', 'climate', 'harvest', 'taste', 'usage', 'pest'];
+/** 감자·배추: 작형을 묻습니다. 감자만 수확 달을 선택으로 더 받습니다(배추는 작형으로 품종이 갈림). */
+const MONTH_TIMING_STEPS: StepId[] = ['crop', 'region', 'climate', 'season', 'taste', 'usage', 'pest'];
+/** 과수(사과·복숭아): 겨울 최저기온·줄이고 싶은 작업 포함, 유통 조건은 판로·용도에 합침 */
+const ORCHARD_STEPS: StepId[] = ['crop', 'region', 'climate', 'harvest', 'winterMin', 'usage', 'pest', 'reduceWork'];
 
 const STEP_META: Record<StepId, { title: string; hint?: string }> = {
   crop: { title: '어떤 작물을 재배하시나요?' },
   region: { title: '어느 지역에서 재배하시나요?', hint: '지역명 첫 글자를 누르거나 직접 검색해 주세요.' },
   climate: { title: '가장 걱정되는 기상위험은 무엇인가요?', hint: '여러 개 선택할 수 있어요' },
+  season: { title: '언제 심어서 키우는 걸 선호하시나요?' },
   harvest: { title: '원하는 수확 시기는 언제인가요?' },
-  usage: { title: '주요 판로와 용도는 무엇인가요?', hint: '여러 개 선택할 수 있어요' },
-  pest: { title: '특히 우려되는 병해충이나 관리 문제가 있나요?', hint: '여러 개 선택할 수 있어요' },
-  management: { title: '가장 줄이고 싶은 관리 부담은 무엇인가요?' },
+  taste: { title: '원하는 맛·식감은 무엇인가요?', hint: '여러 개 선택할 수 있어요' },
+  usage: { title: '주요 생산 목적과 판로는 무엇인가요?', hint: '여러 개 선택할 수 있어요' },
+  pest: { title: '특히 걱정되는 병해충이나 생리장해가 있나요?', hint: '여러 개 선택할 수 있어요' },
   winterMin: { title: '최근 5년 겨울 최저기온은 어느 정도였나요?' },
-  reduceWork: { title: '줄이고 싶은 작업은 무엇인가요?' },
-  logistics: { title: '유통에서 중요한 조건은 무엇인가요?' },
+  reduceWork: { title: '가장 줄이고 싶은 작업은 무엇인가요?' },
 };
 
 /**
@@ -87,18 +96,18 @@ export function FarmerConditionsPage() {
   };
   const region: RegionAnswer | null = resolveRegionAnswer(regionSelection);
   const [climateRisks, setClimateRisks] = useState<string[]>([]);
+  const [cropSeason, setCropSeason] = useState<CropSeason | null>(null);
   const [harvestChoice, setHarvestChoice] = useState<string | null>(null);
   const [usages, setUsages] = useState<string[]>([]);
   const [pestConcerns, setPestConcerns] = useState<string[]>([]);
-  const [managementPriority, setManagementPriority] = useState<string | null>(null);
+  const [tastes, setTastes] = useState<string[]>([]);
   const [winterMin, setWinterMin] = useState<WinterMinAnswer | null>(null);
   const [reduceWork, setReduceWork] = useState<string | null>(null);
-  const [logistics, setLogistics] = useState<string | null>(null);
 
   const isOrchard = cropId ? isOrchardCrop(cropId) : false;
   const steps = useMemo<StepId[]>(
-    () => (isOrchard ? [...BASE_STEPS, ...ORCHARD_EXTRA_STEPS] : BASE_STEPS),
-    [isOrchard],
+    () => (isOrchard ? ORCHARD_STEPS : cropId && isMonthTimingCrop(cropId) ? MONTH_TIMING_STEPS : FIELD_STEPS),
+    [isOrchard, cropId],
   );
   const currentStepId = steps[stepIndex];
 
@@ -109,14 +118,14 @@ export function FarmerConditionsPage() {
 
   const handleSelectCrop = (nextCropId: CropId) => {
     if (cropId !== null && cropId !== nextCropId) {
-      // 작물이 바뀌면 작물별 선택지(용도·병해충·관리우선순위·수확시기)는 더 이상 유효하지 않으므로 초기화합니다.
+      // 작물이 바뀌면 작물별 선택지(수확시기·식미·용도·병해충 등)는 더 이상 유효하지 않으므로 초기화합니다.
       setUsages([]);
       setPestConcerns([]);
-      setManagementPriority(null);
+      setTastes([]);
       setHarvestChoice(null);
+      setCropSeason(null);
       setWinterMin(null);
       setReduceWork(null);
-      setLogistics(null);
     }
     setCropId(nextCropId);
   };
@@ -131,18 +140,18 @@ export function FarmerConditionsPage() {
         return climateRisks.length > 0;
       case 'harvest':
         return harvestChoice !== null;
+      case 'season':
+        return cropSeason !== null;
       case 'usage':
         return usages.length > 0;
       case 'pest':
         return pestConcerns.length > 0;
-      case 'management':
-        return managementPriority !== null;
+      case 'taste':
+        return tastes.length > 0;
       case 'winterMin':
         return winterMin !== null;
       case 'reduceWork':
         return reduceWork !== null;
-      case 'logistics':
-        return logistics !== null;
       default:
         return false;
     }
@@ -163,14 +172,15 @@ export function FarmerConditionsPage() {
       cropId,
       region: region ?? 'other',
       climateRisks: (climateRisks.includes('none') ? [] : climateRisks) as HazardKey[],
-      harvestTiming: isOrchard ? 'normal' : ((harvestChoice ?? 'normal') as FieldHarvestTimingAnswer),
+      harvestTiming: cropId === 'corn' ? ((harvestChoice ?? 'any') as FieldHarvestTimingAnswer) : 'any',
+      cropSeason: isMonthTimingCrop(cropId) ? cropSeason : null,
+      potatoHarvestTiming: cropId === 'potato' && harvestChoice ? (harvestChoice as PotatoHarvestTiming) : null,
+      tastes: isOrchard ? [] : tastes.filter((t) => t !== 'any'),
       harvestMonth: isOrchard ? ((harvestChoice ?? '6-7') as OrchardHarvestMonthAnswer) : '6-7',
       usages,
       pestConcerns,
-      managementPriority: managementPriority ?? 'any',
       winterMin: isOrchard ? (winterMin ?? 'unknown') : 'unknown',
       reduceWork: isOrchard ? (reduceWork ?? 'none') : 'none',
-      logistics: isOrchard ? (logistics ?? 'sell-now') : 'sell-now',
     };
     const result = getFarmerRecommendation(answers);
     // 지도에서 고른 시·군은 점수 계산에는 쓰지 않지만, 다음 단계에서 표시·활용할 수 있도록 함께 넘깁니다.
@@ -221,8 +231,47 @@ export function FarmerConditionsPage() {
             ))}
           </div>
         );
+      case 'season': {
+        if (!cropId || !isMonthTimingCrop(cropId)) return null;
+        const timingHint = cropId === 'potato' ? findSeason('potato', cropSeason)?.timingHint : undefined;
+        return (
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2">
+              {SEASON_CALENDAR[cropId].map((season) => (
+                <ChoiceButton
+                  key={season.value}
+                  label={season.label}
+                  selected={cropSeason === season.value}
+                  onSelect={() => setCropSeason(season.value)}
+                />
+              ))}
+            </div>
+            {timingHint && (
+              <div className="flex flex-col gap-2 rounded-2xl bg-brand-ivory p-4">
+                <p className="text-sm text-slate-600">
+                  언제 캐고 싶으세요? <span className="text-xs text-slate-400">(선택)</span>
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {POTATO_HARVEST_OPTIONS.map((option) => (
+                    <ChoiceChip
+                      key={option.value}
+                      label={option.label}
+                      selected={harvestChoice === option.value}
+                      onToggle={() => setHarvestChoice(harvestChoice === option.value ? null : option.value)}
+                    />
+                  ))}
+                </div>
+                <p className="text-xs text-slate-500">{timingHint}</p>
+              </div>
+            )}
+          </div>
+        );
+      }
       case 'harvest': {
-        const options = isOrchard ? ORCHARD_HARVEST_MONTH_OPTIONS : FIELD_HARVEST_TIMING_OPTIONS;
+        if (!cropId) return null;
+        let options: { value: string; label: string }[];
+        if (isOrchard) options = ORCHARD_HARVEST_MONTH_OPTIONS;
+        else options = CORN_HARVEST_TIMING_OPTIONS;
         return (
           <div className="flex flex-col gap-2">
             {options.map((option) => (
@@ -264,16 +313,16 @@ export function FarmerConditionsPage() {
             ))}
           </div>
         );
-      case 'management':
-        if (!cropId) return null;
+      case 'taste':
+        if (!cropId || isOrchard) return null;
         return (
-          <div className="flex flex-col gap-2">
-            {MANAGEMENT_OPTIONS[cropId].map((option) => (
-              <ChoiceButton
+          <div className="flex flex-wrap gap-2">
+            {TASTE_OPTIONS[cropId as keyof typeof TASTE_OPTIONS].map((option) => (
+              <ChoiceChip
                 key={option.value}
                 label={option.label}
-                selected={managementPriority === option.value}
-                onSelect={() => setManagementPriority(option.value)}
+                selected={tastes.includes(option.value)}
+                onToggle={() => setTastes((prev) => toggleMultiSelect(prev, option.value, 'any'))}
               />
             ))}
           </div>
@@ -304,25 +353,14 @@ export function FarmerConditionsPage() {
             ))}
           </div>
         );
-      case 'logistics':
-        return (
-          <div className="flex flex-col gap-2">
-            {ORCHARD_LOGISTICS_OPTIONS.map((option) => (
-              <ChoiceButton
-                key={option.value}
-                label={option.label}
-                selected={logistics === option.value}
-                onSelect={() => setLogistics(option.value)}
-              />
-            ))}
-          </div>
-        );
       default:
         return null;
     }
   };
 
   const meta = STEP_META[currentStepId];
+  // 옥수수 수확시기는 날짜 감각용 안내를 붙입니다.
+  const hint = currentStepId === 'harvest' && cropId === 'corn' ? CORN_HARVEST_HINT : meta.hint;
   const isLastStep = stepIndex === steps.length - 1;
 
   return (
@@ -343,7 +381,7 @@ export function FarmerConditionsPage() {
         {currentStepId !== 'region' && (
           <div>
             <h2 className="text-lg font-bold text-slate-800">{meta.title}</h2>
-            {meta.hint && <p className="mt-1 text-xs text-slate-400">{meta.hint}</p>}
+            {hint && <p className="mt-1 text-xs text-slate-400">{hint}</p>}
           </div>
         )}
 
