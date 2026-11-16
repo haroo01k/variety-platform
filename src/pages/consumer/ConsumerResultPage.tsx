@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Container } from '../../components/common/Container';
 import { Button } from '../../components/common/Button';
+import { CloudButton } from '../../components/common/CloudButton';
 import { toKoreanOnlyName } from '../../lib/varietyDisplayName';
 import { ConsumerResultCard } from '../../components/consumer/ConsumerResultCard';
 import { InterestRanking } from '../../components/common/InterestRanking';
@@ -146,9 +147,7 @@ export function ConsumerResultPage() {
         )}
       </section>
 
-      <Button variant="secondary" onClick={retake} className="w-full max-w-sm">
-        다시 테스트하기
-      </Button>
+      <CloudButton onClick={retake}>다시 테스트하기</CloudButton>
 
       <hr aria-hidden="true" className="w-full max-w-[520px] border-t border-dashed border-brand-green/20" />
 
