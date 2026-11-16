@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Container } from '../../components/common/Container';
 import { Button } from '../../components/common/Button';
-import { ConsumerRankPickerCard } from '../../components/consumer/ConsumerRankPickerCard';
+import { findMarketVariety } from '../../lib/varietyLookup';
+import { toKoreanOnlyName } from '../../lib/varietyDisplayName';
 import { ConsumerResultCard } from '../../components/consumer/ConsumerResultCard';
 import { InterestRanking } from '../../components/common/InterestRanking';
 import { CROPS } from '../../data/crops';
@@ -22,6 +23,8 @@ interface LocationState {
  * 취향 유형(응답으로 결정)과 추천 품종(추천 알고리즘으로 결정)은 서로 다른 결과라 영역을 나눠 보여줍니다.
  * 작은 카드를 누르면 가운데 카드만 바뀌며, 좋아요·저장·공유·판매처·자세히 보기는 TOP 1을 선택했을 때만 제공합니다.
  */
+const RANK_MEDALS = ['🥇', '🥈', '🥉'];
+
 export function ConsumerResultPage() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -47,54 +50,91 @@ export function ConsumerResultPage() {
   const type = findTasteType(result.typeId);
   const selected = result.top3[selectedIndex] ?? result.top3[0];
   const emojiOf = (cropId: string) => CROPS.find((c) => c.id === cropId)?.emoji ?? '🌱';
-  const alternatives = result.top3.map((r, index) => ({ r, index })).filter(({ index }) => index !== selectedIndex);
 
   return (
     <Container className="font-nanum-round flex flex-1 flex-col items-center gap-8 py-8 text-center md:py-12">
+      {/* ① 취향 유형: 상자 없이 배경 위에 바로 올려 결과의 '첫 장면'처럼 보여줍니다. */}
       <section
         aria-label="나의 농산물 취향 유형"
-        className="flex w-full max-w-[520px] flex-col items-center gap-3 rounded-3xl border-2 border-brand-yellow/30 bg-white px-5 py-8 shadow-sm motion-safe:animate-[type-reveal_0.6s_ease-out]"
+        className="flex w-full max-w-[520px] flex-col items-center gap-3 pt-2 motion-safe:animate-[type-reveal_0.6s_ease-out]"
       >
-        <p className="text-sm font-bold text-brand-orange">나의 농산물 취향은?</p>
-        <span aria-hidden="true" className="flex h-20 w-20 items-center justify-center rounded-3xl bg-brand-yellow/20 text-5xl">
+        <p className="rounded-full bg-brand-orange/10 px-3 py-1 text-xs font-bold text-brand-orange">나의 농산물 취향</p>
+        <span
+          aria-hidden="true"
+          className="flex h-24 w-24 items-center justify-center rounded-full bg-white text-6xl shadow-[0_0_0_10px_rgba(245,185,62,0.15)]"
+        >
           {type.emoji}
         </span>
-        <h1 className="flex items-center gap-2 text-3xl font-extrabold text-brand-green-dark sm:text-4xl">
-          <span aria-hidden="true" className="text-base text-[#F28B9B]">
-            ♥
-          </span>
-          {type.name}
-          <span aria-hidden="true" className="text-base text-[#F28B9B]">
-            ♥
-          </span>
-        </h1>
-        <p className="text-sm leading-relaxed text-[#5f7f6c] sm:text-base">{type.description}</p>
+        <h1 className="mt-1 text-3xl font-extrabold text-brand-green-dark sm:text-4xl">{type.name}</h1>
+        <p className="max-w-[22rem] text-sm leading-relaxed text-[#5f7f6c] sm:text-base">{type.description}</p>
         {result.keywords.length > 0 && (
-          <div className="mt-1 flex flex-col items-center gap-2">
-            <p className="text-xs font-semibold text-slate-400">나의 취향 키워드</p>
-            <ul className="flex flex-wrap justify-center gap-2">
-              {result.keywords.map((keyword) => (
-                <li key={keyword} className="rounded-full bg-brand-green-light px-3 py-1.5 text-sm font-bold text-brand-green-dark">
-                  {keyword}
-                </li>
-              ))}
-            </ul>
-          </div>
+          <ul aria-label="나의 취향 키워드" className="mt-1 flex flex-wrap justify-center gap-2">
+            {result.keywords.map((keyword) => (
+              <li key={keyword} className="rounded-full bg-white px-3 py-1.5 text-sm font-bold text-brand-green-dark shadow-sm">
+                {keyword}
+              </li>
+            ))}
+          </ul>
         )}
       </section>
 
+      {/* ② 유형 → 추천으로 이어지는 연결선 */}
+      <div aria-hidden="true" className="flex flex-col items-center gap-1 text-brand-green/40">
+        <span className="h-6 w-px bg-current" />
+        <span className="text-xs">▼</span>
+      </div>
+
+      {/* ③ 추천 TOP 3: 제목 → 순위 탭 → 카드 순서로 위에서 아래로 읽히게 합니다. */}
       <section aria-label="나에게 어울리는 신품종" className="flex w-full max-w-[520px] flex-col items-center gap-4">
-        <div>
+        <div className="flex flex-col items-center gap-1">
+          <p className="text-xs font-bold text-brand-orange">이런 취향이라면</p>
           <h2 className="text-2xl font-extrabold text-brand-green-dark">
-            나에게 어울리는 {CROPS.find((c) => c.id === result.cropId)?.name ?? ''} 신품종 TOP 3
+            나에게 어울리는 {CROPS.find((c) => c.id === result.cropId)?.name ?? ''} 신품종
           </h2>
-          <p className="mt-1 text-sm text-slate-500">답변과 품종별 맛·식감·모양·활용 특징을 비교해 골랐어요.</p>
+          <p className="text-sm text-slate-500">답변과 품종별 맛·식감·모양·활용 특징을 비교해 골랐어요.</p>
         </div>
 
         {!selected ? (
           <p className="w-full rounded-2xl bg-white p-5 text-sm text-slate-500 shadow-sm">추천할 품종을 찾지 못했어요.</p>
         ) : (
-          <div className="w-full">
+          <div className="flex w-full flex-col gap-3">
+            {result.top3.length > 1 && (
+              <div role="tablist" aria-label="추천 순위 선택" className="grid w-full grid-cols-3 gap-2">
+                {result.top3.map((r, index) => {
+                  const isSelected = index === selectedIndex;
+                  const stamp = findMarketVariety(r.variety.cropId, r.variety.name)?.image;
+                  return (
+                    <button
+                      key={r.variety.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={isSelected}
+                      onClick={() => setSelectedIndex(index)}
+                      className={`flex min-w-0 flex-col items-center gap-1 rounded-2xl border-2 px-1.5 py-2 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green ${
+                        isSelected ? 'border-brand-green bg-white shadow-sm' : 'border-transparent bg-white/60 hover:border-brand-green/40'
+                      }`}
+                    >
+                      {stamp ? (
+                        <img src={stamp} alt="" className="h-12 w-12 object-contain" />
+                      ) : (
+                        <span aria-hidden="true" className="flex h-12 w-12 items-center justify-center text-3xl">
+                          {emojiOf(r.variety.cropId)}
+                        </span>
+                      )}
+                      <span className={`text-[11px] font-bold ${isSelected ? 'text-brand-orange' : 'text-slate-400'}`}>
+                        {RANK_MEDALS[index]} {index + 1}위
+                      </span>
+                      <span
+                        className={`w-full truncate text-sm font-extrabold ${isSelected ? 'text-brand-green-dark' : 'text-slate-600'}`}
+                      >
+                        {toKoreanOnlyName(r.variety.name)}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
             <div
               key={selected.variety.id}
               className={
@@ -110,23 +150,6 @@ export function ConsumerResultPage() {
                 onRetake={retake}
               />
             </div>
-
-            {alternatives.length > 0 && (
-              <>
-                <p className="mt-6 text-sm font-semibold text-slate-500">다른 추천도 살펴보세요</p>
-                <div className="mt-3 grid w-full max-w-full grid-cols-2 gap-3">
-                  {alternatives.map(({ r, index }) => (
-                    <ConsumerRankPickerCard
-                      key={r.variety.id}
-                      cropId={r.variety.cropId}
-                      varietyName={r.variety.name}
-                      trait={`${index + 1}위 · ${r.variety.cropName}`}
-                      onSelect={() => setSelectedIndex(index)}
-                    />
-                  ))}
-                </div>
-              </>
-            )}
           </div>
         )}
       </section>
@@ -134,6 +157,8 @@ export function ConsumerResultPage() {
       <Button variant="secondary" onClick={retake} className="w-full max-w-sm">
         다시 테스트하기
       </Button>
+
+      <hr aria-hidden="true" className="w-full max-w-[520px] border-t border-dashed border-brand-green/20" />
 
       <InterestRanking subtitle="다른 사람들은 어떤 품종을 먹어보고 싶어 할까요?" emptyMessage="아직 집계된 관심도가 없어요." />
     </Container>
