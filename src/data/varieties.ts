@@ -10,7 +10,7 @@ import type { VarietyRecord } from '../types/variety';
 export const VARIETIES: VarietyRecord[] = [
   {
     id: 'POT-01',
-    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EC%84%A0%ED%92%8D%EA%B0%90%EC%9E%90&traceId=muckg1bo&channel=user',
+    marketUrl: 'https://www.gwdmall.kr/goods/search?search_text=%EA%B0%90%EC%9E%90',
     cropId: 'potato',
     cropName: '감자',
     name: '선풍',
@@ -46,7 +46,7 @@ export const VARIETIES: VarietyRecord[] = [
   },
   {
     id: 'POT-02',
-    marketUrl: 'https://www.coupang.com/np/search?q=%EC%9E%A5%EC%9B%90%EA%B0%90%EC%9E%90&channel=recent&traceId=muckk1og',
+    marketUrl: 'https://www.gwdmall.kr/goods/search?search_text=%EA%B0%90%EC%9E%90',
     cropId: 'potato',
     cropName: '감자',
     name: '장원',
@@ -81,7 +81,7 @@ export const VARIETIES: VarietyRecord[] = [
   },
   {
     id: 'POT-03',
-    marketUrl: 'https://www.coupang.com/np/search?component=&q=%ED%8F%AC%EC%8A%AC%EC%9D%B4%EA%B0%90%EC%9E%90&traceId=mucl6aly&channel=user',
+    marketUrl: 'https://www.gwdmall.kr/goods/search?search_text=%EA%B0%90%EC%9E%90',
     cropId: 'potato',
     cropName: '감자',
     name: '포슬이',
@@ -116,7 +116,7 @@ export const VARIETIES: VarietyRecord[] = [
   },
   {
     id: 'POT-04',
-    marketUrl: 'https://www.coupang.com/np/search?component=&q=%ED%92%8D%EB%86%8D%EA%B0%90%EC%9E%90&traceId=mucl0x54&channel=user',
+    marketUrl: 'https://www.gwdmall.kr/goods/search?search_text=%EA%B0%90%EC%9E%90',
     cropId: 'potato',
     cropName: '감자',
     name: '풍농',
@@ -151,7 +151,7 @@ export const VARIETIES: VarietyRecord[] = [
   },
   {
     id: 'POT-05',
-    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EC%9E%90%EB%AF%B8%EA%B0%90%EC%9E%90&traceId=mucl57yp&channel=user',
+    marketUrl: 'https://www.gwdmall.kr/goods/search?search_text=%EA%B0%90%EC%9E%90',
     cropId: 'potato',
     cropName: '감자',
     name: '자미',
@@ -186,7 +186,7 @@ export const VARIETIES: VarietyRecord[] = [
   },
   {
     id: 'COR-01',
-    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EC%98%A5%EC%88%98%EC%88%98+%EB%AF%B8%EB%B0%B12%ED%98%B8&traceId=muclbc18&channel=user',
+    marketUrl: 'https://www.gwdmall.kr/goods/search?search_text=%EB%AF%B8%EB%B0%B12%ED%98%B8',
     cropId: 'corn',
     cropName: '옥수수',
     name: '미백2호',
@@ -220,7 +220,7 @@ export const VARIETIES: VarietyRecord[] = [
   },
   {
     id: 'COR-02',
-    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EC%98%A5%EC%88%98%EC%88%98+%EB%AF%B8%ED%9D%91%EC%B0%B0&traceId=muclcnyh&channel=user',
+    marketUrl: 'https://www.gwdmall.kr/goods/search?search_text=%EB%AF%B8%ED%9D%91%EC%B0%B0',
     cropId: 'corn',
     cropName: '옥수수',
     name: '미흑찰',
@@ -254,7 +254,7 @@ export const VARIETIES: VarietyRecord[] = [
   },
   {
     id: 'COR-03',
-    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EC%98%A5%EC%88%98%EC%88%98+%ED%9D%91%EC%A0%902%ED%98%B8&traceId=mucledkh&channel=user',
+    marketUrl: 'https://www.gwdmall.kr/goods/search?search_text=%EC%B0%B0%EC%98%A5%EC%88%98%EC%88%98',
     cropId: 'corn',
     cropName: '옥수수',
     name: '흑점2호',
@@ -288,7 +288,7 @@ export const VARIETIES: VarietyRecord[] = [
   },
   {
     id: 'COR-04',
-    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EC%98%A5%EC%88%98%EC%88%98+%ED%9D%91%EC%A0%903%ED%98%B8&traceId=muclf7xf&channel=user',
+    marketUrl: 'https://www.gwdmall.kr/goods/search?search_text=%EC%B0%B0%EC%98%A5%EC%88%98%EC%88%98',
     cropId: 'corn',
     cropName: '옥수수',
     name: '흑점3호',
@@ -322,7 +322,7 @@ export const VARIETIES: VarietyRecord[] = [
   },
   {
     id: 'COR-05',
-    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EC%98%A5%EC%88%98%EC%88%98+%ED%99%A9%EA%B8%88%EB%A7%9B%EC%B0%B0&traceId=muclhpim&channel=user',
+    marketUrl: 'https://www.gwdmall.kr/goods/search?search_text=%EC%B0%B0%EC%98%A5%EC%88%98%EC%88%98',
     cropId: 'corn',
     cropName: '옥수수',
     name: '황금맛찰',
@@ -356,7 +356,7 @@ export const VARIETIES: VarietyRecord[] = [
   },
   {
     id: 'PEA-01',
-    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EB%B3%B5%EC%88%AD%EC%95%84+%EC%98%90%EB%A1%9C%EB%93%9C%EB%A6%BC&traceId=mucll8j4&channel=user',
+    marketUrl: 'https://www.gwdmall.kr/goods/search?search_text=%EB%B3%B5%EC%88%AD%EC%95%84',
     cropId: 'peach',
     cropName: '복숭아',
     name: '옐로드림(Yellow Dream)',
@@ -390,7 +390,7 @@ export const VARIETIES: VarietyRecord[] = [
   },
   {
     id: 'PEA-02',
-    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EB%B3%B5%EC%88%AD%EC%95%84+%EC%9D%B4%EB%85%B8%EC%84%BC%EC%8A%A4&traceId=muclmsei&channel=user',
+    marketUrl: 'https://www.gwdmall.kr/goods/search?search_text=%EB%B3%B5%EC%88%AD%EC%95%84',
     cropId: 'peach',
     cropName: '복숭아',
     name: '이노센스(Innocence)',
@@ -424,7 +424,7 @@ export const VARIETIES: VarietyRecord[] = [
   },
   {
     id: 'PEA-03',
-    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EB%B3%B5%EC%88%AD%EC%95%84+%ED%99%8D%EC%8A%AC&traceId=muclpeai&channel=user&correctedQuery=%EB%B3%B5%EC%88%AD%EC%95%84+%ED%99%8D%EC%84%A4&spellCorrectionType=weak',
+    marketUrl: 'https://www.gwdmall.kr/goods/search?search_text=%EB%B3%B5%EC%88%AD%EC%95%84',
     cropId: 'peach',
     cropName: '복숭아',
     name: '홍슬(Hongseul)',
@@ -459,7 +459,7 @@ export const VARIETIES: VarietyRecord[] = [
   },
   {
     id: 'PEA-04',
-    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EB%B3%B5%EC%88%AD%EC%95%84+%EC%84%A4%ED%99%8D&traceId=muclq3k4&channel=user',
+    marketUrl: 'https://www.gwdmall.kr/goods/search?search_text=%EB%B3%B5%EC%88%AD%EC%95%84',
     cropId: 'peach',
     cropName: '복숭아',
     name: '설홍(Seolhong)',
@@ -494,7 +494,7 @@ export const VARIETIES: VarietyRecord[] = [
   },
   {
     id: 'PEA-05',
-    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EB%B3%B5%EC%88%AD%EC%95%84+%EB%A7%88%EB%A3%A8%ED%99%A9%EB%8F%84&traceId=muclr1pc&channel=user',
+    marketUrl: 'https://www.gwdmall.kr/goods/search?search_text=%EB%B3%B5%EC%88%AD%EC%95%84',
     cropId: 'peach',
     cropName: '복숭아',
     name: '마루황도(Maruhwangdo)',
@@ -528,7 +528,7 @@ export const VARIETIES: VarietyRecord[] = [
   },
   {
     id: 'APP-01',
-    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EC%82%AC%EA%B3%BC+%EC%8D%B8%EB%A8%B8%ED%82%B9&traceId=mucluzqv&channel=user',
+    marketUrl: 'https://www.gwdmall.kr/goods/search?search_text=%EC%82%AC%EA%B3%BC',
     cropId: 'apple',
     cropName: '사과',
     name: '썸머킹(Summer King)',
@@ -562,7 +562,7 @@ export const VARIETIES: VarietyRecord[] = [
   },
   {
     id: 'APP-02',
-    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EC%82%AC%EA%B3%BC+%EA%B3%A8%EB%93%A0%EB%B3%BC&traceId=muclw2c8&channel=user',
+    marketUrl: 'https://www.gwdmall.kr/goods/search?search_text=%EC%82%AC%EA%B3%BC',
     cropId: 'apple',
     cropName: '사과',
     name: '골든볼(Golden Ball)',
@@ -596,7 +596,7 @@ export const VARIETIES: VarietyRecord[] = [
   },
   {
     id: 'APP-03',
-    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EC%82%AC%EA%B3%BC+%EC%95%84%EB%A6%AC%EC%88%98&traceId=muclwnxg&channel=user',
+    marketUrl: 'https://www.gwdmall.kr/goods/search?search_text=%EC%95%84%EB%A6%AC%EC%88%98',
     cropId: 'apple',
     cropName: '사과',
     name: '아리수(Arisoo)',
@@ -630,7 +630,7 @@ export const VARIETIES: VarietyRecord[] = [
   },
   {
     id: 'APP-04',
-    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EC%82%AC%EA%B3%BC+%EC%9D%B4%EC%A7%80%ED%94%8C&traceId=muclx65z&channel=user',
+    marketUrl: 'https://www.gwdmall.kr/goods/search?search_text=%EC%82%AC%EA%B3%BC',
     cropId: 'apple',
     cropName: '사과',
     name: '이지플(Easyple)',
@@ -664,7 +664,7 @@ export const VARIETIES: VarietyRecord[] = [
   },
   {
     id: 'APP-05',
-    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EC%82%AC%EA%B3%BC+%EC%BB%AC%EB%9F%AC%ED%94%8C&traceId=mucly0qr&channel=user',
+    marketUrl: 'https://www.gwdmall.kr/goods/search?search_text=%EC%82%AC%EA%B3%BC',
     cropId: 'apple',
     cropName: '사과',
     name: '컬러플(Colorple)',
@@ -698,7 +698,7 @@ export const VARIETIES: VarietyRecord[] = [
   },
   {
     id: 'CAB-01',
-    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EB%B0%B0%EC%B6%94+%EC%9B%90%EA%B5%9020054%ED%98%B8&traceId=muclz5qa&channel=user',
+    marketUrl: 'https://www.gwdmall.kr/goods/search?search_text=%EB%B0%B0%EC%B6%94',
     cropId: 'cabbage',
     cropName: '배추',
     name: '원교20054호',
@@ -734,7 +734,7 @@ export const VARIETIES: VarietyRecord[] = [
   },
   {
     id: 'CAB-02',
-    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EB%B0%B0%EC%B6%94+%EC%9B%90%EA%B5%9020049%ED%98%B8&traceId=mucm0pi7&channel=user',
+    marketUrl: 'https://www.gwdmall.kr/goods/search?search_text=%EB%B0%B0%EC%B6%94',
     cropId: 'cabbage',
     cropName: '배추',
     name: '원교20049호',
@@ -770,7 +770,7 @@ export const VARIETIES: VarietyRecord[] = [
   },
   {
     id: 'CAB-03',
-    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EB%B0%B0%EC%B6%94+FH112&traceId=mucm1kk7&channel=user',
+    marketUrl: 'https://www.gwdmall.kr/goods/search?search_text=%EB%B0%B0%EC%B6%94',
     cropId: 'cabbage',
     cropName: '배추',
     name: '원교20055호(FH112)',
@@ -806,7 +806,7 @@ export const VARIETIES: VarietyRecord[] = [
   },
   {
     id: 'CAB-04',
-    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EB%B0%B0%EC%B6%94+%EC%88%9C%EC%A0%95%EC%95%84%EC%82%AD&traceId=mucm2gnq&channel=user',
+    marketUrl: 'https://www.gwdmall.kr/goods/search?search_text=%EB%B0%B0%EC%B6%94',
     cropId: 'cabbage',
     cropName: '배추',
     name: '순정아삭',
@@ -841,7 +841,7 @@ export const VARIETIES: VarietyRecord[] = [
   },
   {
     id: 'CAB-05',
-    marketUrl: 'https://www.coupang.com/np/search?component=&q=%EB%B0%B0%EC%B6%94+%ED%95%98%EB%9D%BC%EB%93%80&traceId=mucm2zxt&channel=user&correctedQuery=%EB%B0%B0%EC%B6%94+%ED%95%98%EB%9D%BC%ED%94%BC%EB%87%A8&spellCorrectionType=weak',
+    marketUrl: 'https://www.gwdmall.kr/goods/search?search_text=%EB%B0%B0%EC%B6%94',
     cropId: 'cabbage',
     cropName: '배추',
     name: '하라듀',
