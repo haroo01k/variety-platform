@@ -380,7 +380,7 @@ export function FarmerConditionsPage() {
         {/* 지역 단계는 큰 글씨 보기 버튼과 함께 제목·안내 문구를 직접 그립니다. */}
         {currentStepId !== 'region' && (
           <div>
-            <h2 className="text-lg font-extrabold text-slate-800">{meta.title}</h2>
+            <h2 className="text-weight-boost text-lg font-extrabold text-slate-800">{meta.title}</h2>
             {hint && <p className="mt-1 text-xs text-slate-400">{hint}</p>}
           </div>
         )}
