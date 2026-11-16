@@ -308,16 +308,20 @@ function weightedItemScores(
   return {
     region: breakdown.region / 2,
     climate,
-    harvestTiming: isMonthTimingCrop(variety.cropId)
-      ? monthTimingScore(variety, answers) === null
-        ? null
-        : breakdown.harvestTiming / 2
-      : answers.harvestTiming === 'any'
-        ? null
-        : breakdown.harvestTiming / 2,
+    harvestTiming: isOrchardCrop(variety.cropId)
+      ? breakdown.harvestTiming / 2
+      : isMonthTimingCrop(variety.cropId)
+        ? monthTimingScore(variety, answers) === null
+          ? null
+          : breakdown.harvestTiming / 2
+        : answers.harvestTiming === 'any'
+          ? null
+          : breakdown.harvestTiming / 2,
     usage,
     pest,
     taste,
+    // 과수 '줄이고 싶은 작업'(전문가 설문의 관리부담). 없음이면 제외
+    reduceWork: isOrchardCrop(variety.cropId) && answers.reduceWork !== 'none' ? breakdown.orchard / 2 : null,
   };
 }
 

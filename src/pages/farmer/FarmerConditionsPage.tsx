@@ -67,8 +67,8 @@ const STEP_META: Record<StepId, { title: string; hint?: string }> = {
   season: { title: '언제 심어서 키우는 걸 선호하시나요?' },
   harvest: { title: '원하는 수확 시기는 언제인가요?' },
   taste: { title: '원하는 맛·식감은 무엇인가요?', hint: '여러 개 선택할 수 있어요' },
-  usage: { title: '주요 판로·유통 방식은 무엇인가요?', hint: '여러 개 선택할 수 있어요' },
-  pest: { title: '특히 걱정되는 병해충이나 재배 문제가 있나요?', hint: '여러 개 선택할 수 있어요' },
+  usage: { title: '주요 생산 목적과 판로는 무엇인가요?', hint: '여러 개 선택할 수 있어요' },
+  pest: { title: '특히 걱정되는 병해충이나 생리장해가 있나요?', hint: '여러 개 선택할 수 있어요' },
   winterMin: { title: '최근 5년 겨울 최저기온은 어느 정도였나요?' },
   reduceWork: { title: '가장 줄이고 싶은 작업은 무엇인가요?' },
 };

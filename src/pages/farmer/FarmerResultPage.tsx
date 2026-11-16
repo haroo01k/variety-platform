@@ -109,6 +109,12 @@ export function FarmerResultPage() {
         </div>
       )}
 
+      <p className="mx-auto w-full max-w-[520px] text-center text-xs leading-relaxed text-slate-400">
+        추천 결과는 공개된 품종 자료와 입력하신 조건으로 계산한 참고 정보예요.
+        <br />
+        실제 품종을 고르기 전에 지역 농업기술센터나 종자 판매처와 함께 확인해 주세요.
+      </p>
+
       <Button variant="secondary" to={ROUTES.farmerConditions} className="w-full">
         조건 다시 입력하기
       </Button>
