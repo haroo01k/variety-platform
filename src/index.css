@@ -162,8 +162,9 @@
   font-weight: normal;
 }
 
-/* 홈·ABOUT 화면 글꼴 (모두 SIL OFL). 아래 .font-nanum-round / .font-gowun-dodum
+/* 홈·ABOUT·문항·결과 화면 글꼴 (모두 SIL OFL). 아래 .font-nanum-round / .font-gowun-dodum
    클래스를 붙인 요소에만 적용되며, 공통 헤더와 다른 화면은 기본 글꼴을 유지합니다.
+   농업인·소비자 문항·분석·결과 화면은 페이지 전체(Container)에 .font-nanum-round를 씁니다.
    - 나눔스퀘어라운드: 네이버 배포 웹폰트 R(400)·B(700)·EB(800), 한글 11,172자 전체 포함
    - 고운돋움: Regular(400)만 제공. KS X 1001 한글 2,350자 + 영문·기본 문장부호로
      서브셋해 용량을 줄였습니다(원본 TTF 7.2MB → 약 150KB).

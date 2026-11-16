@@ -77,7 +77,7 @@ export function ConsumerQuizPage() {
 
   if (!started) {
     return (
-      <Container className="flex flex-col gap-6 py-8 md:py-12">
+      <Container className="font-nanum-round flex flex-col gap-6 py-8 md:py-12">
         {/* 시작 화면(강조형): 작은 새싹 장식 + 초록 제목과 연한 노란 밑줄 + 하단 연두색 언덕 */}
         <section className="relative flex flex-col items-center gap-3 overflow-hidden rounded-3xl border border-[#F0E9D8] bg-white px-5 pt-10 pb-24 text-center sm:pb-28">
           <span aria-hidden="true" className="text-2xl">
@@ -116,7 +116,7 @@ export function ConsumerQuizPage() {
   const percent = Math.round(((index + 1) / total) * 100);
 
   return (
-    <Container className="flex flex-col gap-6 py-8 md:py-12">
+    <Container className="font-nanum-round flex flex-col gap-6 py-8 md:py-12">
       <header>
         <p className="text-sm font-bold text-brand-orange">나의 농산물 취향 발견하기</p>
         <div className="mt-3" role="progressbar" aria-valuenow={index + 1} aria-valuemin={1} aria-valuemax={total}>

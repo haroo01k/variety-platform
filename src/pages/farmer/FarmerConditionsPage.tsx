@@ -364,7 +364,7 @@ export function FarmerConditionsPage() {
   const isLastStep = stepIndex === steps.length - 1;
 
   return (
-    <Container className="flex flex-col gap-6 py-8 md:py-12">
+    <Container className="font-nanum-round flex flex-col gap-6 py-8 md:py-12">
       <header>
         <h1 className="text-2xl font-extrabold text-brand-green-dark sm:text-3xl">
           우리 농장 조건을 알려주세요

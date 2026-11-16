@@ -34,7 +34,7 @@ export function ConsumerResultPage() {
 
   if (!state?.result) {
     return (
-      <Container className="flex flex-1 flex-col items-center justify-center gap-4 py-10 text-center">
+      <Container className="font-nanum-round flex flex-1 flex-col items-center justify-center gap-4 py-10 text-center">
         <p className="text-sm text-slate-500">취향 테스트 응답을 찾을 수 없어요. 다시 시도해주세요.</p>
         <Button to={ROUTES.consumer} variant="primary">
           취향 테스트 하러 가기
@@ -50,7 +50,7 @@ export function ConsumerResultPage() {
   const alternatives = result.top3.map((r, index) => ({ r, index })).filter(({ index }) => index !== selectedIndex);
 
   return (
-    <Container className="flex flex-1 flex-col items-center gap-8 py-8 text-center md:py-12">
+    <Container className="font-nanum-round flex flex-1 flex-col items-center gap-8 py-8 text-center md:py-12">
       <section
         aria-label="나의 농산물 취향 유형"
         className="flex w-full max-w-[520px] flex-col items-center gap-3 rounded-3xl border-2 border-brand-yellow/30 bg-white px-5 py-8 shadow-sm motion-safe:animate-[type-reveal_0.6s_ease-out]"

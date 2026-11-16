@@ -49,7 +49,7 @@ export function FarmerResultPage() {
 
   if (!state) {
     return (
-      <Container className="flex flex-1 flex-col items-center justify-center gap-4 py-10 text-center">
+      <Container className="font-nanum-round flex flex-1 flex-col items-center justify-center gap-4 py-10 text-center">
         <p className="text-sm text-slate-500">입력한 조건을 찾을 수 없어요. 조건을 다시 입력해주세요.</p>
         <Button to={ROUTES.farmerConditions} variant="primary">
           조건 입력하기
@@ -69,7 +69,7 @@ export function FarmerResultPage() {
   const selectedTied = ranks.filter((r) => r === selectedDisplayRank).length > 1;
 
   return (
-    <Container className="flex flex-col gap-6 py-8 md:py-12">
+    <Container className="font-nanum-round flex flex-col gap-6 py-8 md:py-12">
       <p className="text-sm font-semibold text-brand-green">3 / 3 단계</p>
       <header>
         <h1 className="text-2xl font-extrabold text-brand-green-dark sm:text-3xl">
