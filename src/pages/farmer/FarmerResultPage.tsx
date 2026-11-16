@@ -6,6 +6,7 @@ import { BottomSheet } from '../../components/common/BottomSheet';
 import { ResultRankTabs } from '../../components/common/ResultRankTabs';
 import { FarmerResultCard } from '../../components/farmer/FarmerResultCard';
 import { FarmerResultDetail } from '../../components/farmer/FarmerResultDetail';
+import { FarmerNextSteps } from '../../components/farmer/FarmerNextSteps';
 import { InterestRanking } from '../../components/common/InterestRanking';
 import { CROPS } from '../../data/crops';
 import { getLikeCounts, isSupabaseConfigured } from '../../lib/likes';
@@ -16,6 +17,8 @@ interface LocationState {
   cropId: string;
   answers: FarmerAnswers;
   result: FarmerResult;
+  /** 지역 문항에서 고른 시·군(강원). 없으면 null */
+  farmLocation?: { regionName: string } | null;
 }
 
 /**
@@ -104,6 +107,8 @@ export function FarmerResultPage() {
           </div>
         </>
       )}
+
+      {selected && <FarmerNextSteps variety={selected.variety} regionName={state.farmLocation?.regionName ?? null} />}
 
       {result.excluded.length > 0 && (
         <div className="rounded-2xl bg-slate-100 p-4 text-xs text-slate-500">
