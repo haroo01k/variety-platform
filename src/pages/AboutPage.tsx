@@ -114,8 +114,8 @@ export function AboutPage() {
           0.5초 ease-in-out으로 펼치고 접습니다(index.css의 .about-team-panel).
           접혀 있을 때는 inert로 키보드 포커스·화면낭독기 접근을 막습니다.
         */}
-        {/* TEAM 소개는 접지 않고 항상 펼쳐 둡니다. */}
-        <div id="about-team-panel">
+        {/* TEAM 소개는 접지 않고 항상 펼쳐 둡니다. is-open이 있어야 팀원 항목이 보입니다(index.css .about-team-panel). */}
+        <div id="about-team-panel" className="about-team-panel is-open">
           <div className="min-h-0 overflow-hidden">
             <div className="min-[769px]:pb-16">
               <div className="about-team-item pt-6 sm:pt-8">
