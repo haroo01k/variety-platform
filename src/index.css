@@ -435,3 +435,17 @@ body {
     transform: translate(-12px, -10px) rotate(6deg);
   }
 }
+
+/* 결과 화면 '다시 하기' 버튼 이모지가 살짝 흔들림 */
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-14deg);
+  }
+  75% {
+    transform: rotate(14deg);
+  }
+}

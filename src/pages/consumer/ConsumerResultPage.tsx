@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Container } from '../../components/common/Container';
 import { Button } from '../../components/common/Button';
-import { CloudButton } from '../../components/common/CloudButton';
+import { CuteButton } from '../../components/common/CuteButton';
 import { toKoreanOnlyName } from '../../lib/varietyDisplayName';
 import { ConsumerResultCard } from '../../components/consumer/ConsumerResultCard';
 import { InterestRanking } from '../../components/common/InterestRanking';
@@ -147,7 +147,7 @@ export function ConsumerResultPage() {
         )}
       </section>
 
-      <CloudButton onClick={retake}>다시 테스트하기</CloudButton>
+      <CuteButton onClick={retake}>다시 테스트하기</CuteButton>
 
       <hr aria-hidden="true" className="w-full max-w-[520px] border-t border-dashed border-brand-green/20" />
 
