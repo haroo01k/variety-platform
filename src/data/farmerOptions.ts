@@ -228,7 +228,33 @@ export const PEST_OPTIONS: Record<CropId, PestOption[]> = {
     { value: 'none', label: '없음' },
   ],
   corn: [
+    // 농촌진흥청이 꼽는 옥수수 주요 병해충(국립식량과학원, 농촌진흥청 웹진 2020.5 / 도 농업기술원 병해충 발생정보).
+    // 품종별 근거가 있는 깨씨무늬병만 점수에 반영하고, 나머지는 결과 화면 안내(caution)로 처리합니다.
     { value: 'leaf-spot', label: '깨씨무늬병', keywords: ['깨씨무늬병', '호마엽고병'] },
+    {
+      value: 'northern-blight',
+      label: '그을음무늬병',
+      keywords: ['그을음무늬병'],
+      caution: '추천 품종은 그을음무늬병 저항성 자료가 없어요. 서늘하고 습한 해에 많이 생기니 병든 잎은 수확 후 치우고 돌려짓기를 해 주세요.',
+    },
+    {
+      value: 'black-streak',
+      label: '검은줄오갈병(바이러스)',
+      keywords: ['검은줄오갈병'],
+      caution: '검은줄오갈병은 애멸구가 옮기는 바이러스병이라 약으로 치료할 수 없어요. 추천 품종은 저항성 자료가 없으니 보리·밀 밭 근처라면 애멸구 방제와 파종 시기 조절을 함께 검토하세요.',
+    },
+    {
+      value: 'corn-borer',
+      label: '조명나방',
+      keywords: ['조명나방'],
+      caution: '조명나방은 품종보다 방제 시기가 중요해요. 1화기 성충이 가장 많은 6월 상순 무렵부터 7~10일 안에 등록 약제로 방제하세요.',
+    },
+    {
+      value: 'fall-armyworm',
+      label: '열대거세미나방',
+      keywords: ['열대거세미나방'],
+      caution: '열대거세미나방은 해마다 날아드는 외래 해충이라 품종 저항성 자료가 없어요. 잎에 구멍·배설물이 보이면 어린 유충일 때 바로 방제하세요.',
+    },
     { value: 'lodging', label: '강풍·호우로 쓰러짐(도복)', keywords: ['쓰러짐'] },
     { value: 'none', label: '없음' },
   ],
