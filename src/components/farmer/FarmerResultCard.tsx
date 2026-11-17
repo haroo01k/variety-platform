@@ -23,12 +23,14 @@ function firstClause(text: string): string {
   return text.split(';')[0].trim();
 }
 
-/** 0~2점 원점수를 3칸 dot(●●○)으로 시각화합니다. */
+/** 0~2점 원점수를 새싹 3칸(🌱🌱·)으로 시각화합니다. 채워지지 않은 칸은 흐린 새싹입니다. */
 function HazardDots({ score }: { score: number }) {
   return (
-    <div className="flex gap-1" aria-hidden="true">
+    <div className="flex gap-0.5 text-base leading-none" aria-hidden="true">
       {[0, 1, 2].map((i) => (
-        <span key={i} className={`h-2.5 w-2.5 rounded-full ${i <= score ? 'bg-brand-green' : 'bg-[#E4DCC8]'}`} />
+        <span key={i} className={i <= score ? '' : 'opacity-25 grayscale'}>
+          🌱
+        </span>
       ))}
     </div>
   );
@@ -52,7 +54,7 @@ export function FarmerResultCard({ rank, emoji, recommendation, onOpenDetail, co
             rank === 1 ? 'bg-brand-green text-white' : 'bg-brand-green-light text-brand-green-dark'
           }`}
         >
-          {rank === 1 ? '🏆 추천' : '적합'}
+          {rank === 1 ? '🐝 딱 좋아요' : '적합'}
         </span>
         <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-brand-green-dark">
           일치 점수 {totalScore}
@@ -81,12 +83,12 @@ export function FarmerResultCard({ rank, emoji, recommendation, onOpenDetail, co
       </div>
 
       <div>
-        <p className="fs-11 font-semibold uppercase tracking-wide text-slate-400">재배적지</p>
+        <p className="fs-11 font-semibold uppercase tracking-wide text-slate-400">📍 재배적지</p>
         <p className="mt-0.5 text-sm font-medium text-[#20251F]">{getRegionSummary(variety)}</p>
       </div>
 
       <div>
-        <p className="fs-11 font-semibold uppercase tracking-wide text-slate-400">기후 대응력</p>
+        <p className="fs-11 font-semibold uppercase tracking-wide text-slate-400">🌦️ 기후 대응력</p>
         <div className="mt-2 space-y-1.5">
           {HAZARD_ITEMS.map(({ key, label }) => (
             <div key={key} className="flex items-center justify-between text-xs font-medium text-slate-600">
