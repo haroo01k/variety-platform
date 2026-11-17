@@ -18,6 +18,11 @@ const HAZARD_ITEMS: { key: HazardKey; label: string }[] = [
   { key: 'wet', label: '습해' },
 ];
 
+/** 카드에는 ';' 앞 첫 문장만 짧게 보여주고, 전체 문장은 상세보기에 둡니다. */
+function firstClause(text: string): string {
+  return text.split(';')[0].trim();
+}
+
 /** 0~2점 원점수를 3칸 dot(●●○)으로 시각화합니다. */
 function HazardDots({ score }: { score: number }) {
   return (
@@ -32,7 +37,7 @@ function HazardDots({ score }: { score: number }) {
 /**
  * 농업인 추천 결과 전용 카드. TOP 3 중 선택된 순위 1장만 크게 보여주는 용도입니다.
  * 소비자용 카드(맛·감성 중심)와 달리 재배적지·기후 대응력·재배 정보 등 재배 판단에
- * 필요한 정보를 우선 보여주고, 좋아요·공유·판매처 보기 대신 "품종 상세보기"를 메인 액션으로 둡니다.
+ * 필요한 정보를 우선 보여주고, 좋아요·공유·판매처 보기 대신 "품종 상세보기"를 하나뿐인 액션으로 둡니다.
  */
 export function FarmerResultCard({ rank, emoji, recommendation, onOpenDetail, consumerInterest }: FarmerResultCardProps) {
   const { variety, totalScore, reasons } = recommendation;
@@ -59,18 +64,20 @@ export function FarmerResultCard({ rank, emoji, recommendation, onOpenDetail, co
         varietyName={variety.name}
         fallbackEmoji={emoji}
         fallbackHex={variety.characterColorHex}
-        className="mx-auto aspect-square w-full max-w-[280px] sm:max-w-[320px]"
+        className="mx-auto aspect-square w-full max-w-[190px] sm:max-w-[220px]"
         label={`${variety.name} 우표 이미지`}
       />
 
       <div className="text-center">
         {/* 품종명은 우표 그림 안에 이미 있어 화면에서는 숨기고, 화면 읽기 프로그램용으로만 남깁니다. */}
         <h3 className="sr-only">{variety.name}</h3>
-        <p className="mt-1 text-xs text-slate-500">{statusText}</p>
-        {/* 재배 적합도와 별개인 참고 정보(보기 전용, 점수·순위에 반영하지 않음) */}
-        <p className="mt-1 text-xs text-slate-400">
-          소비자 관심 <span className="text-rose-400">♡</span> {consumerInterest ?? '–'}
-        </p>
+        <p className="mt-1 text-sm leading-relaxed text-slate-700">{statusText}</p>
+        {/* 재배 적합도와 별개인 참고 정보(보기 전용, 점수·순위에 반영하지 않음). 값이 없으면 숨깁니다. */}
+        {consumerInterest !== null && consumerInterest > 0 && (
+          <p className="mt-1 text-xs text-slate-400">
+            소비자 관심 <span className="text-rose-400">♡</span> {consumerInterest}
+          </p>
+        )}
       </div>
 
       <div>
@@ -92,10 +99,10 @@ export function FarmerResultCard({ rank, emoji, recommendation, onOpenDetail, co
 
       <div className="rounded-2xl bg-white/70 p-3 text-xs leading-relaxed text-slate-600">
         <p>
-          <span className="font-semibold text-slate-700">용도</span> {variety.usageText}
+          <span className="font-semibold text-slate-700">용도</span> {firstClause(variety.usageText)}
         </p>
         <p className="mt-1.5">
-          <span className="font-semibold text-slate-700">병해충 저항성</span> {variety.pestNote}
+          <span className="font-semibold text-slate-700">병해충 저항성</span> {firstClause(variety.pestNote)}
         </p>
         <p className="mt-1.5">
           <span className="font-semibold text-slate-700">조만성</span> {growth.maturity}
@@ -130,13 +137,6 @@ export function FarmerResultCard({ rank, emoji, recommendation, onOpenDetail, co
           className="min-h-[44px] flex-1 rounded-full bg-brand-green px-4 text-sm font-bold text-white transition-colors hover:bg-brand-green-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green"
         >
           품종 상세보기
-        </button>
-        <button
-          type="button"
-          className="inline-flex min-h-[44px] items-center justify-center gap-1 rounded-full border border-slate-200 bg-white px-3.5 text-sm font-semibold text-slate-600 transition-colors hover:border-brand-green hover:text-brand-green-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green"
-        >
-          <span aria-hidden="true">🔖</span>
-          카드 저장
         </button>
       </div>
     </div>
