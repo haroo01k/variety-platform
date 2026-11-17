@@ -44,6 +44,8 @@ export interface VarietyRecord {
   name: string;
   originalName: string;
   regionText: string;
+  /** 재배적지 한 줄 요약(원문 regionText가 긴 품종만). 결과 화면에 크게 보여주고 원문은 상세보기에 함께 둡니다. */
+  regionSummary?: string;
   regionTags: string[];
   hazards: Record<HazardKey, HazardInfo>;
   usageText: string;
