@@ -85,37 +85,30 @@ export function FarmerNextSteps({ variety, regionName }: FarmerNextStepsProps) {
     <section aria-labelledby="next-steps-title" className="mx-auto flex w-full max-w-[520px] flex-col gap-3">
       <div>
         <h2 id="next-steps-title" className="text-lg font-extrabold text-brand-green-dark">
-          🌱 {variety.name}, 이렇게 시작해 보세요
+          🌱 이렇게 시작해 보세요
         </h2>
-        <p className="mt-0.5 text-sm text-slate-500">공공기관 창구로 바로 연결해 드려요.</p>
       </div>
 
-      <ol className="flex flex-col gap-2">
-        {links.map((link, index) => (
+      <ol className="divide-y divide-[#F0E9D8] overflow-hidden rounded-2xl border border-[#F0E9D8] bg-white">
+        {links.map((link) => (
           <li key={link.title}>
             <a
               href={link.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 rounded-2xl border border-[#F0E9D8] bg-white px-4 py-3 transition-colors hover:border-brand-green focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-green"
+              className="flex min-h-[56px] items-center gap-3 px-4 py-3 transition-colors hover:bg-[#FBF8EF] focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand-green"
             >
               <span
                 aria-hidden="true"
-                className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-xl ${link.tint}`}
+                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-lg ${link.tint}`}
               >
                 {link.icon}
-                <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-brand-green text-[10px] font-bold text-white">
-                  {index + 1}
-                </span>
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block text-sm font-extrabold text-[#20251F]">{link.title}</span>
+                <span className="block text-sm font-bold text-[#20251F]">{link.title}</span>
                 <span className="mt-0.5 block text-xs leading-relaxed text-slate-500">{link.description}</span>
-                <span className="mt-1 inline-flex items-center gap-0.5 text-xs font-bold text-brand-green">
-                  {link.cta}
-                  <ChevronRightIcon className="h-3 w-3" />
-                </span>
               </span>
+              <ChevronRightIcon className="h-4 w-4 shrink-0 text-slate-300" />
             </a>
           </li>
         ))}

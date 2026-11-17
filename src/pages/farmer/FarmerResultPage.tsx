@@ -128,9 +128,9 @@ export function FarmerResultPage() {
         </>
       )}
 
-      {selected && <FarmerNextSteps variety={selected.variety} regionName={state.farmLocation?.regionName ?? null} />}
-
       {selected && <FarmerOtherVarieties items={others} onSelect={(i) => setDetailTarget(i)} />}
+
+      {selected && <FarmerNextSteps variety={selected.variety} regionName={state.farmLocation?.regionName ?? null} />}
 
       {result.excluded.length > 0 && (
         <div className="rounded-2xl bg-slate-100 p-4 text-xs text-slate-500">
