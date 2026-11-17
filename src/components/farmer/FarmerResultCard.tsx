@@ -1,6 +1,7 @@
 import { VarietyStampImage } from '../common/VarietyStampImage';
 import type { FarmerRecommendation } from '../../types/farmer';
 import type { HazardKey } from '../../types/variety';
+import { getGrowthTraits, getRegionSummary } from '../../lib/varietyTraits';
 
 interface FarmerResultCardProps {
   rank: 1 | 2 | 3;
@@ -30,12 +31,13 @@ function HazardDots({ score }: { score: number }) {
 
 /**
  * 농업인 추천 결과 전용 카드. TOP 3 중 선택된 순위 1장만 크게 보여주는 용도입니다.
- * 소비자용 카드(맛·감성 중심)와 달리 권장지역·기후 대응력·재배 정보 등 재배 판단에
+ * 소비자용 카드(맛·감성 중심)와 달리 재배적지·기후 대응력·재배 정보 등 재배 판단에
  * 필요한 정보를 우선 보여주고, 좋아요·공유·판매처 보기 대신 "품종 상세보기"를 메인 액션으로 둡니다.
  */
 export function FarmerResultCard({ rank, emoji, recommendation, onOpenDetail, consumerInterest }: FarmerResultCardProps) {
   const { variety, totalScore, reasons } = recommendation;
-  const statusText = reasons[0] ?? `${variety.regionText} 재배에 참고할 수 있는 품종이에요.`;
+  const statusText = reasons[0] ?? `${getRegionSummary(variety)} 재배에 참고할 수 있는 품종이에요.`;
+  const growth = getGrowthTraits(variety);
 
   return (
     <div className="mx-auto flex w-full max-w-[520px] flex-col gap-4 rounded-3xl border border-[#F0E9D8] bg-[#FBF8EF] p-5 shadow-sm sm:p-6">
@@ -72,8 +74,8 @@ export function FarmerResultCard({ rank, emoji, recommendation, onOpenDetail, co
       </div>
 
       <div>
-        <p className="fs-11 font-semibold uppercase tracking-wide text-slate-400">권장지역</p>
-        <p className="mt-0.5 text-sm font-medium text-[#20251F]">{variety.regionText}</p>
+        <p className="fs-11 font-semibold uppercase tracking-wide text-slate-400">재배적지</p>
+        <p className="mt-0.5 text-sm font-medium text-[#20251F]">{getRegionSummary(variety)}</p>
       </div>
 
       <div>
@@ -96,8 +98,29 @@ export function FarmerResultCard({ rank, emoji, recommendation, onOpenDetail, co
           <span className="font-semibold text-slate-700">병해충 저항성</span> {variety.pestNote}
         </p>
         <p className="mt-1.5">
-          <span className="font-semibold text-slate-700">생육기간</span> {variety.growthPeriodText}
+          <span className="font-semibold text-slate-700">조만성</span> {growth.maturity}
+          {growth.harvest && (
+            <>
+              {' · '}
+              <span className="font-semibold text-slate-700">출하적기</span> {growth.harvest}
+            </>
+          )}
         </p>
+        {(growth.fruitWeight || growth.sugar) && (
+          <p className="mt-1.5">
+            {growth.fruitWeight && (
+              <>
+                <span className="font-semibold text-slate-700">과중</span> {growth.fruitWeight}
+              </>
+            )}
+            {growth.fruitWeight && growth.sugar && ' · '}
+            {growth.sugar && (
+              <>
+                <span className="font-semibold text-slate-700">당도</span> {growth.sugar}
+              </>
+            )}
+          </p>
+        )}
       </div>
 
       <div className="flex gap-2">

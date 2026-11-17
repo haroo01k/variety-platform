@@ -362,6 +362,7 @@ export const VARIETIES: VarietyRecord[] = [
     name: '옐로드림(Yellow Dream)',
     originalName: '옐로드림(Yellow Dream)',
     regionText: '경북 경산(6월 하순 수확)부터 강원 춘천(7월 중순 수확)까지 재배 확인; 내한성 양호',
+    regionSummary: '경북 경산 ~ 강원 춘천',
     regionTags: ['강원', '남부', '영서'],
     hazards: {
       heat: { score: 1, evidenceType: 'common', reasonText: '1; 근거(작물 공통 지침 적용, 고온 대책 전제의 조건부 적응; 품종별 공식 서술은 없음)' },
@@ -396,6 +397,7 @@ export const VARIETIES: VarietyRecord[] = [
     name: '이노센스(Innocence)',
     originalName: '이노센스(Innocence)',
     regionText: '천도 주산지(경북 경산·영천 등) 중심 보급·생산 중',
+    regionSummary: '천도 주산지 (경북 경산·영천 등)',
     regionTags: ['남부'],
     hazards: {
       heat: { score: 1, evidenceType: 'common', reasonText: '1; 근거(작물 공통 지침 적용, 고온 대책 전제의 조건부 적응; 품종별 공식 서술은 없음)' },
@@ -430,6 +432,7 @@ export const VARIETIES: VarietyRecord[] = [
     name: '홍슬(Hongseul)',
     originalName: '홍슬(Hongseul)',
     regionText: '복숭아 재배지 중 겨울철 최저기온이 영하 18℃ 이하로 내려가지 않는 지역',
+    regionSummary: '겨울 최저기온 -18℃ 이상 지역',
     regionTags: ['중부', '남부'],
     hazards: {
       heat: { score: 1, evidenceType: 'common', reasonText: '1; 근거(작물 공통 지침 적용, 고온 대책 전제의 조건부 적응; 품종별 공식 서술은 없음)' },
@@ -465,6 +468,7 @@ export const VARIETIES: VarietyRecord[] = [
     name: '설홍(Seolhong)',
     originalName: '설홍(Seolhong)',
     regionText: '겨울철 최저기온이 -19℃ 이하로 내려가지 않는 지역에서 재배하는 것이 안전; 천도 주산지(경북 경산·영천 등) 중심',
+    regionSummary: '겨울 최저기온 -19℃ 이상 지역',
     regionTags: ['남부'],
     hazards: {
       heat: { score: 1, evidenceType: 'common', reasonText: '1; 근거(작물 공통 지침 적용, 고온 대책 전제의 조건부 적응; 품종별 공식 서술은 없음)' },
@@ -500,6 +504,7 @@ export const VARIETIES: VarietyRecord[] = [
     name: '마루황도(Maruhwangdo)',
     originalName: '마루황도(Maruhwangdo)',
     regionText: '주요 산지 실증 농가 중심 시범 재배·출하 단계; 재배지 선택 시 겨울철 최저기온과 지역 여건 고려 필요',
+    regionSummary: '시범 재배 단계 (지역 여건 확인 필요)',
     regionTags: ['미정'],
     hazards: {
       heat: { score: 1, evidenceType: 'common', reasonText: '1; 근거(작물 공통 지침 적용, 고온 대책 전제의 조건부 적응; 품종별 공식 서술은 없음)' },
@@ -534,6 +539,7 @@ export const VARIETIES: VarietyRecord[] = [
     name: '썸머킹(Summer King)',
     originalName: '썸머킹(Summer King)',
     regionText: '전국(출하 지역: 경남 함양, 경북 군위·김천·영양·영주, 충북 보은, 강원 철원 등)',
+    regionSummary: '전국',
     regionTags: ['전국', '강원', '중부', '남부', '고랭지', '영동', '영서'],
     hazards: {
       heat: { score: 1, evidenceType: 'indirect', reasonText: '1; 근거: 초록색 상태로 익어 착색 관리가 필요 없는 \'비(非) 적색 계열\' 품종으로 고온기 착색 불량 부담이 적어 기후변화 대응 품종으로 보급' },
@@ -568,6 +574,7 @@ export const VARIETIES: VarietyRecord[] = [
     name: '골든볼(Golden Ball)',
     originalName: '골든볼(Golden Ball)',
     regionText: '위도가 낮아 붉은 사과 착색이 불리한 지역에 적합(대구 군위 특화단지 20ha)',
+    regionSummary: '붉은 사과 착색이 불리한 남쪽 지역',
     regionTags: ['남부', '고랭지'],
     hazards: {
       heat: { score: 2, evidenceType: 'direct', reasonText: '2; 근거: 황색과피 사과는 온도에 상관없이 황색으로 착색되기 때문에 골든볼은 이러한 기후변화 문제를 극복할 수 있는 품종; 고온에도 색이 잘 드는 노란 사과' },
@@ -602,6 +609,7 @@ export const VARIETIES: VarietyRecord[] = [
     name: '아리수(Arisoo)',
     originalName: '아리수(Arisoo)',
     regionText: '남해안 및 경남·전남의 해발고도가 낮은 남쪽 지역을 제외한 전국',
+    regionSummary: '남부 저지대 제외 전국',
     regionTags: ['전국', '강원', '중부', '남부', '고랭지'],
     hazards: {
       heat: { score: 1, evidenceType: 'indirect', reasonText: '1; 근거(상반): 고온에서도 착색이 잘 되고 식미가 우수한 사과 / 일소피해에 노출이 쉬운 사과 아리수 품종 → 착색은 강하나 햇볕데임 주의로 중간' },
@@ -636,6 +644,7 @@ export const VARIETIES: VarietyRecord[] = [
     name: '이지플(Easyple)',
     originalName: '이지플(Easyple)',
     regionText: '추석 사과 재배지(전문생산단지: 충북 충주 15ha, 경북 포항 10ha)',
+    regionSummary: '추석 사과 재배지 (충주·포항 등)',
     regionTags: ['중부', '남부'],
     hazards: {
       heat: { score: 2, evidenceType: 'direct', reasonText: '2; 근거: 더위에도 잘 자라는 품종, 고온에서도 껍질에 색이 잘 들어 기후변화에 강한 품종; 당도가 16.7브릭스로 높으며 해거리가 거의 없음' },
@@ -670,6 +679,7 @@ export const VARIETIES: VarietyRecord[] = [
     name: '컬러플(Colorple)',
     originalName: '컬러플(Colorple)',
     regionText: '강원 홍천 등 밤낮 일교차가 큰 지역',
+    regionSummary: '일교차 큰 지역 (강원 홍천 등)',
     regionTags: ['강원'],
     hazards: {
       heat: { score: 1, evidenceType: 'common', reasonText: '1; 근거(작물 공통 지침 적용, 고온 대책 전제의 조건부 적응; 품종별 공식 서술은 없음)' },

@@ -8,6 +8,7 @@ import { ResultRankTabs } from '../../components/common/ResultRankTabs';
 import { FarmerResultCard } from '../../components/farmer/FarmerResultCard';
 import { FarmerResultDetail } from '../../components/farmer/FarmerResultDetail';
 import { FarmerNextSteps } from '../../components/farmer/FarmerNextSteps';
+import { FarmerOtherVarieties } from '../../components/farmer/FarmerOtherVarieties';
 import { InterestRanking } from '../../components/common/InterestRanking';
 import { CROPS } from '../../data/crops';
 import { getLikeCounts, isSupabaseConfigured } from '../../lib/likes';
@@ -34,7 +35,8 @@ export function FarmerResultPage() {
   const location = useLocation();
   const state = location.state as LocationState | null;
   const [selectedRank, setSelectedRank] = useState(0);
-  const [showDetail, setShowDetail] = useState(false);
+  /** 상세보기 바텀시트에 띄울 품종. 'top'은 선택된 TOP 3 카드, 숫자는 '다른 품종' 목록의 순서 */
+  const [detailTarget, setDetailTarget] = useState<'top' | number | null>(null);
   /** 추천 TOP 3 품종의 소비자 관심 수(Supabase 집계). null이면 아직 모르거나 불러오지 못함 */
   const [interestCounts, setInterestCounts] = useState<Record<string, number> | null>(null);
   const top3Ids = state?.result.top3.map((r) => r.variety.id).join(',') ?? '';
@@ -71,6 +73,23 @@ export function FarmerResultPage() {
   const hasTie = new Set(ranks).size < ranks.length;
   const selectedDisplayRank = ranks[selectedRank] ?? 1;
   const selectedTied = ranks.filter((r) => r === selectedDisplayRank).length > 1;
+  // TOP 3 밖의 품종도 전체 순위(공동 순위 포함)로 보여줍니다.
+  const others = result.ranked.slice(result.top3.length).map((recommendation) => ({
+    recommendation,
+    rank: 1 + result.ranked.filter((o) => o.totalScore > recommendation.totalScore).length,
+  }));
+  const detail =
+    detailTarget === 'top'
+      ? selected
+        ? { recommendation: selected, rank: selectedDisplayRank, tied: selectedTied }
+        : null
+      : detailTarget !== null && others[detailTarget]
+        ? {
+            recommendation: others[detailTarget].recommendation,
+            rank: others[detailTarget].rank,
+            tied: result.ranked.filter((o) => o.totalScore === others[detailTarget].recommendation.totalScore).length > 1,
+          }
+        : null;
 
   return (
     <Container className="font-nanum-round flex flex-col gap-6 py-8 md:py-12">
@@ -102,7 +121,7 @@ export function FarmerResultPage() {
               rank={selectedDisplayRank as 1 | 2 | 3}
               emoji={crop.emoji}
               recommendation={selected}
-              onOpenDetail={() => setShowDetail(true)}
+              onOpenDetail={() => setDetailTarget('top')}
               consumerInterest={interestCounts?.[selected.variety.id] ?? null}
             />
           </div>
@@ -110,6 +129,8 @@ export function FarmerResultPage() {
       )}
 
       {selected && <FarmerNextSteps variety={selected.variety} regionName={state.farmLocation?.regionName ?? null} />}
+
+      {selected && <FarmerOtherVarieties items={others} onSelect={(i) => setDetailTarget(i)} />}
 
       {result.excluded.length > 0 && (
         <div className="rounded-2xl bg-slate-100 p-4 text-xs text-slate-500">
@@ -139,11 +160,13 @@ export function FarmerResultPage() {
       />
 
       <BottomSheet
-        open={showDetail}
-        onClose={() => setShowDetail(false)}
-        title={selected ? `${selected.variety.name} 상세 정보` : '품종 상세 정보'}
+        open={detail !== null}
+        onClose={() => setDetailTarget(null)}
+        title={detail ? `${detail.recommendation.variety.name} 상세 정보` : '품종 상세 정보'}
       >
-        {selected && <FarmerResultDetail rank={selectedDisplayRank} tied={selectedTied} emoji={crop.emoji} recommendation={selected} />}
+        {detail && (
+          <FarmerResultDetail rank={detail.rank} tied={detail.tied} emoji={crop.emoji} recommendation={detail.recommendation} />
+        )}
       </BottomSheet>
     </Container>
   );
