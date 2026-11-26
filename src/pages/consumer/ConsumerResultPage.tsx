@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Container } from '../../components/common/Container';
 import { Button } from '../../components/common/Button';
@@ -9,6 +9,7 @@ import { InterestRanking } from '../../components/common/InterestRanking';
 import { CROPS } from '../../data/crops';
 import { findTasteType } from '../../data/consumerQuiz';
 import { ROUTES } from '../../lib/routes';
+import { recordImpression } from '../../lib/demand';
 import type { ConsumerResult } from '../../types/consumer';
 
 interface LocationState {
@@ -31,6 +32,13 @@ export function ConsumerResultPage() {
   const state = location.state as LocationState | null;
   /** 가운데에 보여줄 추천 순위의 인덱스(0 = TOP 1) */
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const topVarietyId = state?.result?.top3[0]?.variety.id ?? '';
+
+  // 하트를 누를 수 있는 TOP 1 품종이 이 기기에 보여졌음을 기록합니다(기기·품종별 1회).
+  // 농업인 결과의 소비자 관심도(노출 대비 하트율) 분모로 쓰입니다(src/lib/demandScoring.ts).
+  useEffect(() => {
+    if (topVarietyId) void recordImpression(topVarietyId);
+  }, [topVarietyId]);
 
   // 다시 테스트하기: 응답을 초기화하고 첫 질문부터 시작(좋아요 등 기기에 저장된 기록은 그대로)
   const retake = () => navigate(ROUTES.consumer, { state: { startAtFirstQuestion: true } });

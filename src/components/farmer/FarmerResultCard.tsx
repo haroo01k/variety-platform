@@ -2,6 +2,7 @@ import { VarietyStampImage } from '../common/VarietyStampImage';
 import type { FarmerRecommendation } from '../../types/farmer';
 import type { HazardKey } from '../../types/variety';
 import { getGrowthTraits, getRegionSummary } from '../../lib/varietyTraits';
+import { demandLevel } from '../../lib/demandScoring';
 
 interface FarmerResultCardProps {
   rank: 1 | 2 | 3;
@@ -10,6 +11,8 @@ interface FarmerResultCardProps {
   onOpenDetail: () => void;
   /** 소비자 "먹어보고 싶어요" 누적 수(보기 전용). null이면 아직 모르거나 불러오지 못함 */
   consumerInterest: number | null;
+  /** 농업인이 '비슷한 점수는 소비자 관심도 순' 스위치를 켰는지 */
+  demandOrderOn?: boolean;
 }
 
 const HAZARD_ITEMS: { key: HazardKey; label: string }[] = [
@@ -36,13 +39,76 @@ function HazardDots({ score }: { score: number }) {
   );
 }
 
+const LEVEL_HEARTS: Record<'높음' | '보통' | '낮음', number> = { 높음: 3, 보통: 2, 낮음: 1 };
+
+/** 소비자 관심도를 하트 3칸으로 보여줍니다(기후 대응력의 새싹 3칸과 같은 형식). 집계 전이면 모두 흐리게. */
+function HeartDots({ filled }: { filled: number }) {
+  return (
+    <div className="flex gap-0.5 text-base leading-none" aria-hidden="true">
+      {[0, 1, 2].map((i) => (
+        <span key={i} className={i < filled ? 'text-rose-500' : 'text-rose-200'}>
+          {i < filled ? '♥' : '♡'}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+/**
+ * 소비자 관심도 한 줄. 재배적지·기후 대응력 다음에 두어, 재배 판단 정보를 먼저 읽게 합니다.
+ * 참고 지표이며 점수에는 반영하지 않습니다(스위치를 켜면 비슷한 점수끼리 순서에만 씀).
+ */
+function ConsumerDemandRow({
+  likes,
+  views,
+  level,
+  orderOn,
+}: {
+  likes: number;
+  views: number;
+  level: '높음' | '보통' | '낮음' | null;
+  orderOn: boolean;
+}) {
+  return (
+    <div>
+      <p className="fs-11 font-semibold uppercase tracking-wide text-slate-400">💌 소비자 관심도</p>
+      <div className="mt-2 flex items-center justify-between text-xs font-medium text-slate-600">
+        <span>
+          {level ? (
+            <>
+              <span className="text-sm font-extrabold text-[#20251F]">{level}</span>
+              <span className="ml-1.5">
+                본 소비자 {views}명 중 <span className="font-bold text-rose-500">{likes}명</span>이 먹어보고 싶어해요
+              </span>
+            </>
+          ) : (
+            <>집계 중 · 아직 본 소비자가 {views}명이에요</>
+          )}
+        </span>
+        <HeartDots filled={level ? LEVEL_HEARTS[level] : 0} />
+      </div>
+      <p className="mt-1 fs-11 text-slate-400">
+        {orderOn ? '비슷한 점수끼리 순서를 정하는 데 쓰고 있어요' : '참고용이에요 · 추천 점수에는 반영하지 않아요'}
+      </p>
+    </div>
+  );
+}
+
 /**
  * 농업인 추천 결과 전용 카드. TOP 3 중 선택된 순위 1장만 크게 보여주는 용도입니다.
  * 소비자용 카드(맛·감성 중심)와 달리 재배적지·기후 대응력·재배 정보 등 재배 판단에
  * 필요한 정보를 우선 보여주고, 좋아요·공유·판매처 보기 대신 "품종 상세보기"를 하나뿐인 액션으로 둡니다.
  */
-export function FarmerResultCard({ rank, emoji, recommendation, onOpenDetail, consumerInterest }: FarmerResultCardProps) {
-  const { variety, totalScore, reasons } = recommendation;
+export function FarmerResultCard({
+  rank,
+  emoji,
+  recommendation,
+  onOpenDetail,
+  consumerInterest,
+  demandOrderOn = false,
+}: FarmerResultCardProps) {
+  const { variety, totalScore, reasons, demand } = recommendation;
+  const level = demand ? demandLevel(demand.normalized) : null;
   const statusText = reasons[0] ?? `${getRegionSummary(variety)} 재배에 참고할 수 있는 품종이에요.`;
   const growth = getGrowthTraits(variety);
 
@@ -66,7 +132,7 @@ export function FarmerResultCard({ rank, emoji, recommendation, onOpenDetail, co
         varietyName={variety.name}
         fallbackEmoji={emoji}
         fallbackHex={variety.characterColorHex}
-        className="mx-auto aspect-square w-full max-w-[190px] sm:max-w-[220px]"
+        className="mx-auto -my-4 aspect-square w-full max-w-[190px] sm:max-w-[220px]"
         label={`${variety.name} 우표 이미지`}
       />
 
@@ -75,7 +141,7 @@ export function FarmerResultCard({ rank, emoji, recommendation, onOpenDetail, co
         <h3 className="sr-only">{variety.name}</h3>
         <p className="mt-1 text-sm leading-relaxed text-slate-700">{statusText}</p>
         {/* 재배 적합도와 별개인 참고 정보(보기 전용, 점수·순위에 반영하지 않음). 값이 없으면 숨깁니다. */}
-        {consumerInterest !== null && consumerInterest > 0 && (
+        {!demand && consumerInterest !== null && consumerInterest > 0 && (
           <p className="mt-1 text-xs text-slate-400">
             소비자 관심 <span className="text-rose-400">♡</span> {consumerInterest}
           </p>
@@ -98,6 +164,9 @@ export function FarmerResultCard({ rank, emoji, recommendation, onOpenDetail, co
           ))}
         </div>
       </div>
+
+      {/* 소비자 관심도(참고 지표). 노출 대비 하트율로 계산하며 점수에는 반영하지 않습니다. */}
+      {demand && <ConsumerDemandRow likes={demand.likes} views={demand.views} level={level} orderOn={demandOrderOn} />}
 
       <div className="rounded-2xl bg-white/70 p-3 text-xs leading-relaxed text-slate-600">
         <p>
