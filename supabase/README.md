@@ -20,6 +20,9 @@
 3. 우측 하단 "Run" 클릭 → 에러 없이 완료되면 성공
    - `variety_likes` 테이블과 `get_like_counts` / `get_my_likes` / `toggle_like` 함수가 만들어집니다.
 4. (확인용) 왼쪽 메뉴 **Table Editor**에서 `variety_likes` 테이블이 보이면 정상입니다.
+5. 같은 방법으로 [`supabase/demand.sql`](./demand.sql)도 실행합니다(소비자 관심도를 농업인 결과에 참고 지표로 보여주는 기능).
+   - `variety_impressions` 테이블과 `record_impression` / `get_demand_stats` 함수가 만들어집니다.
+   - 실행하지 않으면 사이트는 그대로 동작하고, 농업인 결과 카드의 관심도(높음·보통·낮음) 라벨만 나오지 않습니다.
 
 ## 3. anon key 발급받기
 

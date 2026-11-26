@@ -1,5 +1,6 @@
 import type { CropId } from './crop';
 import type { CropSeason, HazardKey, VarietyRecord } from './variety';
+import type { DemandInfo } from '../lib/demandScoring';
 
 export type RegionAnswer =
   | 'gangwon-yeongdong'
@@ -69,6 +70,8 @@ export interface FarmerScoreBreakdown {
 export interface FarmerRecommendation {
   variety: VarietyRecord;
   totalScore: number;
+  /** 소비자 관심도(노출 대비 하트율, 참고 지표). 점수·순위에는 반영하지 않습니다. 불러오지 못했으면 없음 */
+  demand?: DemandInfo;
   breakdown: FarmerScoreBreakdown;
   /** 표시 순서대로 최대 2개: 가장 큰 가점 → 두 번째 가점 */
   reasons: string[];

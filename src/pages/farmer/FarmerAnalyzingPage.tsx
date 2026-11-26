@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Container } from '../../components/common/Container';
 import { Button } from '../../components/common/Button';
@@ -6,34 +6,64 @@ import { AnalyzingStamp } from '../../components/farmer/AnalyzingStamp';
 import { CROPS } from '../../data/crops';
 import { CROP_PESTS } from '../../data/cropPests';
 import { ROUTES } from '../../lib/routes';
+import { getDemandStats } from '../../lib/demand';
+import { attachConsumerDemand } from '../../lib/demandScoring';
 import type { FarmerAnswers, FarmerResult } from '../../types/farmer';
 
 /** 병해충 안내 3가지를 읽을 수 있도록 결과 화면으로 넘어가기 전 기다리는 시간 */
 const AUTO_ADVANCE_MS = 6500;
+/** '결과 바로 보기'를 눌렀을 때 소비자 관심도 조회를 기다리는 최대 시간 */
+const DEMAND_WAIT_MS = 3000;
 
 interface LocationState {
   cropId: string;
   answers: FarmerAnswers;
   result: FarmerResult;
+  farmLocation?: { regionName: string } | null;
+}
+
+/** 소비자 관심도(참고 지표)를 붙인 결과. 점수·순위는 그대로이며, 불러오지 못하면 원래 결과 */
+async function withConsumerDemand(state: LocationState): Promise<FarmerResult> {
+  const ids = state.result.ranked.map((r) => r.variety.id);
+  const stats = await getDemandStats(ids);
+  return stats ? attachConsumerDemand(state.result, stats) : state.result;
+}
+
+function withTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
+  return Promise.race([promise, new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms))]);
 }
 
 /**
  * 농업인 분석 화면.
  * FarmerConditionsPage에서 이미 계산된 결과(location.state)를 잠시 보여준 뒤
- * 결과 화면으로 넘겨줍니다. 기다리는 동안 선택한 작물의 대표 병해충 3가지(src/data/cropPests.ts)를 안내합니다. state가 없으면(새로고침 등) 조건 입력 화면으로 되돌립니다.
+ * 결과 화면으로 넘겨줍니다. 기다리는 동안 소비자 관심도(노출 대비 하트율, 참고 지표)를 불러와 결과에 붙입니다. 점수·순위에는 반영하지 않습니다(src/lib/demandScoring.ts). 기다리는 동안 선택한 작물의 대표 병해충 3가지(src/data/cropPests.ts)를 안내합니다. state가 없으면(새로고침 등) 조건 입력 화면으로 되돌립니다.
  */
 export function FarmerAnalyzingPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const state = location.state as LocationState | null;
+  const demandRef = useRef<Promise<FarmerResult> | null>(null);
+  const navigatedRef = useRef(false);
+
+  // 화면에 들어오자마자 소비자 관심도를 불러오기 시작합니다(분석 화면을 보여주는 동안 끝나도록).
+  useEffect(() => {
+    if (state && !demandRef.current) demandRef.current = withConsumerDemand(state);
+  }, [state]);
+
+  const goResult = useCallback(async () => {
+    if (!state || navigatedRef.current) return;
+    navigatedRef.current = true;
+    const result = await withTimeout(demandRef.current ?? Promise.resolve(state.result), DEMAND_WAIT_MS, state.result);
+    navigate(ROUTES.farmerResult, { replace: true, state: { ...state, result } });
+  }, [navigate, state]);
 
   useEffect(() => {
     if (!state) return;
     const timer = setTimeout(() => {
-      navigate(ROUTES.farmerResult, { replace: true, state });
+      void goResult();
     }, AUTO_ADVANCE_MS);
     return () => clearTimeout(timer);
-  }, [navigate, state]);
+  }, [goResult, state]);
 
   if (!state) {
     return (
@@ -48,7 +78,6 @@ export function FarmerAnalyzingPage() {
 
   const crop = CROPS.find((c) => c.id === state.cropId) ?? CROPS[0];
   const pests = CROP_PESTS[crop.id];
-  const goResult = () => navigate(ROUTES.farmerResult, { replace: true, state });
 
   return (
     <Container className="font-nanum-round flex flex-1 flex-col items-center gap-6 py-8 text-center md:py-12">
@@ -98,7 +127,7 @@ export function FarmerAnalyzingPage() {
         </section>
       )}
 
-      <Button variant="secondary" onClick={goResult}>
+      <Button variant="secondary" onClick={() => void goResult()}>
         결과 바로 보기 <span aria-hidden="true">→</span>
       </Button>
     </Container>
