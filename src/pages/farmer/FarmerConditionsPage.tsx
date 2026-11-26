@@ -58,6 +58,8 @@ type StepId =
 const FIELD_STEPS: StepId[] = ['crop', 'region', 'climate', 'harvest', 'taste', 'usage', 'pest'];
 /** 감자·배추: 작형을 묻습니다. 감자만 수확 달을 선택으로 더 받습니다(배추는 작형으로 품종이 갈림). */
 const MONTH_TIMING_STEPS: StepId[] = ['crop', 'region', 'climate', 'season', 'taste', 'usage', 'pest'];
+/** 식미 문항을 묻지 않는 밭작물. 배추는 전문가 자문 설문에 식미 항목이 없어 연구팀 결정으로 제외(2026-11-26) */
+const NO_TASTE_CROPS: string[] = ['cabbage'];
 /** 과수(사과·복숭아): 겨울 최저기온·줄이고 싶은 작업 포함, 유통 조건은 판로·용도에 합침 */
 const ORCHARD_STEPS: StepId[] = ['crop', 'region', 'climate', 'harvest', 'winterMin', 'usage', 'pest', 'reduceWork'];
 
@@ -108,7 +110,12 @@ export function FarmerConditionsPage() {
 
   const isOrchard = cropId ? isOrchardCrop(cropId) : false;
   const steps = useMemo<StepId[]>(
-    () => (isOrchard ? ORCHARD_STEPS : cropId && isMonthTimingCrop(cropId) ? MONTH_TIMING_STEPS : FIELD_STEPS),
+    () =>
+      isOrchard
+        ? ORCHARD_STEPS
+        : cropId && isMonthTimingCrop(cropId)
+          ? MONTH_TIMING_STEPS.filter((step) => !(step === 'taste' && NO_TASTE_CROPS.includes(cropId)))
+          : FIELD_STEPS,
     [isOrchard, cropId],
   );
   const currentStepId = steps[stepIndex];
