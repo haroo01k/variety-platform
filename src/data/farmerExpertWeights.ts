@@ -3,7 +3,8 @@
  * 0 = 가중치 계산에서 제외, 1 = 매우 낮음 ~ 5 = 매우 높음 (자문 설문지 기준).
  *
  * 자문 결과가 있는 작물은 농업인 추천 점수를 "항목 점수(0~1) × 가중치"의 가중 평균으로 계산합니다
- * (src/lib/farmerScoring.ts). 자문 결과가 없는 작물(옥수수·배추·복숭아 등)은 기존 합산 방식을 그대로 씁니다.
+ * (src/lib/farmerScoring.ts). 자문 결과가 없는 작물(옥수수·배추)은 기존 합산 방식을 그대로 씁니다.
+ * 과수류(사과·복숭아)는 같은 자문값을 씁니다(EXPERT_WEIGHT_SOURCE, 연구팀 결정 2026-11-26).
  *
  * 전문가가 늘어나면 해당 작물 배열에 응답을 하나 더 추가하면 됩니다.
  * 가중치는 전문가별 값의 평균이며, 0(제외)도 평균에 그대로 포함합니다.
@@ -61,6 +62,14 @@ export const EXPERT_REVIEWS: Partial<Record<CropId, ExpertReview[]>> = {
 };
 
 /**
+ * 자문값을 다른 작물에서 빌려 쓰는 작물. 과수류는 사과 자문값을 복숭아에도 그대로 씁니다(연구팀 결정 2026-11-26).
+ * 복숭아 전용 자문을 받으면 EXPERT_REVIEWS.peach에 넣고 여기서 지웁니다.
+ */
+export const EXPERT_WEIGHT_SOURCE: Partial<Record<CropId, CropId>> = {
+  peach: 'apple',
+};
+
+/**
  * 전문가 자문에 없던 항목의 임시 가중치(연구팀 설정). 추가 자문으로 값을 받으면 EXPERT_REVIEWS에 넣고 여기서 지웁니다.
  * - 감자 식미 2: 같은 전문가가 재배목적(용도)을 1로 낮게 봤고, 감자 식미(분질·점질)는 용도와 밀접해
  *   재배목적보다 조금 높고 다른 항목보다 낮게 둠
@@ -84,7 +93,7 @@ const average = (values: number[]) => (values.length > 0 ? values.reduce((a, b) 
 
 /** 작물의 전문가 평균 가중치. 자문 결과가 없으면 null(기존 합산 방식 사용) */
 export function getCropWeights(cropId: CropId): CropWeights | null {
-  const reviews = EXPERT_REVIEWS[cropId];
+  const reviews = EXPERT_REVIEWS[cropId] ?? EXPERT_REVIEWS[EXPERT_WEIGHT_SOURCE[cropId] ?? cropId];
   if (!reviews || reviews.length === 0) return null;
   const allItems: ExpertItem[] = ['region', 'climate', 'harvestTiming', 'usage', 'pest', 'taste', 'reduceWork'];
   const items = {} as Record<ExpertItem, number>;
